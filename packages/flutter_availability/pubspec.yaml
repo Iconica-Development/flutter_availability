@@ -1,0 +1,26 @@
+name: flutter_availability
+description: "Flutter availability userstory package"
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.3 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_availability_data_interface:
+    git:
+      url: https://github.com/Iconica-Development/flutter_availability
+      ref: 1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_iconica_analysis:
+    git:
+      url: https://github.com/Iconica-Development/flutter_iconica_analysis
+      ref: 7.0.0
+
+flutter:
