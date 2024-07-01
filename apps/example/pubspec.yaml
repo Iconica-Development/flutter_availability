@@ -1,0 +1,24 @@
+name: flutter_availability_example
+description: "Flutter Availability Example App"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.3 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_availability:
+    path: ../../packages/flutter_availability
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_iconica_analysis:
+    git:
+      url: https://github.com/Iconica-Development/flutter_iconica_analysis
+      ref: 7.0.0
+
+flutter:
+  uses-material-design: true
