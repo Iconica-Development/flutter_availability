@@ -1,0 +1,12 @@
+version: 2
+
+updates:
+  - package-ecosystem: "pub"
+    directory: "/packages/flutter_availability"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pub"
+    directory: "/packages/flutter_availability_data_interface"
+    schedule:
+      interval: "weekly"
