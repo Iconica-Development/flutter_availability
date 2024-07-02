@@ -1,3 +1,4 @@
+import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 import "package:flutter_availability_data_interface/src/models/availability.dart";
 
 /// A limited set of different availability template types
@@ -22,6 +23,26 @@ class AvailabilityTemplateModel {
     this.id,
   });
 
+  factory AvailabilityTemplateModel.fromType({
+    required String userId,
+    required String name,
+    required int color,
+    required AvailabilityTemplateType templateType,
+    required Map<String, dynamic> data,
+    String? id,
+  }) {
+    var templateData = TemplateData.fromType(templateType, data);
+
+    return AvailabilityTemplateModel(
+      userId: userId,
+      name: name,
+      color: color,
+      templateType: templateType,
+      templateData: templateData,
+      id: id,
+    );
+  }
+
   /// The identifier for this template
   final String? id;
 
@@ -41,6 +62,8 @@ class AvailabilityTemplateModel {
 
   /// The specific data for this template
   final TemplateData templateData;
+
+  Map<String, dynamic> get rawTemplateData => templateData.toMap();
 }
 
 /// Used as the key for defining week-based templates
@@ -79,12 +102,24 @@ enum WeekDay {
 ///
 /// ignore: one_member_abstracts
 abstract interface class TemplateData {
+  factory TemplateData.fromType(
+    AvailabilityTemplateType type,
+    Map<String, dynamic> data,
+  ) =>
+      switch (type) {
+        AvailabilityTemplateType.week => WeekTemplateData.fromMap(data),
+        AvailabilityTemplateType.day => DayTemplateData.fromMap(data)
+      };
+
   /// Applies the current template to all days found between [start] and [end],
   /// inclusive
   List<AvailabilityModel> apply({
     required DateTime start,
     required DateTime end,
   });
+
+  /// Serialize the template to representational data
+  Map<String, dynamic> toMap();
 }
 
 /// A week based template data structure
@@ -116,6 +151,36 @@ class WeekTemplateData implements TemplateData {
         },
       );
 
+  /// Parses the template data from a map.
+  ///
+  /// This assumes that the structure of the map is the following:
+  ///
+  /// ```
+  /// {
+  ///   '0': <String, dynamic>{},
+  ///   'index thats parseable by int and matches with a weekday': {
+  ///      // an object that is allowed to be parsed as a DayTemplateData
+  ///   }
+  /// }
+  /// ```
+  factory WeekTemplateData.fromMap(Map<String, dynamic> data) =>
+      WeekTemplateData(
+        data: {
+          for (var entry in data.entries) ...{
+            WeekDay.values[int.parse(entry.key)]:
+                DayTemplateData.fromMap(entry.value),
+          },
+        },
+      );
+
+  /// returns the map representation of this template data
+  @override
+  Map<String, dynamic> toMap() => {
+        for (var entry in _data.entries) ...{
+          entry.key.index.toString(): entry.value.toMap(),
+        },
+      };
+
   final Map<WeekDay, DayTemplateData> _data;
 
   /// retrieves an unmodifiable map for each date.
@@ -140,6 +205,35 @@ class DayTemplateData implements TemplateData {
     required this.breaks,
   });
 
+  /// Parses the template data from a map.
+  ///
+  /// This assumes that the structure of the map is the following:
+  ///
+  /// ```
+  /// {
+  ///   '0': <String, dynamic>{},
+  ///   'index thats parseable by int and matches with a weekday': {
+  ///      // an object that is allowed to be parsed as a DayTemplateData
+  ///   }
+  /// }
+  /// ```
+  factory DayTemplateData.fromMap(Map<String, dynamic> data) {
+    var rawBreaks = data["breaks"] as List?;
+    var breaks = <AvailabilityBreakModel>[
+      if (rawBreaks != null) ...[
+        for (var rawBreak in rawBreaks) ...[
+          AvailabilityBreakModel.fromMap(rawBreak as Map<String, dynamic>),
+        ],
+      ],
+    ];
+
+    return DayTemplateData(
+      startTime: DateTime.parse(data["startTime"]),
+      endTime: DateTime.parse(data["endTime"]),
+      breaks: breaks,
+    );
+  }
+
   /// The start time to apply on a new availability
   final DateTime startTime;
 
@@ -157,4 +251,15 @@ class DayTemplateData implements TemplateData {
     // TODO(Joey): Implement the apply method
     throw UnimplementedError();
   }
+
+  @override
+  Map<String, dynamic> toMap() => { 
+        "startTime": startTime.toIso8601String(),
+        "endTime": endTime.toIso8601String(),
+        "breaks": [
+          for (var breakToSerialize in breaks) ...[
+            breakToSerialize.toMap(),
+          ],
+        ],
+      };
 }
