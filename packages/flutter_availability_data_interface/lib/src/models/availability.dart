@@ -1,3 +1,4 @@
+// ignore_for_file: Generated using data class generator
 /// A model defining the data structure for an availability
 class AvailabilityModel {
   /// Creates a new availability
@@ -55,6 +56,22 @@ class AvailabilityBreakModel {
     Duration? duration,
   }) : _duration = duration;
 
+  /// Parses a break from a map.
+  ///
+  /// This function is primarily used in the storing of template blobs. For each
+  /// variant of the service it is recommended to implement your own
+  /// serialization layer.
+  factory AvailabilityBreakModel.fromMap(Map<String, dynamic> map) =>
+      AvailabilityBreakModel(
+        startTime:
+            DateTime.fromMillisecondsSinceEpoch((map["startTime"] ?? 0) as int),
+        endTime:
+            DateTime.fromMillisecondsSinceEpoch((map["endTime"] ?? 0) as int),
+        duration: map["duration"] != null
+            ? Duration(minutes: map["duration"] as int)
+            : null,
+      );
+
   /// The start time for this break
   ///
   /// If duration is not the same as the difference between [startTime] and
@@ -102,4 +119,15 @@ class AvailabilityBreakModel {
         endTime: endTime ?? this.endTime,
         duration: duration ?? _duration,
       );
+
+  /// Returns a map variant of this object.
+  ///
+  /// This is mainly for serialization of template data. Serialization of this
+  /// object for persistance in your own implementation is recommended to be
+  /// done in a separate serialization layer.
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        "startTime": startTime.millisecondsSinceEpoch,
+        "endTime": endTime.millisecondsSinceEpoch,
+        "duration": _duration?.inMinutes,
+      };
 }
