@@ -10,8 +10,12 @@ abstract interface class AvailabilityDataInterface {
   /// Retrieves a list of availabilities for the given [userId].
   ///
   /// Whether this is a one time value or a continuous stream of values is up to
-  /// the implementation.
-  Stream<List<AvailabilityModel>> getAvailabilityForUser(String userId);
+  /// the implementation. The [start] and [end] parameters can be used to filter
+  Stream<List<AvailabilityModel>> getAvailabilityForUser({
+    required String userId,
+    DateTime? start,
+    DateTime? end,
+  });
 
   /// Retrieves a specific availability for the given
   /// [userId] and [availabilityId]
