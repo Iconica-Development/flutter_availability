@@ -70,7 +70,12 @@ class AvailabilityTemplateModel {
 
   /// applies the template to a range of dates
   List<AvailabilityModel> apply(DateTime start, DateTime end) =>
-      templateData.apply(userId: userId, start: start, end: end);
+      templateData.apply(
+        userId: userId,
+        start: start,
+        end: end,
+        templateId: id,
+      );
 }
 
 /// Used as the key for defining week-based templates
@@ -124,6 +129,7 @@ abstract interface class TemplateData {
     required String userId,
     required DateTime start,
     required DateTime end,
+    required String? templateId,
   });
 
   /// Serialize the template to representational data
@@ -199,9 +205,9 @@ class WeekTemplateData implements TemplateData {
     required String userId,
     required DateTime start,
     required DateTime end,
+    String? templateId,
   }) {
     var dates = _getDatesBetween(start, end);
-
     return [
       for (var date in dates)
         if (data.containsKey(WeekDay.fromDateTime(date)))
@@ -209,6 +215,7 @@ class WeekTemplateData implements TemplateData {
             start: date,
             end: date,
             userId: userId,
+            templateId: templateId,
           ),
     ];
   }
@@ -266,6 +273,7 @@ class DayTemplateData implements TemplateData {
     required String userId,
     required DateTime start,
     required DateTime end,
+    String? templateId,
   }) {
     var dates = _getDatesBetween(start, end);
 
@@ -273,6 +281,7 @@ class DayTemplateData implements TemplateData {
       for (var date in dates) ...[
         AvailabilityModel(
           userId: userId,
+          templateId: templateId,
           startDate: date.mergeTime(startTime),
           endDate: date.mergeTime(endTime),
           breaks: [
