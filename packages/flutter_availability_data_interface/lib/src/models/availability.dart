@@ -23,7 +23,7 @@ class AvailabilityModel {
 
   /// The until date of this availability
   ///
-  /// [endDate] will always be before the start date.
+  /// [endDate] will always be after the start date.
   final DateTime endDate;
 
   /// A list of breaks during the specified time period
