@@ -30,6 +30,7 @@ void main() {
         var sunday = createTemplate(7);
 
         var sut = AvailabilityTemplateModel(
+          id: "",
           userId: "",
           name: "",
           color: 0,
@@ -142,6 +143,7 @@ void main() {
         }
 
         var weektemplate = AvailabilityTemplateModel(
+          id: "id",
           userId: "1",
           name: "test",
           color: 0xFFAABBCC,

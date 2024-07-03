@@ -8,6 +8,7 @@ class AvailabilityModel {
     required this.endDate,
     required this.breaks,
     this.id,
+    this.templateId,
   });
 
   /// the identifier for this availability
@@ -15,6 +16,10 @@ class AvailabilityModel {
 
   /// The uniquely identifiable string for who or what the
   final String userId;
+
+  /// The identifier of the [AvailabilityTemplateModel] that this availability
+  /// is associated with if any.
+  final String? templateId;
 
   /// The from date of this availability.
   ///
@@ -34,6 +39,7 @@ class AvailabilityModel {
   AvailabilityModel copyWith({
     String? id,
     String? userId,
+    String? templateId,
     DateTime? startDate,
     DateTime? endDate,
     List<AvailabilityBreakModel>? breaks,
@@ -41,6 +47,7 @@ class AvailabilityModel {
       AvailabilityModel(
         id: id ?? this.id,
         userId: userId ?? this.userId,
+        templateId: templateId ?? this.templateId,
         startDate: startDate ?? this.startDate,
         endDate: endDate ?? this.endDate,
         breaks: breaks ?? this.breaks,
