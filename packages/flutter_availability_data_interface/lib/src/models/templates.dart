@@ -23,6 +23,8 @@ class AvailabilityTemplateModel {
     this.id,
   });
 
+  /// Automatically parses [templateData] based on the dynamic data map and
+  /// template type.
   factory AvailabilityTemplateModel.fromType({
     required String userId,
     required String name,
@@ -63,7 +65,12 @@ class AvailabilityTemplateModel {
   /// The specific data for this template
   final TemplateData templateData;
 
+  /// returns the [templateData] in its serialized form
   Map<String, dynamic> get rawTemplateData => templateData.toMap();
+
+  /// applies the template to a range of dates
+  List<AvailabilityModel> apply(DateTime start, DateTime end) =>
+      templateData.apply(userId: userId, start: start, end: end);
 }
 
 /// Used as the key for defining week-based templates
@@ -114,6 +121,7 @@ abstract interface class TemplateData {
   /// Applies the current template to all days found between [start] and [end],
   /// inclusive
   List<AvailabilityModel> apply({
+    required String userId,
     required DateTime start,
     required DateTime end,
   });
@@ -147,7 +155,7 @@ class WeekTemplateData implements TemplateData {
           if (thursday != null) WeekDay.thursday: thursday,
           if (friday != null) WeekDay.friday: friday,
           if (saturday != null) WeekDay.saturday: saturday,
-          if (sunday != null) WeekDay.monday: sunday,
+          if (sunday != null) WeekDay.sunday: sunday,
         },
       );
 
@@ -188,11 +196,21 @@ class WeekTemplateData implements TemplateData {
 
   @override
   List<AvailabilityModel> apply({
+    required String userId,
     required DateTime start,
     required DateTime end,
   }) {
-    // TODO(Joey): Implement the apply method
-    throw UnimplementedError();
+    var dates = _getDatesBetween(start, end);
+
+    return [
+      for (var date in dates)
+        if (data.containsKey(WeekDay.fromDateTime(date)))
+          ...data[WeekDay.fromDateTime(date)]!.apply(
+            start: date,
+            end: date,
+            userId: userId,
+          ),
+    ];
   }
 }
 
@@ -245,15 +263,34 @@ class DayTemplateData implements TemplateData {
 
   @override
   List<AvailabilityModel> apply({
+    required String userId,
     required DateTime start,
     required DateTime end,
   }) {
-    // TODO(Joey): Implement the apply method
-    throw UnimplementedError();
+    var dates = _getDatesBetween(start, end);
+
+    return [
+      for (var date in dates) ...[
+        AvailabilityModel(
+          userId: userId,
+          startDate: date.mergeTime(startTime),
+          endDate: date.mergeTime(endTime),
+          breaks: [
+            for (var templateBreak in breaks) ...[
+              AvailabilityBreakModel(
+                startTime: date.mergeTime(templateBreak.startTime),
+                endTime: date.mergeTime(templateBreak.endTime),
+                duration: templateBreak.isTight ? null : templateBreak.duration,
+              ),
+            ],
+          ],
+        ),
+      ],
+    ];
   }
 
   @override
-  Map<String, dynamic> toMap() => { 
+  Map<String, dynamic> toMap() => {
         "startTime": startTime.toIso8601String(),
         "endTime": endTime.toIso8601String(),
         "breaks": [
@@ -262,4 +299,18 @@ class DayTemplateData implements TemplateData {
           ],
         ],
       };
+}
+
+List<DateTime> _getDatesBetween(DateTime startDate, DateTime endDate) {
+  var diff = endDate.difference(startDate).inDays;
+  return [
+    for (var i = 0; i <= diff; i++) ...[
+      DateTime(startDate.year, startDate.month, startDate.day + i),
+    ],
+  ];
+}
+
+extension _MergeTime on DateTime {
+  DateTime mergeTime(DateTime time) =>
+      DateTime(year, month, day, time.hour, time.minute);
 }
