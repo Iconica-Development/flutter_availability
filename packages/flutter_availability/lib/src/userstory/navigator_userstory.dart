@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/screens/availability_day_overview.dart";
 import "package:flutter_availability/src/screens/availability_overview.dart";
+import "package:flutter_availability/src/screens/availability_select.dart";
 import "package:flutter_availability/src/service/local_service.dart";
 import "package:flutter_availability/src/userstory/userstory_configuration.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
@@ -8,20 +9,20 @@ import "package:flutter_availability_data_interface/flutter_availability_data_in
 ///
 Widget availabilityNavigatorUserStory(
   BuildContext context, {
-  AvailabiltyUserstoryConfiguration? configuration,
+  AvailabilityUserstoryConfiguration? configuration,
 }) =>
-    _availabiltyScreenRoute(
+    _availabilityScreenRoute(
       context,
       configuration ??
-          AvailabiltyUserstoryConfiguration(
+          AvailabilityUserstoryConfiguration(
             service: LocalAvailabilityDataInterface(),
             getUserId: (_) => "no-user",
           ),
     );
 
-Widget _availabiltyScreenRoute(
+Widget _availabilityScreenRoute(
   BuildContext context,
-  AvailabiltyUserstoryConfiguration configuration,
+  AvailabilityUserstoryConfiguration configuration,
 ) =>
     SafeArea(
       child: Scaffold(
@@ -31,7 +32,7 @@ Widget _availabiltyScreenRoute(
           userId: configuration.getUserId(context),
           onDayClicked: (date) async => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => _avaibiltyDayOverviewRoute(
+              builder: (context) => _availabilityDayOverviewRoute(
                 context,
                 configuration,
                 date,
@@ -42,7 +43,7 @@ Widget _availabiltyScreenRoute(
           onAvailabilityClicked: (availability) async =>
               Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => _avaibiltyDayOverviewRoute(
+              builder: (context) => _availabilityDayOverviewRoute(
                 context,
                 configuration,
                 availability.startDate,
@@ -50,13 +51,22 @@ Widget _availabiltyScreenRoute(
               ),
             ),
           ),
+          onDaysSelected: (selectedDates) async => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => _availabilitySelectionOverviewRoute(
+                context,
+                configuration,
+                selectedDates,
+              ),
+            ),
+          ),
         ),
       ),
     );
 
-Widget _avaibiltyDayOverviewRoute(
+Widget _availabilityDayOverviewRoute(
   BuildContext context,
-  AvailabiltyUserstoryConfiguration configuration,
+  AvailabilityUserstoryConfiguration configuration,
   DateTime date,
   AvailabilityModel? availability,
 ) =>
@@ -70,6 +80,21 @@ Widget _avaibiltyDayOverviewRoute(
           date: date,
           initialAvailability: availability,
           onAvailabilitySaved: () => Navigator.of(context).pop(),
+        ),
+      ),
+    );
+
+Widget _availabilitySelectionOverviewRoute(
+  BuildContext context,
+  AvailabilityUserstoryConfiguration configuration,
+  DateTimeRange selectedDates,
+) =>
+    SafeArea(
+      child: Scaffold(
+        appBar: AppBar(),
+        body: AvailabilitySelectionScreen(
+          selectedDates: selectedDates,
+          onTemplateSelectClicked: () async => null,
         ),
       ),
     );

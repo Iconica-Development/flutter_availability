@@ -12,6 +12,7 @@ class AvailabilityOverview extends StatefulWidget {
     required this.options,
     required this.onDayClicked,
     required this.onAvailabilityClicked,
+    required this.onDaysSelected,
     super.key,
   });
 
@@ -29,6 +30,10 @@ class AvailabilityOverview extends StatefulWidget {
 
   /// Callback for when the user clicks on an availability
   final void Function(AvailabilityModel availability) onAvailabilityClicked;
+
+  /// Callback for when the user selects days in the calendar to fill in
+  /// availability for
+  final void Function(DateTimeRange selectedRange) onDaysSelected;
 
   @override
   State<AvailabilityOverview> createState() => _AvailabilityOverviewState();
@@ -147,6 +152,28 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
                 child: Text(
                   widget.options.translations.addAvailableDayButtonText,
                 ),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () async {
+                  // ask the user to select a date
+                  var dateRange = await showDateRangePicker(
+                    context: context,
+                    firstDate:
+                        DateTime.now().subtract(const Duration(days: 365)),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+
+                  if (dateRange == null) {
+                    return;
+                  }
+                  // use the callback with all the selected dates
+                  widget.onDaysSelected(dateRange);
+                },
+                child: const Text("Give an availability for a date range"),
+              ),
+              const SizedBox(
+                height: 8,
               ),
               ElevatedButton(
                 onPressed: () async {

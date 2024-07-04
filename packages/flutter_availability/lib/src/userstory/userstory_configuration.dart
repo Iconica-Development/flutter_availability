@@ -3,9 +3,9 @@ import "package:flutter_availability/src/config/availability_options.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 ///
-class AvailabiltyUserstoryConfiguration {
+class AvailabilityUserstoryConfiguration {
   ///
-  const AvailabiltyUserstoryConfiguration({
+  const AvailabilityUserstoryConfiguration({
     required this.service,
     required this.getUserId,
     this.options = const AvailabilityOptions(),
