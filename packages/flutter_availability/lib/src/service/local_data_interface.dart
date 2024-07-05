@@ -3,15 +3,22 @@ import "dart:async";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// A local implementation of the [AvailabilityDataInterface] that stores data
-///  in memory.
+/// in memory.
 class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
   final Map<String, List<AvailabilityModel>> _userAvailabilities = {};
+  final Map<String, List<AvailabilityTemplateModel>> _userTemplates = {};
 
   final StreamController<Map<String, List<AvailabilityModel>>>
       _availabilityController = StreamController.broadcast();
+  final StreamController<Map<String, List<AvailabilityTemplateModel>>>
+      _templateController = StreamController.broadcast();
 
-  void _notifyChanges() {
+  void _notifyAvailabilityChanges() {
     _availabilityController.add(_userAvailabilities);
+  }
+
+  void _notifyTemplateChanges() {
+    _templateController.add(_userTemplates);
   }
 
   @override
@@ -21,29 +28,54 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
     DateTime start,
     DateTime end,
   ) async {
-    // Implementation for applying a template
-    throw UnimplementedError();
+    var availabilities = template.apply(start, end);
+    _userAvailabilities.putIfAbsent(userId, () => []).addAll(availabilities);
+    _notifyAvailabilityChanges();
+    return availabilities;
   }
 
   @override
-  Future<AvailabilityModel> createAvailabilityForUser(
-    String userId,
-    AvailabilityModel availability,
-  ) async {
+  Future<void> createAvailabilitiesForUser({
+    required String userId,
+    required AvailabilityModel availability,
+    required DateTime start,
+    required DateTime end,
+  }) async {
     var availabilities = _userAvailabilities.putIfAbsent(userId, () => []);
-    var newAvailability = availability.copyWith(id: _generateId());
-    availabilities.add(newAvailability);
-    _notifyChanges();
-    return newAvailability;
+
+    var templateData = DayTemplateData(
+      startTime: availability.startDate,
+      endTime: availability.endDate,
+      breaks: availability.breaks,
+    );
+
+    var newAvailabilities = templateData.apply(
+      start: start,
+      end: end,
+      userId: userId,
+    );
+
+    for (var newAvailability in newAvailabilities) {
+      availabilities.add(
+        newAvailability.copyWith(
+          id: _generateId(),
+        ),
+      );
+    }
+
+    _notifyAvailabilityChanges();
   }
 
   @override
   Future<AvailabilityTemplateModel> createTemplateForUser(
     String userId,
     AvailabilityTemplateModel template,
-  ) {
-    // Implementation for creating a template
-    throw UnimplementedError();
+  ) async {
+    var templates = _userTemplates.putIfAbsent(userId, () => []);
+    var newTemplate = template.copyWith(id: _generateId());
+    templates.add(newTemplate);
+    _notifyTemplateChanges();
+    return newTemplate;
   }
 
   @override
@@ -55,14 +87,17 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
     if (availabilities != null) {
       availabilities
           .removeWhere((availability) => availability.id == availabilityId);
-      _notifyChanges();
+      _notifyAvailabilityChanges();
     }
   }
 
   @override
-  Future<void> deleteTemplateForUser(String userId, String templateId) {
-    // Implementation for deleting a template
-    throw UnimplementedError();
+  Future<void> deleteTemplateForUser(String userId, String templateId) async {
+    var templates = _userTemplates[userId];
+    if (templates != null) {
+      templates.removeWhere((template) => template.id == templateId);
+      _notifyTemplateChanges();
+    }
   }
 
   @override
@@ -109,16 +144,32 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
   Stream<AvailabilityTemplateModel> getTemplateForUserById(
     String userId,
     String templateId,
-  ) {
-    // Implementation for getting a template by ID
-    throw UnimplementedError();
-  }
+  ) =>
+      _templateController.stream.map((templatesMap) {
+        var templates = templatesMap[userId];
+        if (templates != null) {
+          return templates.firstWhere((template) => template.id == templateId);
+        } else {
+          throw Exception("Template not found");
+        }
+      });
 
   @override
-  Stream<List<AvailabilityTemplateModel>> getTemplatesForUser(String userId) {
-    // Implementation for getting all templates for a user
-    throw UnimplementedError();
-  }
+  Stream<List<AvailabilityTemplateModel>> getTemplatesForUser({
+    required String userId,
+    List<String>? templateIds,
+  }) =>
+      _templateController.stream.map((templatesMap) {
+        var templates = templatesMap[userId];
+        if (templateIds != null) {
+          return templates
+                  ?.where((template) => templateIds.contains(template.id))
+                  .toList() ??
+              [];
+        } else {
+          return templates ?? [];
+        }
+      });
 
   @override
   Future<AvailabilityModel> updateAvailabilityForUser(
@@ -132,7 +183,7 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
           .indexWhere((availability) => availability.id == availabilityId);
       if (index != -1) {
         availabilities[index] = updatedModel.copyWith(id: availabilityId);
-        _notifyChanges();
+        _notifyAvailabilityChanges();
         return availabilities[index];
       }
     }
@@ -144,10 +195,20 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
     String userId,
     String templateId,
     AvailabilityTemplateModel updatedModel,
-  ) {
-    // Implementation for updating a template
-    throw UnimplementedError();
+  ) async {
+    var templates = _userTemplates[userId];
+    if (templates != null) {
+      var index = templates.indexWhere((template) => template.id == templateId);
+      if (index != -1) {
+        templates[index] = updatedModel.copyWith(id: templateId);
+        _notifyTemplateChanges();
+        return templates[index];
+      }
+    }
+    throw Exception("Template not found");
   }
 
-  String _generateId() => DateTime.now().millisecondsSinceEpoch.toString();
+  int _id = 1;
+
+  String _generateId() => (_id++).toString();
 }

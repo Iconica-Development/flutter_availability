@@ -38,16 +38,21 @@ abstract interface class AvailabilityDataInterface {
   );
 
   /// Creates a new persistant representation of an availability model.
-  Future<AvailabilityModel> createAvailabilityForUser(
-    String userId,
-    AvailabilityModel availability,
-  );
+  Future<void> createAvailabilitiesForUser({
+    required String userId,
+    required AvailabilityModel availability,
+    required DateTime start,
+    required DateTime end,
+  });
 
   /// Retrieves a list of templates for the given [userId].
   ///
   /// Whether this is a one time value or a continuous stream of values is up to
   /// the implementation.
-  Stream<List<AvailabilityTemplateModel>> getTemplatesForUser(String userId);
+  Stream<List<AvailabilityTemplateModel>> getTemplatesForUser({
+    required String userId,
+    List<String>? templateIds,
+  });
 
   /// Retrieves a specific template for the given
   /// [userId] and [templateId]
