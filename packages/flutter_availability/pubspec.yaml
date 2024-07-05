@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   intl: any
+  rxdart: ^0.28.0
   flutter_availability_data_interface:
     git:
       url: https://github.com/Iconica-Development/flutter_availability
@@ -19,6 +20,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.4
   flutter_iconica_analysis:
     git:
       url: https://github.com/Iconica-Development/flutter_iconica_analysis

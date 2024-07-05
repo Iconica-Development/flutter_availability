@@ -76,6 +76,25 @@ class AvailabilityTemplateModel {
         end: end,
         templateId: id,
       );
+
+  /// Copies the current properties into a new
+  /// instance of [AvailabilityTemplateModel],
+  AvailabilityTemplateModel copyWith({
+    String? id,
+    String? userId,
+    String? name,
+    int? color,
+    AvailabilityTemplateType? templateType,
+    TemplateData? templateData,
+  }) =>
+      AvailabilityTemplateModel(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        name: name ?? this.name,
+        color: color ?? this.color,
+        templateType: templateType ?? this.templateType,
+        templateData: templateData ?? this.templateData,
+      );
 }
 
 /// Used as the key for defining week-based templates

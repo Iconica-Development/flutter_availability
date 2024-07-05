@@ -124,9 +124,11 @@ class _AvailabilityDayOverviewState extends State<AvailabilityDayOverview> {
         }
       } else {
         // add an availability for the user
-        await service.dataInterface.createAvailabilityForUser(
-          userId,
-          _availability,
+        await service.dataInterface.createAvailabilitiesForUser(
+          userId: userId,
+          availability: _availability,
+          start: widget.date,
+          end: widget.date,
         );
       }
       if (context.mounted) {

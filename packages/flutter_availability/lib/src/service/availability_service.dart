@@ -1,4 +1,6 @@
+import "package:flutter/material.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:rxdart/rxdart.dart";
 
 ///
 class AvailabilityService {
@@ -13,4 +15,108 @@ class AvailabilityService {
 
   ///
   final AvailabilityDataInterface dataInterface;
+
+  /// Creates a set of availabilities for the given [range], where every
+  /// availability is a copy of [availability] with only date information
+  /// changed
+  Future<void> createAvailability(
+    AvailabilityModel availability,
+    DateTimeRange range,
+  ) async {
+    await dataInterface.createAvailabilitiesForUser(
+      userId: userId,
+      availability: availability,
+      start: range.start,
+      end: range.end,
+    );
+  }
+
+  /// Returns a stream where data from availabilities and templates are merged
+  Stream<List<AvailabilityWithTemplate>> getOverviewDataForMonth(
+    DateTime dayInMonth,
+  ) {
+    var start = DateTime(dayInMonth.year, dayInMonth.month);
+    var end = DateTime(start.year, start.month + 1, 0);
+
+    var availabilityStream = dataInterface.getAvailabilityForUser(
+      userId: userId,
+      start: start,
+      end: end,
+    );
+
+    return availabilityStream.switchMap((availabilities) {
+      var templateIds = availabilities
+          .map((availability) => availability.templateId)
+          .whereType<String>()
+          .toSet()
+          .toList();
+
+      var templatesStream = dataInterface.getTemplatesForUser(
+        userId: userId,
+        templateIds: templateIds,
+      );
+
+      List<AvailabilityWithTemplate> combineTemplateWithAvailability(
+        List<AvailabilityModel> availabilities,
+        List<AvailabilityTemplateModel> templates,
+      ) {
+        // create a map to reduce lookup speed to O1
+        var templateMap = {
+          for (var template in templates) ...{
+            template.id: template,
+          },
+        };
+
+        return [
+          for (var availability in availabilities) ...[
+            AvailabilityWithTemplate(
+              availabilityModel: availability,
+              template: templateMap[availability.templateId],
+            ),
+          ],
+        ];
+      }
+
+      return Rx.combineLatest2(
+        Stream.value(availabilities),
+        templatesStream,
+        combineTemplateWithAvailability,
+      );
+    });
+  }
+}
+
+/// A combination of availability and template for a single day
+class AvailabilityWithTemplate {
+  /// Creates
+  const AvailabilityWithTemplate({
+    required this.availabilityModel,
+    required this.template,
+  });
+
+  /// the availability
+  final AvailabilityModel availabilityModel;
+
+  /// the related template, if any
+  final AvailabilityTemplateModel? template;
+}
+
+/// Extension to retrieve all unique templates from a combined list
+extension RetrieveUniqueTemplates on List<AvailabilityWithTemplate> {
+  /// Retrieve all unique templates from a combined list
+  List<AvailabilityTemplateModel> getUniqueTemplates() =>
+      map((entry) => entry.template)
+          .whereType<AvailabilityTemplateModel>()
+          .fold(
+        <AvailabilityTemplateModel>[],
+        (current, template) {
+          if (!current.any((other) => other.id == template.id)) {
+            return [
+              ...current,
+              template,
+            ];
+          }
+          return current;
+        },
+      );
 }
