@@ -16,6 +16,7 @@ class AvailabilityOptions {
     this.primaryButtonBuilder = DefaultPrimaryButton.builder,
     this.textButtonBuilder = DefaultTextButton.builder,
     this.spacing = const AvailabilitySpacing(),
+    this.colors = const AvailabilityColors(),
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
 
@@ -40,6 +41,9 @@ class AvailabilityOptions {
 
   /// The spacing between elements
   final AvailabilitySpacing spacing;
+
+  /// The colors used in the userstory
+  final AvailabilityColors colors;
 }
 
 /// All configurable paddings and whitespaces withing the userstory
@@ -55,6 +59,46 @@ class AvailabilitySpacing {
 
   /// the padding applied on both sides of the screen
   final double sidePadding;
+}
+
+/// Contains all the customizable colors for the availability userstory
+///
+/// If colors are not provided the colors will be taken from the theme
+class AvailabilityColors {
+  /// Constructor for the AvailabilityColors
+  ///
+  /// If a color is not provided the color will be taken from the theme
+  const AvailabilityColors({
+    this.selectedDayColor,
+    this.blankDayColor,
+    this.outsideMonthTextColor,
+    this.textDarkColor,
+    this.textLightColor,
+    this.templateColors,
+  });
+
+  /// The color of the text for the days that are not in the current month
+  final Color? outsideMonthTextColor;
+
+  /// The background color of the days that are selected in the calendar
+  final Color? selectedDayColor;
+
+  /// The background color of the days in the current month
+  /// that have no availability and are not selected
+  final Color? blankDayColor;
+
+  /// The color of the text in the calendar when the background has a dark color
+  /// This is used to make sure the text is readable on dark backgrounds
+  /// If not provided the text color will be white
+  final Color? textLightColor;
+
+  /// The color of the text in the calendar when the background has a light
+  /// color. This is used to make sure the text is readable on light backgrounds
+  /// If not provided the text color will be the theme's text color
+  final Color? textDarkColor;
+
+  /// The colors that are used for the templates
+  final List<Color>? templateColors;
 }
 
 /// Builder definition for providing a base screen surrounding each page

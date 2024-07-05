@@ -1,8 +1,9 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/widgets/calendar.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
-class AvailabilityOverview extends StatelessWidget {
+class AvailabilityOverview extends StatefulWidget {
   ///
   const AvailabilityOverview({
     required this.onEditDateRange,
@@ -21,6 +22,13 @@ class AvailabilityOverview extends StatelessWidget {
   final VoidCallback onBack;
 
   @override
+  State<AvailabilityOverview> createState() => _AvailabilityOverviewState();
+}
+
+class _AvailabilityOverviewState extends State<AvailabilityOverview> {
+  DateTime _selectedDate = DateTime.now();
+
+  @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var availabilityScope = AvailabilityScope.of(context);
@@ -35,9 +43,13 @@ class AvailabilityOverview extends StatelessWidget {
       ),
     );
 
-    const calendar = SizedBox(
-      height: 320,
-      child: Placeholder(),
+    var calendar = CalendarView(
+      month: _selectedDate,
+      onMonthChanged: (month) {
+        setState(() {
+          _selectedDate = month;
+        });
+      },
     );
 
     const templateLegend = SizedBox(
@@ -48,7 +60,9 @@ class AvailabilityOverview extends StatelessWidget {
     var startEditButton = options.primaryButtonBuilder(
       context,
       () {
-        onEditDateRange(DateTimeRange(start: DateTime(1), end: DateTime(2)));
+        widget.onEditDateRange(
+          DateTimeRange(start: DateTime(1), end: DateTime(2)),
+        );
       },
       Text(translations.editAvailabilityButton),
     );
