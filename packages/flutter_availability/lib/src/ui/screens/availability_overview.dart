@@ -17,7 +17,6 @@ class AvailabilityOverview extends StatelessWidget {
   /// Callback for when the user wants to navigate to the overview of templates
   final VoidCallback onViewTemplates;
 
-
   /// Callback invoked when a user attempts to go back
   final VoidCallback onBack;
 
