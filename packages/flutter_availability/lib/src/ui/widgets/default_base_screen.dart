@@ -3,12 +3,12 @@ import "package:flutter_availability/src/util/scope.dart";
 
 /// Default base screen for any availability screen
 class DefaultBaseScreen extends StatelessWidget {
-
   /// Create a base screen
   const DefaultBaseScreen({
     required this.child,
     super.key,
   });
+
   /// Builder as default option
   static Widget builder(
     BuildContext context,
