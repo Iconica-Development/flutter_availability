@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   intl: any
-  rxdart: ^0.28.0
+  rxdart: ^0.27.0
   flutter_availability_data_interface:
     git:
       url: https://github.com/Iconica-Development/flutter_availability

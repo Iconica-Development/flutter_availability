@@ -8,7 +8,7 @@ class AvailabilityOverview extends StatefulWidget {
   const AvailabilityOverview({
     required this.onEditDateRange,
     required this.onViewTemplates,
-    required this.onBack,
+    required this.onExit,
     super.key,
   });
 
@@ -18,8 +18,8 @@ class AvailabilityOverview extends StatefulWidget {
   /// Callback for when the user wants to navigate to the overview of templates
   final VoidCallback onViewTemplates;
 
-  /// Callback invoked when a user attempts to go back
-  final VoidCallback onBack;
+  /// Callback for when the user wants to navigate back
+  final VoidCallback onExit;
 
   @override
   State<AvailabilityOverview> createState() => _AvailabilityOverviewState();
@@ -103,7 +103,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     return options.baseScreenBuilder(
       context,
-      onBack,
+      widget.onExit,
       body,
     );
   }
