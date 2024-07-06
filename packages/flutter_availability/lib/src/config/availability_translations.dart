@@ -14,6 +14,7 @@ class AvailabilityTranslations {
     required this.appbarTitle,
     required this.editAvailabilityButton,
     required this.templateLegendTitle,
+    required this.templateSelectionLabel,
     required this.overviewScreenTitle,
     required this.createTemplateButton,
     required this.monthYearFormatter,
@@ -26,6 +27,7 @@ class AvailabilityTranslations {
     this.appbarTitle = "Availability",
     this.editAvailabilityButton = "Edit availability",
     this.templateLegendTitle = "Templates",
+    this.templateSelectionLabel = "Selected day(s)",
     this.createTemplateButton = "Create a new template",
     this.overviewScreenTitle = "Availability",
     this.monthYearFormatter = _defaultMonthYearFormatter,
@@ -40,6 +42,9 @@ class AvailabilityTranslations {
 
   /// The title for the legend template section on the overview screen
   final String templateLegendTitle;
+
+  /// The text for the selected days in the template legend
+  final String templateSelectionLabel;
 
   /// The title on the overview screen
   final String overviewScreenTitle;

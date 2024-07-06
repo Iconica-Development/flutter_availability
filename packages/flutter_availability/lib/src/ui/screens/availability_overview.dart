@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/ui/widgets/calendar.dart";
+import "package:flutter_availability/src/ui/widgets/template_legend.dart";
 import "package:flutter_availability/src/util/scope.dart";
+import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 ///
 class AvailabilityOverview extends StatefulWidget {
@@ -58,9 +60,35 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       },
     );
 
-    const templateLegend = SizedBox(
-      height: 40,
-      child: Placeholder(),
+    var templateLegend = TemplateLegend(
+      onViewTemplates: widget.onViewTemplates,
+      templates: [
+        for (var template in <(Color, String)>[
+          (Colors.red, "Template 1"),
+          (Colors.blue, "Template 2"),
+          // do 10 more
+          (Colors.green, "Template 3"),
+          (Colors.yellow, "Template 4"),
+          (Colors.purple, "Template 5"),
+          (Colors.orange, "Template 6"),
+          (Colors.teal, "Template 7"),
+          (Colors.pink, "Template 8"),
+          (Colors.indigo, "Template 9"),
+        ]) ...[
+          AvailabilityTemplateModel(
+            userId: "1",
+            id: "1",
+            name: template.$2,
+            templateType: AvailabilityTemplateType.day,
+            templateData: DayTemplateData(
+              startTime: DateTime.now(),
+              endTime: DateTime.now(),
+              breaks: [],
+            ),
+            color: template.$1.value,
+          ),
+        ],
+      ],
     );
 
     // if there is no range selected we want to disable the button
