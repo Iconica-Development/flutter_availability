@@ -17,6 +17,11 @@ class AvailabilityTranslations {
     required this.templateSelectionLabel,
     required this.overviewScreenTitle,
     required this.createTemplateButton,
+    required this.templateScreenTitle,
+    required this.dayTemplates,
+    required this.weekTemplates,
+    required this.createDayTemplate,
+    required this.createWeekTemplate,
     required this.monthYearFormatter,
     required this.weekDayAbbreviatedFormatter,
   });
@@ -30,6 +35,11 @@ class AvailabilityTranslations {
     this.templateSelectionLabel = "Selected day(s)",
     this.createTemplateButton = "Create a new template",
     this.overviewScreenTitle = "Availability",
+    this.templateScreenTitle = "Templates",
+    this.dayTemplates = "Day templates",
+    this.weekTemplates = "Week templates",
+    this.createDayTemplate = "Create day template",
+    this.createWeekTemplate = "Create week template",
     this.monthYearFormatter = _defaultMonthYearFormatter,
     this.weekDayAbbreviatedFormatter = _defaultWeekDayAbbreviatedFormatter,
   });
@@ -49,8 +59,23 @@ class AvailabilityTranslations {
   /// The title on the overview screen
   final String overviewScreenTitle;
 
-  /// The label on the button to go to the tempalte creation page
+  /// The label on the button to go to the template screen
   final String createTemplateButton;
+
+  /// The title on the template screen
+  final String templateScreenTitle;
+
+  /// The title for the day templates section on the template screen
+  final String dayTemplates;
+
+  /// The title for the week templates section on the template screen
+  final String weekTemplates;
+
+  /// The label for the button to create a new day template
+  final String createDayTemplate;
+
+  /// The label for the button to create a new week template
+  final String createWeekTemplate;
 
   /// Gets the month and year formatted as a string
   ///
