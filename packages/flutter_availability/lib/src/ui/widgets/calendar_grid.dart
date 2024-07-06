@@ -8,6 +8,8 @@ class CalendarGrid extends StatelessWidget {
   const CalendarGrid({
     required this.month,
     required this.days,
+    required this.onDayTap,
+    required this.selectedRange,
     super.key,
   });
 
@@ -16,6 +18,12 @@ class CalendarGrid extends StatelessWidget {
 
   /// A list of days that need to be displayed differently
   final List<CalendarDay> days;
+
+  /// A callback that is called when a day is tapped
+  final void Function(DateTime) onDayTap;
+
+  /// The selected range of dates
+  final DateTimeRange? selectedRange;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +34,8 @@ class CalendarGrid extends StatelessWidget {
     var options = availabilityScope.options;
     var colors = options.colors;
     var translations = options.translations;
-    var calendarDays = _generateCalendarDays(month, days, colors, colorScheme);
+    var calendarDays =
+        _generateCalendarDays(month, days, selectedRange, colors, colorScheme);
 
     // get the names of the days of the week
     var dayNames = List.generate(7, (index) {
@@ -34,25 +43,30 @@ class CalendarGrid extends StatelessWidget {
       return translations.weekDayAbbreviatedFormatter(context, day);
     });
 
+    var calendarDaysRow = GridView.builder(
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      itemCount: 7,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 7,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 0,
+      ),
+      itemBuilder: (context, index) {
+        var day = dayNames[index];
+        return Text(
+          day,
+          style: textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        );
+      },
+    );
+
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: dayNames
-              .map(
-                (day) => Expanded(
-                  child: Center(
-                    child: Text(
-                      day,
-                      style: textTheme.bodyLarge,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-        const SizedBox(height: 4.0),
+        calendarDaysRow,
         GridView.builder(
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           itemCount: calendarDays.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -72,9 +86,7 @@ class CalendarGrid extends StatelessWidget {
             var textStyle = textTheme.bodyLarge?.copyWith(color: textColor);
 
             return GestureDetector(
-              onTap: () {
-                // Handle day tap here
-              },
+              onTap: () => onDayTap(day.date),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: day.outsideMonth ? Colors.transparent : day.color,
@@ -154,6 +166,7 @@ class CalendarDay {
 List<CalendarDay> _generateCalendarDays(
   DateTime month,
   List<CalendarDay> days,
+  DateTimeRange? selectedRange,
   AvailabilityColors colors,
   ColorScheme colorScheme,
 ) {
@@ -195,11 +208,15 @@ List<CalendarDay> _generateCalendarDays(
         templateDeviation: false,
       ),
     );
-    // if the day is selected we need to change the color
+    var dayIsSelected = selectedRange != null &&
+        !day.isBefore(selectedRange.start) &&
+        !day.isAfter(selectedRange.end);
+    // if the day is selected we need to change the color and remove the marking
     specialDay = specialDay.copyWith(
-      color: specialDay.isSelected
+      color: dayIsSelected
           ? colors.selectedDayColor ?? colorScheme.primaryFixedDim
           : null,
+      templateDeviation: dayIsSelected ? false : null,
     );
     calendarDays.add(specialDay);
   }

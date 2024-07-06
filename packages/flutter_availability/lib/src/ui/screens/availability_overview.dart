@@ -27,6 +27,7 @@ class AvailabilityOverview extends StatefulWidget {
 
 class _AvailabilityOverviewState extends State<AvailabilityOverview> {
   DateTime _selectedDate = DateTime.now();
+  DateTimeRange? _selectedRange;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +51,11 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
           _selectedDate = month;
         });
       },
+      onEditDateRange: (range) {
+        setState(() {
+          _selectedRange = range;
+        });
+      },
     );
 
     const templateLegend = SizedBox(
@@ -57,13 +63,18 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       child: Placeholder(),
     );
 
+    // if there is no range selected we want to disable the button
+    var onButtonPress = _selectedRange == null
+        ? null
+        : () {
+            widget.onEditDateRange(
+              DateTimeRange(start: DateTime(1), end: DateTime(2)),
+            );
+          };
+
     var startEditButton = options.primaryButtonBuilder(
       context,
-      () {
-        widget.onEditDateRange(
-          DateTimeRange(start: DateTime(1), end: DateTime(2)),
-        );
-      },
+      onButtonPress,
       Text(translations.editAvailabilityButton),
     );
 
