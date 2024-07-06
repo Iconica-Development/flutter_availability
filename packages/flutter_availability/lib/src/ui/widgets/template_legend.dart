@@ -24,6 +24,7 @@ class TemplateLegend extends StatefulWidget {
 
 class _TemplateLegendState extends State<TemplateLegend> {
   bool _templateDrawerOpen = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -90,57 +91,64 @@ class _TemplateLegendState extends State<TemplateLegend> {
           ),
         ),
         const SizedBox(height: 4),
-        if (_templateDrawerOpen) ...[
-          // show a container with all the templates with a max height and after
-          // that scrollable but as small as possible
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: theme.colorScheme.onSurface,
-                width: 1,
-              ),
-            ),
-            padding: const EdgeInsets.only(right: 2),
-            child: Column(
-              children: [
-                Container(
-                  constraints: const BoxConstraints(
-                    maxHeight: 100,
-                  ),
-                  child: Scrollbar(
-                    thumbVisibility: true,
-                    trackVisibility: true,
-                    thickness: 2,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: widget.templates.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return _TemplateLegendItem(
-                            name: translations.templateSelectionLabel,
-                            backgroundColor: colors.selectedDayColor ??
-                                colorScheme.primaryFixedDim,
-                            borderColor: colorScheme.primary,
-                          );
-                        }
-                        var template = widget.templates[index - 1];
-                        return _TemplateLegendItem(
-                          name: template.name,
-                          backgroundColor: Color(template.color),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                createNewTemplateButton,
-                const SizedBox(height: 8),
-              ],
-            ),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          constraints: BoxConstraints(maxHeight: _templateDrawerOpen ? 150 : 0),
+          decoration: BoxDecoration(
+            border: _templateDrawerOpen
+                ? Border.all(color: theme.colorScheme.onSurface, width: 1)
+                : null,
           ),
-        ] else ...[
-          const Divider(height: 1),
-        ],
+          padding: const EdgeInsets.only(right: 2),
+          child: _templateDrawerOpen
+              ? SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        constraints: const BoxConstraints(
+                          maxHeight: 150,
+                        ),
+                        child: Scrollbar(
+                          controller: _scrollController,
+                          thumbVisibility: true,
+                          trackVisibility: true,
+                          thickness: 2,
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            shrinkWrap: true,
+                            itemCount: widget.templates.length + 2,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return _TemplateLegendItem(
+                                  name: translations.templateSelectionLabel,
+                                  backgroundColor: colors.selectedDayColor ??
+                                      colorScheme.primaryFixedDim,
+                                  borderColor: colorScheme.primary,
+                                );
+                              }
+                              if (index == widget.templates.length + 1) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 10,
+                                    bottom: 8,
+                                  ),
+                                  child: createNewTemplateButton,
+                                );
+                              }
+                              var template = widget.templates[index - 1];
+                              return _TemplateLegendItem(
+                                name: template.name,
+                                backgroundColor: Color(template.color),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const Divider(height: 1),
+        ),
         if (!templatesAvailable) ...[
           const SizedBox(height: 12),
           createNewTemplateButton,
