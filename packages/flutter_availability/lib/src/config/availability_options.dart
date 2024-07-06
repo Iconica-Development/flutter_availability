@@ -111,6 +111,6 @@ typedef BaseScreenBuilder = Widget Function(
 /// Builder definition for providing a button implementation
 typedef ButtonBuilder = Widget Function(
   BuildContext context,
-  FutureOr<void>? Function() onPressed,
+  FutureOr<void>? Function()? onPressed,
   Widget child,
 );
