@@ -26,6 +26,7 @@ class AvailabilityUserStory extends StatefulWidget {
   const AvailabilityUserStory({
     required this.userId,
     required this.options,
+    this.onExit,
     super.key,
   });
 
@@ -34,6 +35,9 @@ class AvailabilityUserStory extends StatefulWidget {
 
   ///
   final AvailabilityOptions options;
+
+  /// Callback for when the user wants to navigate back
+  final VoidCallback? onExit;
 
   ///
   static MaterialPageRoute route(String userId, AvailabilityOptions options) =>
@@ -61,7 +65,7 @@ class _AvailabilityUserStoryState extends State<AvailabilityUserStory> {
         service: _service,
         child: Navigator(
           onGenerateInitialRoutes: (state, route) => [
-            homePageRoute,
+            homePageRoute(widget.onExit ?? () {}),
           ],
         ),
       );
