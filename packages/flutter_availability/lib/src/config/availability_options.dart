@@ -16,6 +16,7 @@ class AvailabilityOptions {
     this.primaryButtonBuilder = DefaultPrimaryButton.builder,
     this.textButtonBuilder = DefaultTextButton.builder,
     this.spacing = const AvailabilitySpacing(),
+    this.textStyles = const AvailabilityTextStyles(),
     this.colors = const AvailabilityColors(),
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
@@ -42,6 +43,9 @@ class AvailabilityOptions {
   /// The spacing between elements
   final AvailabilitySpacing spacing;
 
+  /// The configurable text styles in the userstory
+  final AvailabilityTextStyles textStyles;
+
   /// The colors used in the userstory
   final AvailabilityColors colors;
 }
@@ -61,6 +65,18 @@ class AvailabilitySpacing {
   final double sidePadding;
 }
 
+/// All customizable text styles for the availability userstory
+/// If text styles are not provided the text styles will be taken from the theme
+class AvailabilityTextStyles {
+  /// Constructor for the AvailabilityTextStyles
+  const AvailabilityTextStyles({
+    this.inputFieldTextStyle,
+  });
+
+  /// The text style for the filled in text on all the input fields
+  final TextStyle? inputFieldTextStyle;
+}
+
 /// Contains all the customizable colors for the availability userstory
 ///
 /// If colors are not provided the colors will be taken from the theme
@@ -74,7 +90,14 @@ class AvailabilityColors {
     this.outsideMonthTextColor,
     this.textDarkColor,
     this.textLightColor,
-    this.templateColors,
+    this.templateColors = const [
+      Color(0xFF9bb8f2),
+      Color(0xFF4b77d0),
+      Color(0xFF283a5e),
+      Color(0xFF57947d),
+      Color(0xFFef6c75),
+      Color(0xFFb7198b),
+    ],
   });
 
   /// The color of the text for the days that are not in the current month
@@ -98,7 +121,7 @@ class AvailabilityColors {
   final Color? textDarkColor;
 
   /// The colors that are used for the templates
-  final List<Color>? templateColors;
+  final List<Color> templateColors;
 }
 
 /// Builder definition for providing a base screen surrounding each page

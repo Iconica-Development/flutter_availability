@@ -317,6 +317,18 @@ class DayTemplateData implements TemplateData {
     ];
   }
 
+  /// copy the current instance with new values
+  DayTemplateData copyWith({
+    DateTime? startTime,
+    DateTime? endTime,
+    List<AvailabilityBreakModel>? breaks,
+  }) =>
+      DayTemplateData(
+        startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
+        breaks: breaks ?? this.breaks,
+      );
+
   @override
   Map<String, dynamic> toMap() => {
         "startTime": startTime.toIso8601String(),
