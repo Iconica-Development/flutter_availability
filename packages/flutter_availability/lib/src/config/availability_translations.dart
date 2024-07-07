@@ -22,6 +22,18 @@ class AvailabilityTranslations {
     required this.weekTemplates,
     required this.createDayTemplate,
     required this.createWeekTemplate,
+    required this.deleteTemplateButton,
+    required this.dayTemplateTitle,
+    required this.templateTitleHintText,
+    required this.templateTitleLabel,
+    required this.templateColorLabel,
+    required this.time,
+    required this.timeSeparator,
+    required this.templateTimeLabel,
+    required this.pauseSectionTitle,
+    required this.saveButton,
+    required this.addButton,
+    required this.timeFormatter,
     required this.monthYearFormatter,
     required this.weekDayAbbreviatedFormatter,
   });
@@ -40,8 +52,20 @@ class AvailabilityTranslations {
     this.weekTemplates = "Week templates",
     this.createDayTemplate = "Create day template",
     this.createWeekTemplate = "Create week template",
+    this.deleteTemplateButton = "Delete template",
+    this.dayTemplateTitle = "Day template",
+    this.templateTitleHintText = "What do you want to call this template?",
+    this.templateTitleLabel = "Template Title",
+    this.templateColorLabel = "Colorlabel",
+    this.time = "Time",
+    this.timeSeparator = "to",
+    this.templateTimeLabel = "When are you available?",
+    this.pauseSectionTitle = "Add a pause (optional)",
+    this.saveButton = "Save",
+    this.addButton = "Add",
     this.monthYearFormatter = _defaultMonthYearFormatter,
     this.weekDayAbbreviatedFormatter = _defaultWeekDayAbbreviatedFormatter,
+    this.timeFormatter = _defaultTimeFormatter,
   });
 
   /// The title shown above the calendar
@@ -77,6 +101,39 @@ class AvailabilityTranslations {
   /// The label for the button to create a new week template
   final String createWeekTemplate;
 
+  /// The label on the button to delete a template
+  final String deleteTemplateButton;
+
+  /// The title for the day template edit screen
+  final String dayTemplateTitle;
+
+  /// The hint text for the template title input field
+  final String templateTitleHintText;
+
+  /// The label for the template title input field
+  final String templateTitleLabel;
+
+  /// The title above the color selection for templates
+  final String templateColorLabel;
+
+  /// The title for time sections
+  final String time;
+
+  /// The text between start and end time
+  final String timeSeparator;
+
+  /// The label for the template time input
+  final String templateTimeLabel;
+
+  /// The title for pause configuration sections
+  final String pauseSectionTitle;
+
+  /// The text on the save button
+  final String saveButton;
+
+  /// The text on the add button
+  final String addButton;
+
   /// Gets the month and year formatted as a string
   ///
   /// The default implementation is `MonthName Year` in english
@@ -87,7 +144,15 @@ class AvailabilityTranslations {
   /// The default implementation is the first 2 letters of
   /// the weekday in english
   final String Function(BuildContext, DateTime) weekDayAbbreviatedFormatter;
+
+  /// Get the time formatted as a string
+  ///
+  /// The default implementation is `HH:mm`
+  final String Function(BuildContext, DateTime) timeFormatter;
 }
+
+String _defaultTimeFormatter(BuildContext context, DateTime date) =>
+    "${date.hour}:${date.minute}";
 
 String _defaultWeekDayAbbreviatedFormatter(
   BuildContext context,

@@ -84,6 +84,31 @@ class AvailabilityService {
       );
     });
   }
+
+  /// Creates a new template
+  Future<void> createTemplate(AvailabilityTemplateModel template) async {
+    await dataInterface.createTemplateForUser(
+      userId,
+      template,
+    );
+  }
+
+  /// Updates a template
+  Future<void> updateTemplate(AvailabilityTemplateModel template) async {
+    await dataInterface.updateTemplateForUser(
+      userId,
+      template.id!,
+      template,
+    );
+  }
+
+  /// Deletes a template
+  Future<void> deleteTemplate(AvailabilityTemplateModel template) async {
+    await dataInterface.deleteTemplateForUser(
+      userId,
+      template.id!,
+    );
+  }
 }
 
 /// A combination of availability and template for a single day
