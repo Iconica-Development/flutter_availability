@@ -1,12 +1,24 @@
 import "dart:async";
 
+import "package:flutter_availability/src/service/initial_data.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// A local implementation of the [AvailabilityDataInterface] that stores data
 /// in memory.
 class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
-  final Map<String, List<AvailabilityModel>> _userAvailabilities = {};
-  final Map<String, List<AvailabilityTemplateModel>> _userTemplates = {};
+  ///
+  LocalAvailabilityDataInterface() {
+    _notifyAvailabilityChanges();
+    _notifyTemplateChanges();
+  }
+
+  final Map<String, List<AvailabilityModel>> _userAvailabilities = {
+    "": getDefaultLocalAvailabilitiesForUser(),
+  };
+
+  final Map<String, List<AvailabilityTemplateModel>> _userTemplates = {
+    "": getDefaultLocalTemplatesForUser(),
+  };
 
   final StreamController<Map<String, List<AvailabilityModel>>>
       _availabilityController = StreamController.broadcast();
@@ -105,25 +117,30 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
     required String userId,
     DateTime? start,
     DateTime? end,
-  }) =>
-      _availabilityController.stream.map((availabilitiesMap) {
-        var availabilities = availabilitiesMap[userId];
-        if (availabilities != null) {
-          if (start != null && end != null) {
-            return availabilities
-                .where(
-                  (availability) =>
-                      availability.startDate.isBefore(end) &&
-                      availability.endDate.isAfter(start),
-                )
-                .toList();
-          } else {
-            return availabilities;
-          }
+  }) {
+    // load the availabilities 1 second later to simulate a network request
+    Future.delayed(const Duration(seconds: 1), _notifyAvailabilityChanges);
+
+    return _availabilityController.stream
+        .map<List<AvailabilityModel>>((availabilitiesMap) {
+      var availabilities = availabilitiesMap[userId];
+      if (availabilities != null) {
+        if (start != null && end != null) {
+          return availabilities
+              .where(
+                (availability) =>
+                    availability.startDate.isBefore(end) &&
+                    availability.endDate.isAfter(start),
+              )
+              .toList();
         } else {
-          return [];
+          return availabilities;
         }
-      });
+      } else {
+        return [];
+      }
+    }).handleError((error) => []);
+  }
 
   @override
   Stream<AvailabilityModel> getAvailabilityForUserById(
@@ -158,18 +175,21 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
   Stream<List<AvailabilityTemplateModel>> getTemplatesForUser({
     required String userId,
     List<String>? templateIds,
-  }) =>
-      _templateController.stream.map((templatesMap) {
-        var templates = templatesMap[userId];
-        if (templateIds != null) {
-          return templates
-                  ?.where((template) => templateIds.contains(template.id))
-                  .toList() ??
-              [];
-        } else {
-          return templates ?? [];
-        }
-      });
+  }) {
+    // load the templates 1 second later to simulate a network request
+    Future.delayed(const Duration(seconds: 1), _notifyTemplateChanges);
+    return _templateController.stream.map((templatesMap) {
+      var templates = templatesMap[userId];
+      if (templateIds != null) {
+        return templates
+                ?.where((template) => templateIds.contains(template.id))
+                .toList() ??
+            [];
+      } else {
+        return templates ?? [];
+      }
+    }).handleError((error) => []);
+  }
 
   @override
   Future<AvailabilityModel> updateAvailabilityForUser(
