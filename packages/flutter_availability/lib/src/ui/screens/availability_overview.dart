@@ -2,10 +2,10 @@ import "package:flutter/material.dart";
 import "package:flutter_availability/src/ui/widgets/calendar.dart";
 import "package:flutter_availability/src/ui/widgets/template_legend.dart";
 import "package:flutter_availability/src/util/scope.dart";
-import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 ///
-class AvailabilityOverview extends StatefulWidget {
+class AvailabilityOverview extends StatefulHookWidget {
   ///
   const AvailabilityOverview({
     required this.onEditDateRange,
@@ -35,9 +35,17 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var availabilityScope = AvailabilityScope.of(context);
+    var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
     var spacing = options.spacing;
+
+    var availabilityStream = useMemoized(
+      () => service.getOverviewDataForMonth(_selectedDate),
+      [_selectedDate],
+    );
+
+    var availabilitySnapshot = useStream(availabilityStream);
 
     var title = Center(
       child: Text(
@@ -62,33 +70,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     var templateLegend = TemplateLegend(
       onViewTemplates: widget.onViewTemplates,
-      templates: [
-        for (var template in <(Color, String)>[
-          (Colors.red, "Template 1"),
-          (Colors.blue, "Template 2"),
-          // do 10 more
-          (Colors.green, "Template 3"),
-          (Colors.yellow, "Template 4"),
-          (Colors.purple, "Template 5"),
-          (Colors.orange, "Template 6"),
-          (Colors.teal, "Template 7"),
-          (Colors.pink, "Template 8"),
-          (Colors.indigo, "Template 9"),
-        ]) ...[
-          AvailabilityTemplateModel(
-            userId: "1",
-            id: "1",
-            name: template.$2,
-            templateType: AvailabilityTemplateType.day,
-            templateData: DayTemplateData(
-              startTime: DateTime.now(),
-              endTime: DateTime.now(),
-              breaks: [],
-            ),
-            color: template.$1.value,
-          ),
-        ],
-      ],
+      availabilities: availabilitySnapshot,
     );
 
     // if there is no range selected we want to disable the button

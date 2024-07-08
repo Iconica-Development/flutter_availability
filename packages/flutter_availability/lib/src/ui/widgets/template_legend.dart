@@ -1,19 +1,19 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/util/scope.dart";
-import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// This shows all the templates of a given month and an option to navigate to
 /// the template overview
 class TemplateLegend extends StatefulWidget {
   ///
   const TemplateLegend({
-    required this.templates,
+    required this.availabilities,
     required this.onViewTemplates,
     super.key,
   });
 
-  ///
-  final List<AvailabilityTemplateModel> templates;
+  /// The stream of availabilities with templates for the current month
+  final AsyncSnapshot<List<AvailabilityWithTemplate>> availabilities;
 
   /// Callback for when the user wants to navigate to the overview of templates
   final VoidCallback onViewTemplates;
@@ -36,7 +36,10 @@ class _TemplateLegendState extends State<TemplateLegend> {
     var colors = options.colors;
     var translations = options.translations;
 
-    var templatesAvailable = widget.templates.isNotEmpty;
+    var templatesLoading =
+        widget.availabilities.connectionState == ConnectionState.waiting;
+    var templatesAvailable = widget.availabilities.data?.isNotEmpty ?? false;
+    var templates = widget.availabilities.data?.getUniqueTemplates() ?? [];
 
     void onDrawerHeaderClick() {
       if (!templatesAvailable) {
@@ -79,7 +82,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                   style: textTheme.titleMedium,
                 ),
                 // a button to open a drawer with all the templates
-                if (templatesAvailable) ...[
+                if (templatesAvailable && !templatesLoading) ...[
                   Icon(
                     _templateDrawerOpen
                         ? Icons.arrow_drop_up
@@ -116,7 +119,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                           child: ListView.builder(
                             controller: _scrollController,
                             shrinkWrap: true,
-                            itemCount: widget.templates.length + 2,
+                            itemCount: templates.length + 2,
                             itemBuilder: (context, index) {
                               if (index == 0) {
                                 return _TemplateLegendItem(
@@ -126,7 +129,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                                   borderColor: colorScheme.primary,
                                 );
                               }
-                              if (index == widget.templates.length + 1) {
+                              if (index == templates.length + 1) {
                                 return Padding(
                                   padding: const EdgeInsets.only(
                                     top: 10,
@@ -135,7 +138,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                                   child: createNewTemplateButton,
                                 );
                               }
-                              var template = widget.templates[index - 1];
+                              var template = templates[index - 1];
                               return _TemplateLegendItem(
                                 name: template.name,
                                 backgroundColor: Color(template.color),
@@ -149,9 +152,13 @@ class _TemplateLegendState extends State<TemplateLegend> {
                 )
               : const Divider(height: 1),
         ),
-        if (!templatesAvailable) ...[
+        if (!templatesAvailable && !_templateDrawerOpen) ...[
           const SizedBox(height: 12),
-          createNewTemplateButton,
+          if (templatesLoading) ...[
+            const CircularProgressIndicator.adaptive(),
+          ] else ...[
+            createNewTemplateButton,
+          ],
         ],
       ],
     );
