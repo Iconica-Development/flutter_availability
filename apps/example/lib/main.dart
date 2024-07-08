@@ -47,7 +47,7 @@ class Home extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             debugPrint("starting availability user story");
-            await openAvailabilitiesForUser(context, "anonymous", null);
+            await openAvailabilitiesForUser(context, "", null);
             debugPrint("finishing availability user story");
           },
         ),
