@@ -38,11 +38,12 @@ class _TemplateLegendState extends State<TemplateLegend> {
 
     var templatesLoading =
         widget.availabilities.connectionState == ConnectionState.waiting;
-    var templatesAvailable = widget.availabilities.data?.isNotEmpty ?? false;
+    var templatesAvailable =
+        !templatesLoading && (widget.availabilities.data?.isNotEmpty ?? false);
     var templates = widget.availabilities.data?.getUniqueTemplates() ?? [];
 
     void onDrawerHeaderClick() {
-      if (!templatesAvailable) {
+      if (!templatesAvailable && !_templateDrawerOpen) {
         return;
       }
       setState(() {
@@ -69,6 +70,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
     );
     return Column(
       children: [
+        // a button to open/close a drawer with all the templates
         GestureDetector(
           onTap: onDrawerHeaderClick,
           child: ColoredBox(
@@ -81,8 +83,8 @@ class _TemplateLegendState extends State<TemplateLegend> {
                   translations.templateLegendTitle,
                   style: textTheme.titleMedium,
                 ),
-                // a button to open a drawer with all the templates
-                if (templatesAvailable && !templatesLoading) ...[
+                if ((templatesAvailable && !templatesLoading) ||
+                    _templateDrawerOpen) ...[
                   Icon(
                     _templateDrawerOpen
                         ? Icons.arrow_drop_up
@@ -96,6 +98,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
         const SizedBox(height: 4),
         AnimatedContainer(
           duration: const Duration(milliseconds: 500),
+          // TODO(freek): Animation should be used so it doesn't instantly close
           constraints: BoxConstraints(maxHeight: _templateDrawerOpen ? 150 : 0),
           decoration: BoxDecoration(
             border: _templateDrawerOpen
@@ -103,7 +106,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                 : null,
           ),
           padding: const EdgeInsets.only(right: 2),
-          child: _templateDrawerOpen
+          child: _templateDrawerOpen && !templatesLoading
               ? SingleChildScrollView(
                   child: Column(
                     children: [
@@ -150,9 +153,13 @@ class _TemplateLegendState extends State<TemplateLegend> {
                     ],
                   ),
                 )
-              : const Divider(height: 1),
+              : const Divider(
+                  height: 1,
+                  thickness: 1,
+                ),
         ),
-        if (!templatesAvailable && !_templateDrawerOpen) ...[
+        if (!templatesAvailable &&
+            (!_templateDrawerOpen || templatesLoading)) ...[
           const SizedBox(height: 12),
           if (templatesLoading) ...[
             const CircularProgressIndicator.adaptive(),
