@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
+import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_selection.dart";
 import "package:flutter_availability/src/util/scope.dart";
@@ -135,9 +136,16 @@ class _AvailabilityDayTemplateEditState
       },
     );
 
-    var pauseSection = const SizedBox(
-      height: 200,
-      child: Placeholder(),
+    var pauseSection = PauseSelection(
+      breaks: (_template.templateData as DayTemplateData).breaks,
+      onBreaksChanged: (breaks) {
+        setState(() {
+          _template = _template.copyWith(
+            templateData: (_template.templateData as DayTemplateData)
+                .copyWith(breaks: breaks),
+          );
+        });
+      },
     );
 
     var body = CustomScrollView(
