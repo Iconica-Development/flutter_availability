@@ -59,3 +59,47 @@ class TimeInputField extends StatelessWidget {
     );
   }
 }
+
+/// An input field for giving a duration in minutes
+class DurationInputField extends StatelessWidget {
+  ///
+  const DurationInputField({
+    required this.initialValue,
+    required this.onDurationChanged,
+    super.key,
+  });
+
+  ///
+  final Duration? initialValue;
+
+  ///
+  final void Function(Duration) onDurationChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
+    var translations = options.translations;
+
+    void onFieldChanged(String value) {
+      var duration = int.tryParse(value);
+      if (duration != null) {
+        onDurationChanged(Duration(minutes: duration));
+      }
+    }
+
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: translations.time,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        suffixIcon: const Icon(Icons.access_time),
+      ),
+      initialValue: initialValue?.inMinutes.toString(),
+      keyboardType: TextInputType.number,
+      style: options.textStyles.inputFieldTextStyle,
+      onChanged: onFieldChanged,
+    );
+  }
+}

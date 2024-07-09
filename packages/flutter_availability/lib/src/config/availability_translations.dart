@@ -29,8 +29,14 @@ class AvailabilityTranslations {
     required this.templateColorLabel,
     required this.time,
     required this.timeSeparator,
+    required this.timeMinutes,
     required this.templateTimeLabel,
     required this.pauseSectionTitle,
+    required this.pauseSectionOptional,
+    required this.pauseDialogTitle,
+    required this.pauseDialogDescription,
+    required this.pauseDialogPeriodTitle,
+    required this.pauseDialogPeriodDescription,
     required this.saveButton,
     required this.addButton,
     required this.timeFormatter,
@@ -59,8 +65,16 @@ class AvailabilityTranslations {
     this.templateColorLabel = "Colorlabel",
     this.time = "Time",
     this.timeSeparator = "to",
+    this.timeMinutes = "minutes",
     this.templateTimeLabel = "When are you available?",
-    this.pauseSectionTitle = "Add a pause (optional)",
+    this.pauseSectionTitle = "Add a pause",
+    this.pauseSectionOptional = "(Optional)",
+    this.pauseDialogTitle = "Add a pause",
+    this.pauseDialogDescription = "Add a pause to your availability. "
+        "Choose how long you want to take a break",
+    this.pauseDialogPeriodTitle = "Time slot",
+    this.pauseDialogPeriodDescription =
+        "Select between which times you want to take a break",
     this.saveButton = "Save",
     this.addButton = "Add",
     this.monthYearFormatter = _defaultMonthYearFormatter,
@@ -122,11 +136,30 @@ class AvailabilityTranslations {
   /// The text between start and end time
   final String timeSeparator;
 
+  /// The text used for minutes
+  final String timeMinutes;
+
   /// The label for the template time input
   final String templateTimeLabel;
 
   /// The title for pause configuration sections
   final String pauseSectionTitle;
+
+  /// The label for optional indication on pause sections
+  final String pauseSectionOptional;
+
+  /// The title for the pause dialog
+  final String pauseDialogTitle;
+
+  /// The description for the pause dialog displayed below the title
+  final String pauseDialogDescription;
+
+  /// The title for the section in the pause dialog where you select the period
+  final String pauseDialogPeriodTitle;
+
+  /// The description for the section in the pause dialog where you select
+  /// the period
+  final String pauseDialogPeriodDescription;
 
   /// The text on the save button
   final String saveButton;
