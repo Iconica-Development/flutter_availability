@@ -76,10 +76,13 @@ class CalendarGrid extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             var day = calendarDays[index];
+            var dayColor = day.color ??
+                colors.customAvailabilityColor ??
+                colorScheme.secondary;
             var textColor = day.outsideMonth && !day.isSelected
                 ? colors.outsideMonthTextColor ?? colorScheme.onSurface
                 : _getTextColor(
-                    day.color,
+                    dayColor,
                     colors.textLightColor ?? Colors.white,
                     colors.textDarkColor,
                   );
@@ -89,7 +92,7 @@ class CalendarGrid extends StatelessWidget {
               onTap: () => onDayTap(day.date),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: day.color,
+                  color: dayColor,
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
                     color: day.isSelected && !day.outsideMonth
@@ -137,7 +140,8 @@ class CalendarDay {
   final bool isSelected;
 
   /// The color of the day
-  final Color color;
+  /// If there is no template for an availability the color will be null
+  final Color? color;
 
   /// Whether there is an availability on this day and it deviates from the
   /// used template

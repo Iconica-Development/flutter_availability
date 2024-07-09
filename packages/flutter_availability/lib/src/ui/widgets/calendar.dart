@@ -171,7 +171,9 @@ List<CalendarDay> _mapAvailabilitiesToCalendarDays(
             );
         return CalendarDay(
           date: availability.availabilityModel.startDate,
-          color: Color(availability.template?.color ?? 0),
+          color: availability.template != null
+              ? Color(availability.template!.color)
+              : null,
           templateDeviation: templateIsDeviated,
           isSelected: false,
         );

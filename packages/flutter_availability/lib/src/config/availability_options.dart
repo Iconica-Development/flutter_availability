@@ -91,6 +91,7 @@ class AvailabilityColors {
   /// If a color is not provided the color will be taken from the theme
   const AvailabilityColors({
     this.selectedDayColor,
+    this.customAvailabilityColor,
     this.blankDayColor,
     this.outsideMonthTextColor,
     this.textDarkColor,
@@ -110,6 +111,11 @@ class AvailabilityColors {
 
   /// The background color of the days that are selected in the calendar
   final Color? selectedDayColor;
+
+  /// The background color of the days that have an availability without a
+  /// template. This color is also shown when a template has been deleted.
+  /// If not provided the color will be the theme's
+  final Color? customAvailabilityColor;
 
   /// The background color of the days in the current month
   /// that have no availability and are not selected
