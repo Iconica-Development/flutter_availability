@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/config/availability_translations.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
+import "package:flutter_availability/src/util/availability_deviation.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
@@ -8,6 +10,7 @@ class CalendarView extends StatefulWidget {
   ///
   const CalendarView({
     required this.month,
+    required this.availabilities,
     required this.onMonthChanged,
     required this.onEditDateRange,
     super.key,
@@ -15,6 +18,9 @@ class CalendarView extends StatefulWidget {
 
   ///
   final DateTime month;
+
+  /// The stream of availabilities with templates for the current month
+  final AsyncSnapshot<List<AvailabilityWithTemplate>> availabilities;
 
   ///
   final void Function(DateTime month) onMonthChanged;
@@ -71,6 +77,9 @@ class _CalendarViewState extends State<CalendarView> {
     var options = availabilityScope.options;
     var translations = options.translations;
 
+    var mappedCalendarDays =
+        _mapAvailabilitiesToCalendarDays(widget.availabilities);
+
     var monthDateSelector = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -107,7 +116,7 @@ class _CalendarViewState extends State<CalendarView> {
 
     var calendarGrid = CalendarGrid(
       month: widget.month,
-      days: const [],
+      days: mappedCalendarDays,
       onDayTap: onTapDate,
       selectedRange: _selectedRange,
     );
@@ -146,3 +155,26 @@ double _calculateTextWidthOfLongestMonth(
   )..layout();
   return textPainter.width;
 }
+
+/// Maps the availabilities to CalendarDays
+/// This is a helper function to make the code more readable
+/// It also determines if the template is a deviation from the original
+List<CalendarDay> _mapAvailabilitiesToCalendarDays(
+  AsyncSnapshot<List<AvailabilityWithTemplate>> availabilitySnapshot,
+) =>
+    availabilitySnapshot.data?.map(
+      (availability) {
+        var templateIsDeviated = availability.template != null &&
+            isTemplateDeviated(
+              availability.availabilityModel,
+              availability.template!,
+            );
+        return CalendarDay(
+          date: availability.availabilityModel.startDate,
+          color: Color(availability.template?.color ?? 0),
+          templateDeviation: templateIsDeviated,
+          isSelected: false,
+        );
+      },
+    ).toList() ??
+    [];

@@ -66,6 +66,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
           _selectedRange = range;
         });
       },
+      availabilities: availabilitySnapshot,
     );
 
     var templateLegend = TemplateLegend(
