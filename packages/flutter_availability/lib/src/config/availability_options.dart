@@ -18,6 +18,7 @@ class AvailabilityOptions {
     this.spacing = const AvailabilitySpacing(),
     this.textStyles = const AvailabilityTextStyles(),
     this.colors = const AvailabilityColors(),
+    this.timePickerBuilder,
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
 
@@ -48,6 +49,10 @@ class AvailabilityOptions {
 
   /// The colors used in the userstory
   final AvailabilityColors colors;
+
+  /// A way to provide your own time picker implementation or customize
+  /// the default time picker
+  final TimePickerBuilder? timePickerBuilder;
 }
 
 /// All configurable paddings and whitespaces withing the userstory
@@ -136,4 +141,10 @@ typedef ButtonBuilder = Widget Function(
   BuildContext context,
   FutureOr<void>? Function()? onPressed,
   Widget child,
+);
+
+/// Builder definition for providing a time picker implementation
+typedef TimePickerBuilder = Future<TimeOfDay?> Function(
+  BuildContext context,
+  TimeOfDay? initialTime,
 );
