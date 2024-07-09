@@ -19,6 +19,7 @@ class AvailabilityOptions {
     this.textStyles = const AvailabilityTextStyles(),
     this.colors = const AvailabilityColors(),
     this.timePickerBuilder,
+    this.loadingIndicatorBuilder = defaultLoader,
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
 
@@ -53,6 +54,11 @@ class AvailabilityOptions {
   /// A way to provide your own time picker implementation or customize
   /// the default time picker
   final TimePickerBuilder? timePickerBuilder;
+
+  /// A builder to override the loading indicator
+  /// If not provided the [CircularProgressIndicator.adaptive()] will be used
+  /// which shows a platform adaptive loading indicator
+  final WidgetBuilder loadingIndicatorBuilder;
 }
 
 /// All configurable paddings and whitespaces withing the userstory
@@ -154,3 +160,9 @@ typedef TimePickerBuilder = Future<TimeOfDay?> Function(
   BuildContext context,
   TimeOfDay? initialTime,
 );
+
+/// Builder definition for providing a loading indicator implementation
+Widget defaultLoader(
+  BuildContext context,
+) =>
+    const CircularProgressIndicator.adaptive();
