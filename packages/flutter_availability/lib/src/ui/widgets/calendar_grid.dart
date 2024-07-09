@@ -76,7 +76,7 @@ class CalendarGrid extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             var day = calendarDays[index];
-            var textColor = day.outsideMonth
+            var textColor = day.outsideMonth && !day.isSelected
                 ? colors.outsideMonthTextColor ?? colorScheme.onSurface
                 : _getTextColor(
                     day.color,
@@ -89,10 +89,10 @@ class CalendarGrid extends StatelessWidget {
               onTap: () => onDayTap(day.date),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: day.outsideMonth ? Colors.transparent : day.color,
+                  color: day.color,
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
-                    color: day.isSelected
+                    color: day.isSelected && !day.outsideMonth
                         ? colorScheme.primary
                         : Colors.transparent,
                   ),
@@ -178,20 +178,34 @@ List<CalendarDay> _generateCalendarDays(
 
   var calendarDays = <CalendarDay>[];
 
-  // Add days from the previous month
-  for (var i = 0; i < startWeekday - 1; i++) {
-    var prevDay =
-        firstDayOfMonth.subtract(Duration(days: startWeekday - 1 - i));
-    calendarDays.add(
-      CalendarDay(
-        date: prevDay,
-        isSelected: false,
-        color: Colors.transparent,
-        templateDeviation: false,
-        outsideMonth: true,
-      ),
-    );
+  void addOutsideMonthDays(
+    DateTime startDay,
+    int count, {
+    required bool isNextMonth,
+  }) {
+    for (var i = 0; i < count; i++) {
+      var day = isNextMonth
+          ? startDay.add(Duration(days: i + 1))
+          : startDay.subtract(Duration(days: count - i));
+      var isSelected = selectedRange != null &&
+          !day.isBefore(selectedRange.start) &&
+          !day.isAfter(selectedRange.end);
+      calendarDays.add(
+        CalendarDay(
+          date: day,
+          isSelected: isSelected,
+          color: isSelected
+              ? colors.selectedDayColor ?? colorScheme.primaryFixedDim
+              : Colors.transparent,
+          templateDeviation: false,
+          outsideMonth: true,
+        ),
+      );
+    }
   }
+
+  // Add days from the previous month
+  addOutsideMonthDays(firstDayOfMonth, startWeekday - 1, isNextMonth: false);
 
   // Add days of the current month
   for (var i = 1; i <= daysInMonth; i++) {
@@ -211,29 +225,18 @@ List<CalendarDay> _generateCalendarDays(
     var dayIsSelected = selectedRange != null &&
         !day.isBefore(selectedRange.start) &&
         !day.isAfter(selectedRange.end);
-    // if the day is selected we need to change the color and remove the marking
     specialDay = specialDay.copyWith(
       color: dayIsSelected
           ? colors.selectedDayColor ?? colorScheme.primaryFixedDim
-          : null,
-      templateDeviation: dayIsSelected ? false : null,
+          : specialDay.color,
+      isSelected: dayIsSelected,
+      templateDeviation: !dayIsSelected && specialDay.templateDeviation,
     );
     calendarDays.add(specialDay);
   }
 
   // Add days from the next month
-  for (var i = endWeekday; i < 7; i++) {
-    var nextDay = lastDayOfMonth.add(Duration(days: i - endWeekday + 1));
-    calendarDays.add(
-      CalendarDay(
-        date: nextDay,
-        isSelected: false,
-        color: Colors.transparent,
-        templateDeviation: false,
-        outsideMonth: true,
-      ),
-    );
-  }
+  addOutsideMonthDays(lastDayOfMonth, 7 - endWeekday, isNextMonth: true);
 
   return calendarDays;
 }
