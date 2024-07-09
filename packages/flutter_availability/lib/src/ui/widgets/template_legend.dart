@@ -41,6 +41,9 @@ class _TemplateLegendState extends State<TemplateLegend> {
     var templatesAvailable =
         !templatesLoading && (widget.availabilities.data?.isNotEmpty ?? false);
     var templates = widget.availabilities.data?.getUniqueTemplates() ?? [];
+    var existAvailabilitiesWithoutTemplate = widget.availabilities.data
+            ?.any((element) => element.template == null) ??
+        false;
 
     void onDrawerHeaderClick() {
       if (!templatesAvailable && !_templateDrawerOpen) {
@@ -125,11 +128,25 @@ class _TemplateLegendState extends State<TemplateLegend> {
                             itemCount: templates.length + 2,
                             itemBuilder: (context, index) {
                               if (index == 0) {
-                                return _TemplateLegendItem(
-                                  name: translations.templateSelectionLabel,
-                                  backgroundColor: colors.selectedDayColor ??
-                                      colorScheme.primaryFixedDim,
-                                  borderColor: colorScheme.primary,
+                                return Column(
+                                  children: [
+                                    _TemplateLegendItem(
+                                      name: translations.templateSelectionLabel,
+                                      backgroundColor:
+                                          colors.selectedDayColor ??
+                                              colorScheme.primaryFixedDim,
+                                      borderColor: colorScheme.primary,
+                                    ),
+                                    if (existAvailabilitiesWithoutTemplate) ...[
+                                      _TemplateLegendItem(
+                                        name: translations
+                                            .availabilityWithoutTemplateLabel,
+                                        backgroundColor:
+                                            colors.customAvailabilityColor ??
+                                                colorScheme.secondary,
+                                      ),
+                                    ],
+                                  ],
                                 );
                               }
                               if (index == templates.length + 1) {
