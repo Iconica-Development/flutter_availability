@@ -85,6 +85,34 @@ class AvailabilityService {
     });
   }
 
+  /// Returns a stream of all templates
+  Stream<List<AvailabilityTemplateModel>> getTemplates() =>
+      dataInterface.getTemplatesForUser(
+        userId: userId,
+      );
+
+  /// Returns a stream of day templates
+  Stream<List<AvailabilityTemplateModel>> getDayTemplates() =>
+      getTemplates().map(
+        (templates) => templates
+            .where(
+              (template) =>
+                  template.templateType == AvailabilityTemplateType.day,
+            )
+            .toList(),
+      );
+
+  /// Returns a stream of week templates
+  Stream<List<AvailabilityTemplateModel>> getWeekTemplates() =>
+      getTemplates().map(
+        (templates) => templates
+            .where(
+              (template) =>
+                  template.templateType == AvailabilityTemplateType.week,
+            )
+            .toList(),
+      );
+
   /// Creates a new template
   Future<void> createTemplate(AvailabilityTemplateModel template) async {
     await dataInterface.createTemplateForUser(
