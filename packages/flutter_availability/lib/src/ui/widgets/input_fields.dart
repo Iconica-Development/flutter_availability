@@ -24,10 +24,12 @@ class TimeInputField extends StatelessWidget {
     var translations = options.translations;
 
     Future<void> onFieldtap() async {
-      var time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(initialValue ?? DateTime.now()),
-      );
+      var initialTime = TimeOfDay.fromDateTime(initialValue ?? DateTime.now());
+      var time = await (options.timePickerBuilder?.call(context, initialTime) ??
+          showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.fromDateTime(initialValue ?? DateTime.now()),
+          ));
       if (time != null) {
         onTimeChanged(
           DateTime(
