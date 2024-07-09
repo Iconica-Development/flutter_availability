@@ -179,7 +179,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
             (!_templateDrawerOpen || templatesLoading)) ...[
           const SizedBox(height: 12),
           if (templatesLoading) ...[
-            const CircularProgressIndicator.adaptive(),
+            options.loadingIndicatorBuilder(context),
           ] else ...[
             createNewTemplateButton,
           ],

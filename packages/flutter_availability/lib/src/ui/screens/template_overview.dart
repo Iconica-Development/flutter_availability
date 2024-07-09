@@ -101,6 +101,8 @@ class _TemplateListSection extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var textTheme = theme.textTheme;
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
 
     var templateCreationButton = GestureDetector(
       onTap: onAddTemplate,
@@ -160,7 +162,7 @@ class _TemplateListSection extends StatelessWidget {
           ),
         ],
         if (templatesSnapshot.connectionState == ConnectionState.waiting) ...[
-          const Center(child: CircularProgressIndicator.adaptive()),
+          Center(child: options.loadingIndicatorBuilder(context)),
         ],
         const SizedBox(height: 8),
         templateCreationButton,
