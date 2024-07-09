@@ -1,9 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Overview screen for all the availability templates
-class AvailabilityTemplateOverview extends StatelessWidget {
+class AvailabilityTemplateOverview extends HookWidget {
   /// Constructor
   const AvailabilityTemplateOverview({
     required this.onExit,
@@ -25,9 +26,16 @@ class AvailabilityTemplateOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var availabilityScope = AvailabilityScope.of(context);
+    var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
     var spacing = options.spacing;
+
+    var dayTemplateStream = useMemoized(() => service.getDayTemplates());
+    var weekTemplateStream = useMemoized(() => service.getWeekTemplates());
+
+    var dayTemplatesSnapshot = useStream(dayTemplateStream);
+    var weekTemplatesSnapshot = useStream(weekTemplateStream);
 
     var title = Center(
       child: Text(
@@ -39,56 +47,15 @@ class AvailabilityTemplateOverview extends StatelessWidget {
     var dayTemplateSection = _TemplateListSection(
       sectionTitle: translations.dayTemplates,
       createButtonText: translations.createDayTemplate,
-      templates: [
-        for (var template in <(Color, String)>[
-          (Colors.red, "Template 1"),
-          (Colors.blue, "Template 2"),
-          (Colors.green, "Template 3"),
-          (Colors.yellow, "Template 4"),
-        ]) ...[
-          AvailabilityTemplateModel(
-            userId: "1",
-            id: "1",
-            name: template.$2,
-            templateType: AvailabilityTemplateType.day,
-            templateData: DayTemplateData(
-              startTime: DateTime.now(),
-              endTime: DateTime.now(),
-              breaks: [],
-            ),
-            color: template.$1.value,
-          ),
-        ],
-      ],
       onEditTemplate: onEditTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.day),
+      templatesSnapshot: dayTemplatesSnapshot,
     );
 
     var weekTemplateSection = _TemplateListSection(
       sectionTitle: translations.weekTemplates,
       createButtonText: translations.createWeekTemplate,
-      templates: [
-        for (var template in <(Color, String)>[
-          (Colors.purple, "Template 5"),
-          (Colors.orange, "Template 6"),
-          (Colors.teal, "Template 7"),
-          (Colors.pink, "Template 8"),
-          (Colors.indigo, "Template 9"),
-        ]) ...[
-          AvailabilityTemplateModel(
-            userId: "1",
-            id: "1",
-            name: template.$2,
-            templateType: AvailabilityTemplateType.week,
-            templateData: DayTemplateData(
-              startTime: DateTime.now(),
-              endTime: DateTime.now(),
-              breaks: [],
-            ),
-            color: template.$1.value,
-          ),
-        ],
-      ],
+      templatesSnapshot: weekTemplatesSnapshot,
       onEditTemplate: onEditTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.week),
     );
@@ -119,14 +86,14 @@ class _TemplateListSection extends StatelessWidget {
   const _TemplateListSection({
     required this.sectionTitle,
     required this.createButtonText,
-    required this.templates,
+    required this.templatesSnapshot,
     required this.onEditTemplate,
     required this.onAddTemplate,
   });
 
   final String sectionTitle;
   final String createButtonText;
-  final List<AvailabilityTemplateModel> templates;
+  final AsyncSnapshot<List<AvailabilityTemplateModel>> templatesSnapshot;
   final void Function(AvailabilityTemplateModel template) onEditTemplate;
   final VoidCallback onAddTemplate;
 
@@ -162,7 +129,8 @@ class _TemplateListSection extends StatelessWidget {
         Text(sectionTitle, style: textTheme.titleMedium),
         const SizedBox(height: 8),
         const Divider(height: 1),
-        for (var template in templates) ...[
+        for (var template
+            in templatesSnapshot.data ?? <AvailabilityTemplateModel>[]) ...[
           GestureDetector(
             onTap: () => onEditTemplate(template),
             child: Container(
@@ -190,6 +158,9 @@ class _TemplateListSection extends StatelessWidget {
               ),
             ),
           ),
+        ],
+        if (templatesSnapshot.connectionState == ConnectionState.waiting) ...[
+          const Center(child: CircularProgressIndicator.adaptive()),
         ],
         const SizedBox(height: 8),
         templateCreationButton,
