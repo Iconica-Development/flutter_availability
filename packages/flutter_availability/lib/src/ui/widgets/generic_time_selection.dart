@@ -20,7 +20,7 @@ class TimeSelection extends StatelessWidget {
   final String title;
 
   /// The description of the time selection
-  final String description;
+  final String? description;
 
   /// the axis aligment for the column
   final CrossAxisAlignment crossAxisAlignment;
@@ -49,8 +49,10 @@ class TimeSelection extends StatelessWidget {
       crossAxisAlignment: crossAxisAlignment,
       children: [
         Text(title, style: textTheme.titleMedium),
-        const SizedBox(height: 4),
-        Text(description, style: textTheme.bodyMedium),
+        if (description != null) ...[
+          const SizedBox(height: 4),
+          Text(description!, style: textTheme.bodyMedium),
+        ],
         const SizedBox(height: 8),
         Row(
           children: [
