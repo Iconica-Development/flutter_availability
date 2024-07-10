@@ -33,6 +33,37 @@ class DefaultPrimaryButton extends StatelessWidget {
       FilledButton(onPressed: onPressed, child: child);
 }
 
+/// a secondary button with a an outlined border
+class DefaultSecondaryButton extends StatelessWidget {
+  ///
+  const DefaultSecondaryButton({
+    required this.child,
+    required this.onPressed,
+    super.key,
+  });
+
+  ///
+  static Widget builder(
+    BuildContext context,
+    FutureOr<void> Function()? onPressed,
+    Widget child,
+  ) =>
+      DefaultSecondaryButton(
+        onPressed: onPressed,
+        child: child,
+      );
+
+  ///
+  final Widget child;
+
+  ///
+  final FutureOr<void> Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) =>
+      OutlinedButton(onPressed: onPressed, child: child);
+}
+
 ///
 class DefaultTextButton extends StatelessWidget {
   ///

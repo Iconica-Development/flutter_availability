@@ -14,6 +14,7 @@ class AvailabilityOptions {
     this.translations = const AvailabilityTranslations.empty(),
     this.baseScreenBuilder = DefaultBaseScreen.builder,
     this.primaryButtonBuilder = DefaultPrimaryButton.builder,
+    this.secondaryButtonBuilder = DefaultSecondaryButton.builder,
     this.textButtonBuilder = DefaultTextButton.builder,
     this.spacing = const AvailabilitySpacing(),
     this.textStyles = const AvailabilityTextStyles(),
@@ -38,6 +39,9 @@ class AvailabilityOptions {
 
   /// A way to provide your own primary button implementation
   final ButtonBuilder primaryButtonBuilder;
+
+  /// A way to provide your own secondary button implementation
+  final ButtonBuilder secondaryButtonBuilder;
 
   /// A way to provide your own text button implementation
   final ButtonBuilder textButtonBuilder;
