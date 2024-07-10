@@ -10,25 +10,57 @@ class AvailabilityService {
     required this.dataInterface,
   });
 
-  ///
+  /// The user id for which the availabilities are managed
   final String userId;
 
-  ///
+  /// The data interface that is used to store and retrieve data
   final AvailabilityDataInterface dataInterface;
 
   /// Creates a set of availabilities for the given [range], where every
   /// availability is a copy of [availability] with only date information
   /// changed
-  Future<void> createAvailability(
-    AvailabilityModel availability,
-    DateTimeRange range,
-  ) async {
+  Future<void> createAvailability({
+    required AvailabilityModel availability,
+    required DateTimeRange range,
+    required TimeOfDay startTime,
+    required TimeOfDay endTime,
+  }) async {
+    // apply the startTime and endTime to the availability model
+    var updatedAvailability = availability.copyWith(
+      startDate: DateTime(
+        range.start.year,
+        range.start.month,
+        range.start.day,
+        startTime.hour,
+        startTime.minute,
+      ),
+      endDate: DateTime(
+        range.start.year,
+        range.start.month,
+        range.start.day,
+        endTime.hour,
+        endTime.minute,
+      ),
+    );
+
     await dataInterface.createAvailabilitiesForUser(
       userId: userId,
-      availability: availability,
+      availability: updatedAvailability,
       start: range.start,
       end: range.end,
     );
+  }
+
+  /// removes all the given [availabilities] from the data store
+  Future<void> clearAvailabilities(
+    List<AvailabilityModel> availabilities,
+  ) async {
+    for (var availability in availabilities) {
+      await dataInterface.deleteAvailabilityForUser(
+        userId,
+        availability.id!,
+      );
+    }
   }
 
   /// Returns a stream where data from availabilities and templates are merged
@@ -172,4 +204,12 @@ extension RetrieveUniqueTemplates on List<AvailabilityWithTemplate> {
           return current;
         },
       );
+}
+
+/// Extension to retrieve [AvailabilityModel] from a list
+/// of [AvailabilityWithTemplate]
+extension TransformAvailabilityWithTemplate on List<AvailabilityWithTemplate> {
+  /// Retrieve all availabilities from a list of [AvailabilityWithTemplate]
+  List<AvailabilityModel> getAvailabilities() =>
+      map((entry) => entry.availabilityModel).toList();
 }

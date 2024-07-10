@@ -1,448 +1,191 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/src/ui/widgets/availability_clear.dart";
+import "package:flutter_availability/src/ui/widgets/availability_template_selection.dart";
+import "package:flutter_availability/src/ui/widgets/availabillity_time_selection.dart";
+import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
-import "package:intl/intl.dart";
 
 ///
-class AvailabilityDayOverview extends StatefulWidget {
+class AvailabilityModificationView extends StatefulWidget {
   ///
-  const AvailabilityDayOverview({
-    required this.date,
-    required this.onAvailabilitySaved,
-    this.initialAvailability,
+  const AvailabilityModificationView({
+    required this.dateRange,
+    required this.onExit,
+    required this.initialAvailabilities,
     super.key,
   });
 
   /// The date for which the availability is being managed
-  final DateTime date;
+  final DateTimeRange dateRange;
 
-  /// The initial availability for the day
-  final AvailabilityModel? initialAvailability;
+  /// The initial availabilities for the selected period
+  final List<AvailabilityWithTemplate> initialAvailabilities;
 
-  /// Callback for when the availability is saved
-  final Function() onAvailabilitySaved;
+  /// Callback for when the user wants to navigate back or the
+  /// availabilities have been saved
+  final VoidCallback onExit;
 
   @override
-  State<AvailabilityDayOverview> createState() =>
-      _AvailabilityDayOverviewState();
+  State<AvailabilityModificationView> createState() =>
+      _AvailabilityModificationViewState();
 }
 
-class _AvailabilityDayOverviewState extends State<AvailabilityDayOverview> {
-  late TextEditingController _startDateController;
-  late TextEditingController _endDateController;
+class _AvailabilityModificationViewState
+    extends State<AvailabilityModificationView> {
   late AvailabilityModel _availability;
-  bool _clearAvailableToday = false;
+  bool _clearAvailability = false;
+  TimeOfDay? _startTime;
+  TimeOfDay? _endTime;
 
   @override
   void initState() {
     super.initState();
-    _availability = widget.initialAvailability ??
-        AvailabilityModel(
-          userId: "",
-          startDate: widget.date,
-          endDate: widget.date,
-          breaks: [],
-        );
-    _startDateController = TextEditingController(
-      text: DateFormat("HH:mm").format(_availability.startDate),
-    );
-    _endDateController = TextEditingController(
-      text: DateFormat("HH:mm").format(_availability.endDate),
-    );
-  }
-
-  @override
-  void dispose() {
-    _startDateController.dispose();
-    _endDateController.dispose();
-    super.dispose();
-  }
-
-  Future<TimeOfDay?> _selectTime(TextEditingController controller) async {
-    var picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        controller.text = picked.format(context);
-      });
-      return picked;
-    }
-    return null;
+    _availability =
+        widget.initialAvailabilities.getAvailabilities().firstOrNull ??
+            AvailabilityModel(
+              userId: "",
+              startDate: widget.dateRange.start,
+              endDate: widget.dateRange.end,
+              breaks: [],
+            );
   }
 
   @override
   Widget build(BuildContext context) {
     var availabilityScope = AvailabilityScope.of(context);
-    var userId = availabilityScope.userId;
     var service = availabilityScope.service;
+    var options = availabilityScope.options;
+    var spacing = options.spacing;
+    var translations = options.translations;
 
-    Future<void> updateAvailabilityStart() async {
-      var selectedTime = await _selectTime(_startDateController);
-      if (selectedTime == null) return;
+    // TODO(freek): the selected period might be longer than 1 month
+    //so we need to get all the availabilites through a stream
 
-      var updatedStartDate = _availability.startDate.copyWith(
-        hour: selectedTime.hour,
-        minute: selectedTime.minute,
-      );
-      setState(() {
-        _availability = _availability.copyWith(startDate: updatedStartDate);
-      });
-    }
-
-    Future<void> updateAvailabilityEnd() async {
-      var selectedTime = await _selectTime(_endDateController);
-      if (selectedTime == null) return;
-
-      var updatedEndDate = _availability.endDate.copyWith(
-        hour: selectedTime.hour,
-        minute: selectedTime.minute,
-      );
-      setState(() {
-        _availability = _availability.copyWith(endDate: updatedEndDate);
-      });
-    }
-
-    Future<void> onClickAddPause() async {
-      var newBreak = await AvailabilityBreakSelectionDialog.show(context, null);
-      if (newBreak != null) {
-        setState(() {
-          _availability.breaks.add(newBreak);
-        });
+    Future<void> onSave() async {
+      if (_clearAvailability) {
+        await service.clearAvailabilities(
+          widget.initialAvailabilities.getAvailabilities(),
+        );
+        widget.onExit();
+        return;
       }
-    }
-
-    Future<void> onClickSave() async {
-      if (_clearAvailableToday) {
-        // remove the availability for the user
-        if (_availability.id != null) {
-          await service.dataInterface.deleteAvailabilityForUser(
-            userId,
-            _availability.id!,
-          );
-        }
-      } else {
-        // add an availability for the user
-        await service.dataInterface.createAvailabilitiesForUser(
-          userId: userId,
-          availability: _availability,
-          start: widget.date,
-          end: widget.date,
+      if (widget.initialAvailabilities.isNotEmpty) {
+        await service.clearAvailabilities(
+          widget.initialAvailabilities.getAvailabilities(),
         );
       }
-      if (context.mounted) {
-        widget.onAvailabilitySaved();
-      }
+
+      await service.createAvailability(
+        availability: _availability,
+        range: widget.dateRange,
+        startTime: _startTime!,
+        endTime: _endTime!,
+      );
+      widget.onExit();
     }
 
-    var theme = Theme.of(context);
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              DateFormat.yMMMMd().format(widget.date),
-              style: theme.textTheme.bodyLarge,
-            ),
-            Row(
-              children: [
-                Checkbox(
-                  value: _clearAvailableToday,
-                  onChanged: (value) {
-                    setState(() {
-                      _clearAvailableToday = value!;
-                    });
-                  },
-                ),
-                const Text("Clear availability for today"),
+    var canSave =
+        _clearAvailability || (_startTime != null && _endTime != null);
+    var saveButton = options.primaryButtonBuilder(
+      context,
+      canSave ? onSave : null,
+      Text(translations.saveButton),
+    );
+
+    var clearSection = AvailabilityClearSection(
+      range: widget.dateRange,
+      clearAvailable: _clearAvailability,
+      onChanged: (isChecked) {
+        setState(() {
+          _clearAvailability = isChecked;
+        });
+      },
+    );
+
+    var templateSelection = const AvailabilityTemplateSelection();
+
+    var timeSelection = AvailabilityTimeSelection(
+      dateRange: widget.dateRange,
+      startTime: _startTime != null
+          ? DateTime(
+              widget.dateRange.start.year,
+              widget.dateRange.start.month,
+              widget.dateRange.start.day,
+              _startTime!.hour,
+              _startTime!.minute,
+            )
+          : null,
+      endTime: _endTime != null
+          ? DateTime(
+              widget.dateRange.start.year,
+              widget.dateRange.start.month,
+              widget.dateRange.start.day,
+              _endTime!.hour,
+              _endTime!.minute,
+            )
+          : null,
+      key: ValueKey([_startTime, _endTime]),
+      onStartChanged: (start) => setState(() {
+        _startTime = TimeOfDay.fromDateTime(start);
+      }),
+      onEndChanged: (end) => setState(() {
+        _endTime = TimeOfDay.fromDateTime(end);
+      }),
+    );
+
+    var pauseSelection = PauseSelection(
+      breaks: _availability.breaks,
+      onBreaksChanged: (breaks) {
+        setState(() {
+          _availability = _availability.copyWith(breaks: breaks);
+        });
+      },
+    );
+
+    var body = CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding:
+              EdgeInsets.symmetric(horizontal: options.spacing.sidePadding),
+          sliver: SliverList.list(
+            children: [
+              const SizedBox(height: 40),
+              clearSection,
+              if (!_clearAvailability) ...[
+                const SizedBox(height: 24),
+                templateSelection,
+                const SizedBox(height: 24),
+                timeSelection,
+                const SizedBox(height: 26),
+                pauseSelection,
               ],
-            ),
-            Opacity(
-              opacity: _clearAvailableToday ? 0.5 : 1,
-              child: IgnorePointer(
-                ignoring: _clearAvailableToday,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: updateAvailabilityStart,
-                            child: AbsorbPointer(
-                              child: TextField(
-                                controller: _startDateController,
-                                decoration: const InputDecoration(
-                                  labelText: "Begin tijd",
-                                  suffixIcon: Icon(Icons.access_time),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        const Text("tot"),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: updateAvailabilityEnd,
-                            child: AbsorbPointer(
-                              child: TextField(
-                                controller: _endDateController,
-                                decoration: const InputDecoration(
-                                  labelText: "Eind tijd",
-                                  suffixIcon: Icon(Icons.access_time),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    const Text("Add pause (optional)"),
-                    ListView(
-                      shrinkWrap: true,
-                      children: _availability.breaks.map(
-                        (breakModel) {
-                          var start =
-                              DateFormat("HH:mm").format(breakModel.startTime);
-                          var end =
-                              DateFormat("HH:mm").format(breakModel.endTime);
-                          return GestureDetector(
-                            onTap: () async {
-                              var updatedBreak =
-                                  await AvailabilityBreakSelectionDialog.show(
-                                context,
-                                breakModel,
-                              );
-                              if (updatedBreak != null) {
-                                setState(() {
-                                  _availability.breaks.remove(breakModel);
-                                  _availability.breaks.add(updatedBreak);
-                                });
-                              }
-                            },
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.lightBlue,
-                              ),
-                              margin: const EdgeInsets.only(bottom: 16),
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "${breakModel.duration.inMinutes}"
-                                    " minutes  |  ",
-                                  ),
-                                  Text(
-                                    "$start - "
-                                    "$end",
-                                  ),
-                                  const Spacer(),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    onPressed: () {
-                                      setState(() {
-                                        _availability.breaks.remove(breakModel);
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ).toList(),
-                    ),
-                    TextButton(
-                      onPressed: onClickAddPause,
-                      child: const Text("Add"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: () async => onClickSave(),
-              child: const Text(""),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-///
-class AvailabilityBreakSelectionDialog extends StatefulWidget {
-  ///
-  const AvailabilityBreakSelectionDialog({
-    required this.initialBreak,
-    super.key,
-  });
-
-  /// The initial break to show in the dialog if any
-  final AvailabilityBreakModel? initialBreak;
-
-  /// Opens the dialog to add a break
-  static Future<AvailabilityBreakModel?> show(
-    BuildContext context,
-    AvailabilityBreakModel? initialBreak,
-  ) async =>
-      showDialog<AvailabilityBreakModel>(
-        context: context,
-        builder: (context) => AvailabilityBreakSelectionDialog(
-          initialBreak: initialBreak,
-        ),
-      );
-
-  @override
-  State<AvailabilityBreakSelectionDialog> createState() =>
-      _AvailabilityBreakSelectionDialogState();
-}
-
-class _AvailabilityBreakSelectionDialogState
-    extends State<AvailabilityBreakSelectionDialog> {
-  late TextEditingController _durationController;
-  late TextEditingController _startPauseController;
-  late TextEditingController _endPauseController;
-  late AvailabilityBreakModel _breakModel;
-
-  @override
-  void initState() {
-    super.initState();
-    _breakModel = widget.initialBreak ??
-        AvailabilityBreakModel(
-          startTime: DateTime.now(),
-          endTime: DateTime.now(),
-        );
-    _durationController = TextEditingController(
-      text: _breakModel.duration.inMinutes.toString(),
-    );
-    _startPauseController = TextEditingController(
-      text: DateFormat("HH:mm").format(_breakModel.startTime),
-    );
-    _endPauseController = TextEditingController(
-      text: DateFormat("HH:mm").format(_breakModel.endTime),
-    );
-  }
-
-  @override
-  void dispose() {
-    _durationController.dispose();
-    _startPauseController.dispose();
-    _endPauseController.dispose();
-    super.dispose();
-  }
-
-  Future<TimeOfDay?> _selectTime(
-    BuildContext context,
-    TextEditingController controller,
-  ) async {
-    var picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        controller.text = picked.format(context);
-      });
-      return picked;
-    }
-    return null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    void onUpdateDuration() {
-      var duration = int.tryParse(_durationController.text);
-      if (duration != null) {
-        setState(() {
-          _breakModel = _breakModel.copyWith(
-            duration: Duration(minutes: duration),
-          );
-        });
-      }
-    }
-
-    Future<void> onUpdateStart() async {
-      var selectedTime = await _selectTime(context, _startPauseController);
-      if (selectedTime == null) return;
-
-      var updatedStartTime = _breakModel.startTime.copyWith(
-        hour: selectedTime.hour,
-        minute: selectedTime.minute,
-      );
-      setState(() {
-        _breakModel = _breakModel.copyWith(startTime: updatedStartTime);
-      });
-    }
-
-    Future<void> onUpdateEnd() async {
-      var selectedTime = await _selectTime(context, _endPauseController);
-      if (selectedTime == null) return;
-
-      var updatedEndTime = _breakModel.endTime.copyWith(
-        hour: selectedTime.hour,
-        minute: selectedTime.minute,
-      );
-      setState(() {
-        _breakModel = _breakModel.copyWith(endTime: updatedEndTime);
-      });
-    }
-
-    return AlertDialog(
-      title: const Text("Pauze toevoegen"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // textfield for duration in minutes
-          TextField(
-            controller: _durationController,
-            decoration: const InputDecoration(
-              labelText: "Duration in minutes",
-            ),
-            onChanged: (_) => onUpdateDuration(),
+            ],
           ),
-          TextField(
-            controller: _startPauseController,
-            decoration: const InputDecoration(
-              labelText: "Start time",
-              suffixIcon: Icon(Icons.access_time),
-            ),
-            readOnly: true,
-            onTap: () async => onUpdateStart(),
-          ),
-          TextField(
-            controller: _endPauseController,
-            decoration: const InputDecoration(
-              labelText: "End time",
-              suffixIcon: Icon(Icons.access_time),
-            ),
-            readOnly: true,
-            onTap: () async => onUpdateEnd(),
-          ),
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: const Text("Cancel"),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
         ),
-        TextButton(
-          child: const Text("Save"),
-          onPressed: () {
-            Navigator.of(context).pop(_breakModel);
-          },
+        SliverFillRemaining(
+          fillOverscroll: false,
+          hasScrollBody: false,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: spacing.sidePadding,
+            ).copyWith(
+              bottom: spacing.bottomButtonPadding,
+            ),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: saveButton,
+            ),
+          ),
         ),
       ],
+    );
+
+    return options.baseScreenBuilder(
+      context,
+      widget.onExit,
+      body,
     );
   }
 }

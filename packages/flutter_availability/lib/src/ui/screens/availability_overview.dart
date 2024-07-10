@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/widgets/calendar.dart";
 import "package:flutter_availability/src/ui/widgets/template_legend.dart";
 import "package:flutter_availability/src/util/scope.dart";
@@ -14,8 +15,11 @@ class AvailabilityOverview extends StatefulHookWidget {
     super.key,
   });
 
-  /// Callback for when the user clicks on a day
-  final void Function(DateTimeRange range) onEditDateRange;
+  /// Callback for when the user gives an availability range
+  final void Function(
+    DateTimeRange range,
+    List<AvailabilityWithTemplate> selectedAvailabilities,
+  ) onEditDateRange;
 
   /// Callback for when the user wants to navigate to the overview of templates
   final VoidCallback onViewTemplates;
@@ -74,12 +78,23 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       availabilities: availabilitySnapshot,
     );
 
-    // if there is no range selected we want to disable the button
     var onButtonPress = _selectedRange == null
         ? null
         : () {
+            var availabilitesWithinSelectedRange = availabilitySnapshot.data
+                    ?.where(
+                      (a) =>
+                          a.availabilityModel.startDate
+                              .isAfter(_selectedRange!.start) &&
+                          a.availabilityModel.endDate
+                              .isBefore(_selectedRange!.end),
+                    )
+                    .toList() ??
+                <AvailabilityWithTemplate>[];
+
             widget.onEditDateRange(
-              DateTimeRange(start: DateTime(1), end: DateTime(2)),
+              _selectedRange!,
+              availabilitesWithinSelectedRange,
             );
           };
 

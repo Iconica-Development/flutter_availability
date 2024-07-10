@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/screens/template_availability_day_overview.dart";
 import "package:flutter_availability/src/ui/screens/template_day_edit.dart";
 import "package:flutter_availability/src/ui/screens/template_overview.dart";
@@ -8,8 +9,8 @@ import "package:flutter_availability_data_interface/flutter_availability_data_in
 ///
 MaterialPageRoute homePageRoute(VoidCallback onExit) => MaterialPageRoute(
       builder: (context) => AvailabilityOverview(
-        onEditDateRange: (range) async =>
-            Navigator.of(context).push(availabilityViewRoute(range.start)),
+        onEditDateRange: (range, availabilities) async => Navigator.of(context)
+            .push(availabilityViewRoute(range, availabilities)),
         onViewTemplates: () async =>
             Navigator.of(context).push(templateOverviewRoute()),
         onExit: () => onExit(),
@@ -44,12 +45,14 @@ MaterialPageRoute templateEditDayRoute(AvailabilityTemplateModel? template) =>
 
 ///
 MaterialPageRoute availabilityViewRoute(
-  DateTime date,
+  DateTimeRange dateRange,
+  List<AvailabilityWithTemplate> initialAvailabilities,
 ) =>
     MaterialPageRoute(
-      builder: (context) => AvailabilityDayOverview(
-        date: date,
-        onAvailabilitySaved: () {
+      builder: (context) => AvailabilityModificationView(
+        dateRange: dateRange,
+        initialAvailabilities: initialAvailabilities,
+        onExit: () {
           Navigator.of(context).pop();
         },
       ),

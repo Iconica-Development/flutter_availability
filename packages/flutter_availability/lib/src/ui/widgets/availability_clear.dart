@@ -47,15 +47,20 @@ class AvailabilityClearSection extends StatelessWidget {
           titleText,
           style: textTheme.titleMedium,
         ),
+        const SizedBox(height: 8),
         Row(
           children: [
             Checkbox(
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+              splashRadius: 0,
               value: clearAvailable,
               onChanged: (value) {
                 if (value == null) return;
                 onChanged(value);
               },
             ),
+            const SizedBox(width: 8),
             Text(
               unavailableText,
               style: textTheme.bodyMedium,
