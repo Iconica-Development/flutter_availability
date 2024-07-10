@@ -51,6 +51,20 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     var availabilitySnapshot = useStream(availabilityStream);
 
+    var selectedAvailabilities = _selectedRange != null
+        ? availabilitySnapshot.data
+                ?.where(
+                  (a) =>
+                      !a.availabilityModel.startDate
+                          .isBefore(_selectedRange!.start) &&
+                      !a.availabilityModel.endDate.isAfter(_selectedRange!.end),
+                )
+                .toList() ??
+            <AvailabilityWithTemplate>[]
+        : <AvailabilityWithTemplate>[];
+
+    var availabilitiesAreSelected = selectedAvailabilities.isNotEmpty;
+
     var title = Center(
       child: Text(
         translations.overviewScreenTitle,
@@ -82,25 +96,35 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
     var onButtonPress = _selectedRange == null
         ? null
         : () {
-            var availabilitesWithinSelectedRange = availabilitySnapshot.data
-                    ?.where(
-                      (a) =>
-                          a.availabilityModel.startDate
-                              .isAfter(_selectedRange!.start) &&
-                          a.availabilityModel.endDate
-                              .isBefore(_selectedRange!.end),
-                    )
-                    .toList() ??
-                <AvailabilityWithTemplate>[];
-
             widget.onEditDateRange(
               _selectedRange!,
-              availabilitesWithinSelectedRange,
+              selectedAvailabilities,
             );
             setState(() {
               _selectedRange = null;
             });
           };
+
+    Future<void> onClearButtonClicked() async {
+      var confirmed = await options.confirmationDialogBuilder(
+        context,
+        title: translations.clearAvailabilityConfirmTitle,
+        description: translations.clearAvailabilityConfirmDescription,
+      );
+      if (confirmed ?? false) {
+        await service
+            .clearAvailabilities(selectedAvailabilities.getAvailabilities());
+        setState(() {
+          _selectedRange = null;
+        });
+      }
+    }
+
+    var clearSelectedButton = options.textButtonBuilder(
+      context,
+      onClearButtonClicked,
+      Text(translations.clearAvailabilityButton),
+    );
 
     var startEditButton = options.primaryButtonBuilder(
       context,
@@ -135,7 +159,15 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
             ),
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: startEditButton,
+              child: Column(
+                children: [
+                  startEditButton,
+                  if (availabilitiesAreSelected) ...[
+                    const SizedBox(height: 8),
+                    clearSelectedButton,
+                  ],
+                ],
+              ),
             ),
           ),
         ),
