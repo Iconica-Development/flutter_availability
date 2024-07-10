@@ -11,10 +11,10 @@ class TimeInputField extends StatelessWidget {
   });
 
   ///
-  final DateTime? initialValue;
+  final TimeOfDay? initialValue;
 
   ///
-  final void Function(DateTime) onTimeChanged;
+  final void Function(TimeOfDay) onTimeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +24,14 @@ class TimeInputField extends StatelessWidget {
     var translations = options.translations;
 
     Future<void> onFieldtap() async {
-      var initialTime = TimeOfDay.fromDateTime(initialValue ?? DateTime.now());
+      var initialTime = initialValue ?? TimeOfDay.now();
       var time = await (options.timePickerBuilder?.call(context, initialTime) ??
           showTimePicker(
             context: context,
-            initialTime: TimeOfDay.fromDateTime(initialValue ?? DateTime.now()),
+            initialTime: initialTime,
           ));
       if (time != null) {
-        onTimeChanged(
-          DateTime(
-            initialValue?.year ?? DateTime.now().year,
-            initialValue?.month ?? DateTime.now().month,
-            initialValue?.day ?? DateTime.now().day,
-            time.hour,
-            time.minute,
-          ),
-        );
+        onTimeChanged(time);
       }
     }
 

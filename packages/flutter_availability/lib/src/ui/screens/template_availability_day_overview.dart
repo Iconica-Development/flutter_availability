@@ -108,30 +108,14 @@ class _AvailabilityModificationViewState
 
     var timeSelection = AvailabilityTimeSelection(
       dateRange: widget.dateRange,
-      startTime: _startTime != null
-          ? DateTime(
-              widget.dateRange.start.year,
-              widget.dateRange.start.month,
-              widget.dateRange.start.day,
-              _startTime!.hour,
-              _startTime!.minute,
-            )
-          : null,
-      endTime: _endTime != null
-          ? DateTime(
-              widget.dateRange.start.year,
-              widget.dateRange.start.month,
-              widget.dateRange.start.day,
-              _endTime!.hour,
-              _endTime!.minute,
-            )
-          : null,
+      startTime: _startTime,
+      endTime: _endTime,
       key: ValueKey([_startTime, _endTime]),
       onStartChanged: (start) => setState(() {
-        _startTime = TimeOfDay.fromDateTime(start);
+        _startTime = start;
       }),
       onEndChanged: (end) => setState(() {
-        _endTime = TimeOfDay.fromDateTime(end);
+        _endTime = end;
       }),
     );
 

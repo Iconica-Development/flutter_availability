@@ -136,6 +136,15 @@ class BreakDisplay extends StatelessWidget {
     var colors = options.colors;
     var translations = options.translations;
 
+    var starTime = translations.timeFormatter(
+      context,
+      TimeOfDay.fromDateTime(breakModel.startTime),
+    );
+    var endTime = translations.timeFormatter(
+      context,
+      TimeOfDay.fromDateTime(breakModel.endTime),
+    );
+
     return GestureDetector(
       onTap: onClick,
       child: Container(
@@ -150,8 +159,8 @@ class BreakDisplay extends StatelessWidget {
             Text(
               "${breakModel.duration.inMinutes} "
               "${translations.timeMinutes}  |  "
-              "${translations.timeFormatter(context, breakModel.startTime)} - "
-              "${translations.timeFormatter(context, breakModel.endTime)}",
+              "$starTime - "
+              "$endTime",
             ),
             const Spacer(),
             GestureDetector(onTap: onRemove, child: const Icon(Icons.remove)),
@@ -207,15 +216,19 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
 
 class _AvailabilityBreakSelectionDialogState
     extends State<AvailabilityBreakSelectionDialog> {
-  late DateTime? _startTime;
-  late DateTime? _endTime;
+  late TimeOfDay? _startTime;
+  late TimeOfDay? _endTime;
   late Duration? _duration;
 
   @override
   void initState() {
     super.initState();
-    _startTime = widget.initialBreak?.startTime;
-    _endTime = widget.initialBreak?.endTime;
+    _startTime = widget.initialBreak != null
+        ? TimeOfDay.fromDateTime(widget.initialBreak!.startTime)
+        : null;
+    _endTime = widget.initialBreak != null
+        ? TimeOfDay.fromDateTime(widget.initialBreak!.endTime)
+        : null;
     _duration = widget.initialBreak?.duration;
   }
 
@@ -234,15 +247,15 @@ class _AvailabilityBreakSelectionDialogState
       });
     }
 
-    void onUpdateStart(DateTime time) {
+    void onUpdateStart(TimeOfDay start) {
       setState(() {
-        _startTime = time;
+        _startTime = start;
       });
     }
 
-    void onUpdateEnd(DateTime time) {
+    void onUpdateEnd(TimeOfDay end) {
       setState(() {
-        _endTime = time;
+        _endTime = end;
       });
     }
 
@@ -251,8 +264,20 @@ class _AvailabilityBreakSelectionDialogState
     var onSaveButtonPress = canSave
         ? () {
             var breakModel = AvailabilityBreakModel(
-              startTime: _startTime!,
-              endTime: _endTime!,
+              startTime: DateTime(
+                DateTime.now().year,
+                DateTime.now().month,
+                DateTime.now().day,
+                _startTime!.hour,
+                _startTime!.minute,
+              ),
+              endTime: DateTime(
+                DateTime.now().year,
+                DateTime.now().month,
+                DateTime.now().day,
+                _endTime!.hour,
+                _endTime!.minute,
+              ),
               duration: _duration,
             );
             Navigator.of(context).pop(breakModel);

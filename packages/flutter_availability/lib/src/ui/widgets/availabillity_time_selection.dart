@@ -15,16 +15,16 @@ class AvailabilityTimeSelection extends StatelessWidget {
   });
 
   ///
-  final DateTime? startTime;
+  final TimeOfDay? startTime;
 
   ///
-  final DateTime? endTime;
+  final TimeOfDay? endTime;
 
   ///
-  final void Function(DateTime) onStartChanged;
+  final void Function(TimeOfDay) onStartChanged;
 
   ///
-  final void Function(DateTime) onEndChanged;
+  final void Function(TimeOfDay) onEndChanged;
 
   /// The date range for which the availabilities are being managed
   final DateTimeRange dateRange;

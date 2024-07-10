@@ -104,22 +104,40 @@ class _AvailabilityDayTemplateEditState
 
     var timeSection = TemplateTimeSelection(
       key: ValueKey(_template.templateData),
-      startTime: (_template.templateData as DayTemplateData).startTime,
-      endTime: (_template.templateData as DayTemplateData).endTime,
+      startTime: TimeOfDay.fromDateTime(
+          (_template.templateData as DayTemplateData).startTime,),
+      endTime: TimeOfDay.fromDateTime(
+          (_template.templateData as DayTemplateData).endTime,),
       onStartChanged: (start) {
+        var startTime = (_template.templateData as DayTemplateData).startTime;
+        var updatedStartTime = DateTime(
+          startTime.year,
+          startTime.month,
+          startTime.day,
+          start.hour,
+          start.minute,
+        );
         setState(() {
           _template = _template.copyWith(
             templateData: (_template.templateData as DayTemplateData).copyWith(
-              startTime: start,
+              startTime: updatedStartTime,
             ),
           );
         });
       },
       onEndChanged: (end) {
+        var endTime = (_template.templateData as DayTemplateData).endTime;
+        var updatedEndTime = DateTime(
+          endTime.year,
+          endTime.month,
+          endTime.day,
+          end.hour,
+          end.minute,
+        );
         setState(() {
           _template = _template.copyWith(
             templateData: (_template.templateData as DayTemplateData).copyWith(
-              endTime: end,
+              endTime: updatedEndTime,
             ),
           );
         });
