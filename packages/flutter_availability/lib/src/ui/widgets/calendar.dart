@@ -6,13 +6,14 @@ import "package:flutter_availability/src/util/availability_deviation.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
-class CalendarView extends StatefulWidget {
+class CalendarView extends StatelessWidget {
   ///
   const CalendarView({
     required this.month,
     required this.availabilities,
     required this.onMonthChanged,
     required this.onEditDateRange,
+    required this.selectedRange,
     super.key,
   });
 
@@ -28,46 +29,35 @@ class CalendarView extends StatefulWidget {
   /// Callback for when the date range is edited by the user
   final void Function(DateTimeRange? range) onEditDateRange;
 
-  @override
-  State<CalendarView> createState() => _CalendarViewState();
-}
+  ///
+  final DateTimeRange? selectedRange;
 
-class _CalendarViewState extends State<CalendarView> {
-  DateTimeRange? _selectedRange;
-
-  void onTapDate(DateTime day) {
+  void _onTapDate(DateTime day) {
     // if there is already a range selected, with a single date and the date
     //that is selected is after it we extend the range
-    if (_selectedRange != null &&
-        day.isAfter(_selectedRange!.start) &&
-        _selectedRange!.start == _selectedRange!.end) {
-      setState(() {
-        _selectedRange = DateTimeRange(
-          start: _selectedRange!.start,
+    if (selectedRange != null &&
+        day.isAfter(selectedRange!.start) &&
+        selectedRange!.start == selectedRange!.end) {
+      onEditDateRange(
+        DateTimeRange(
+          start: selectedRange!.start,
           end: day,
-        );
-      });
-      widget.onEditDateRange(_selectedRange);
+        ),
+      );
       return;
     }
 
     // if select the already selected date we want to clear the range
-    if (_selectedRange != null &&
-        day.isAtSameMomentAs(_selectedRange!.start) &&
-        day.isAtSameMomentAs(_selectedRange!.end)) {
-      setState(() {
-        _selectedRange = null;
-      });
-      widget.onEditDateRange(_selectedRange);
+    if (selectedRange != null &&
+        day.isAtSameMomentAs(selectedRange!.start) &&
+        day.isAtSameMomentAs(selectedRange!.end)) {
+      onEditDateRange(null);
       return;
     }
 
     // if there is already a range selected we want to clear
     //it and start a new one
-    setState(() {
-      _selectedRange = DateTimeRange(start: day, end: day);
-    });
-    widget.onEditDateRange(_selectedRange);
+    onEditDateRange(DateTimeRange(start: day, end: day));
   }
 
   @override
@@ -77,8 +67,7 @@ class _CalendarViewState extends State<CalendarView> {
     var options = availabilityScope.options;
     var translations = options.translations;
 
-    var mappedCalendarDays =
-        _mapAvailabilitiesToCalendarDays(widget.availabilities);
+    var mappedCalendarDays = _mapAvailabilitiesToCalendarDays(availabilities);
 
     var monthDateSelector = Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -87,8 +76,8 @@ class _CalendarViewState extends State<CalendarView> {
           padding: EdgeInsets.zero,
           icon: const Icon(Icons.chevron_left),
           onPressed: () {
-            widget.onMonthChanged(
-              DateTime(widget.month.year, widget.month.month - 1),
+            onMonthChanged(
+              DateTime(month.year, month.month - 1),
             );
           },
         ),
@@ -96,7 +85,7 @@ class _CalendarViewState extends State<CalendarView> {
         SizedBox(
           width: _calculateTextWidthOfLongestMonth(context, translations),
           child: Text(
-            translations.monthYearFormatter(context, widget.month),
+            translations.monthYearFormatter(context, month),
             style: theme.textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
@@ -106,8 +95,8 @@ class _CalendarViewState extends State<CalendarView> {
           padding: EdgeInsets.zero,
           icon: const Icon(Icons.chevron_right),
           onPressed: () {
-            widget.onMonthChanged(
-              DateTime(widget.month.year, widget.month.month + 1),
+            onMonthChanged(
+              DateTime(month.year, month.month + 1),
             );
           },
         ),
@@ -115,10 +104,10 @@ class _CalendarViewState extends State<CalendarView> {
     );
 
     var calendarGrid = CalendarGrid(
-      month: widget.month,
+      month: month,
       days: mappedCalendarDays,
-      onDayTap: onTapDate,
-      selectedRange: _selectedRange,
+      onDayTap: _onTapDate,
+      selectedRange: selectedRange,
     );
 
     return Column(
