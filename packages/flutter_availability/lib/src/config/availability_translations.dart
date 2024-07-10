@@ -225,12 +225,12 @@ class AvailabilityTranslations {
   /// Get the time formatted as a string
   ///
   /// The default implementation is `HH:mm`
-  final String Function(BuildContext, DateTime) timeFormatter;
+  final String Function(BuildContext, TimeOfDay) timeFormatter;
 }
 
-String _defaultTimeFormatter(BuildContext context, DateTime date) =>
-    "${date.hour.toString().padLeft(2, '0')}:"
-    "${date.minute.toString().padLeft(2, '0')}";
+String _defaultTimeFormatter(BuildContext context, TimeOfDay time) =>
+    "${time.hour.toString().padLeft(2, '0')}:"
+    "${time.minute.toString().padLeft(2, '0')}";
 
 String _defaultDayMonthFormatter(BuildContext context, DateTime date) =>
     "${_getDayName(date.weekday)} ${date.day} ${_getMonthName(date.month)}";

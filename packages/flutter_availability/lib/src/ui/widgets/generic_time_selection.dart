@@ -26,16 +26,16 @@ class TimeSelection extends StatelessWidget {
   final CrossAxisAlignment crossAxisAlignment;
 
   ///
-  final DateTime? startTime;
+  final TimeOfDay? startTime;
 
   ///
-  final DateTime? endTime;
+  final TimeOfDay? endTime;
 
   ///
-  final void Function(DateTime) onStartChanged;
+  final void Function(TimeOfDay) onStartChanged;
 
   ///
-  final void Function(DateTime) onEndChanged;
+  final void Function(TimeOfDay) onEndChanged;
 
   @override
   Widget build(BuildContext context) {
