@@ -18,6 +18,9 @@ class AvailabilityTranslations {
     required this.availabilityWithoutTemplateLabel,
     required this.overviewScreenTitle,
     required this.createTemplateButton,
+    required this.clearAvailabilityButton,
+    required this.clearAvailabilityConfirmTitle,
+    required this.clearAvailabilityConfirmDescription,
     required this.unavailableForDay,
     required this.unavailableForMultipleDays,
     required this.availabilityAddTemplateTitle,
@@ -63,6 +66,10 @@ class AvailabilityTranslations {
     this.templateSelectionLabel = "Selected day(s)",
     this.availabilityWithoutTemplateLabel = "Availabilty without template",
     this.createTemplateButton = "Create a new template",
+    this.clearAvailabilityButton = "Not available on these days",
+    this.clearAvailabilityConfirmTitle = "Are you sure you want to clear?",
+    this.clearAvailabilityConfirmDescription =
+        "This will remove all availabilities for the selected days",
     this.unavailableForDay = "I am not available this day",
     this.unavailableForMultipleDays = "I am not available these days",
     this.availabilityAddTemplateTitle = "Add template to availability",
@@ -122,6 +129,16 @@ class AvailabilityTranslations {
 
   /// The label on the button to go to the template screen
   final String createTemplateButton;
+
+  /// The text shown on the button to clear the selected range on the
+  /// overview page
+  final String clearAvailabilityButton;
+
+  /// The title for the confirmation dialog when clearing the availability
+  final String clearAvailabilityConfirmTitle;
+
+  /// The description for the confirmation dialog when clearing the availability
+  final String clearAvailabilityConfirmDescription;
 
   /// The text shown to clear the availability for a day
   final String unavailableForDay;

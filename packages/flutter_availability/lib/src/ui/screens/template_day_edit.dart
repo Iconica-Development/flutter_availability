@@ -105,9 +105,11 @@ class _AvailabilityDayTemplateEditState
     var timeSection = TemplateTimeSelection(
       key: ValueKey(_template.templateData),
       startTime: TimeOfDay.fromDateTime(
-          (_template.templateData as DayTemplateData).startTime,),
+        (_template.templateData as DayTemplateData).startTime,
+      ),
       endTime: TimeOfDay.fromDateTime(
-          (_template.templateData as DayTemplateData).endTime,),
+        (_template.templateData as DayTemplateData).endTime,
+      ),
       onStartChanged: (start) {
         var startTime = (_template.templateData as DayTemplateData).startTime;
         var updatedStartTime = DateTime(
