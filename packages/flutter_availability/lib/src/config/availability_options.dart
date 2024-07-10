@@ -5,6 +5,7 @@ import "package:flutter_availability/src/config/availability_translations.dart";
 import "package:flutter_availability/src/service/local_data_interface.dart";
 import "package:flutter_availability/src/ui/widgets/default_base_screen.dart";
 import "package:flutter_availability/src/ui/widgets/default_buttons.dart";
+import "package:flutter_availability/src/ui/widgets/default_confirmation_dialog.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// Class that holds all options for the availability userstory
@@ -19,6 +20,7 @@ class AvailabilityOptions {
     this.spacing = const AvailabilitySpacing(),
     this.textStyles = const AvailabilityTextStyles(),
     this.colors = const AvailabilityColors(),
+    this.confirmationDialogBuilder = DefaultConfirmationDialog.builder,
     this.timePickerBuilder,
     this.loadingIndicatorBuilder = defaultLoader,
     AvailabilityDataInterface? dataInterface,
@@ -54,6 +56,11 @@ class AvailabilityOptions {
 
   /// The colors used in the userstory
   final AvailabilityColors colors;
+
+  /// A way to provide your own confirmation dialog implementation
+  /// If not provided the [DefaultConfirmationDialog.builder] will be used
+  /// which shows a modal bottom sheet with a title and a description
+  final ConfirmationDialogBuilder confirmationDialogBuilder;
 
   /// A way to provide your own time picker implementation or customize
   /// the default time picker
@@ -164,6 +171,16 @@ typedef TimePickerBuilder = Future<TimeOfDay?> Function(
   BuildContext context,
   TimeOfDay? initialTime,
 );
+
+/// Builder definition for providing a custom confirmation dialog
+///
+/// The function should return a [Future] that resolves to `true` if the user
+/// confirms.
+typedef ConfirmationDialogBuilder = Future<bool?> Function(
+  BuildContext context, {
+  required String title,
+  required String description,
+});
 
 /// Builder definition for providing a loading indicator implementation
 Widget defaultLoader(

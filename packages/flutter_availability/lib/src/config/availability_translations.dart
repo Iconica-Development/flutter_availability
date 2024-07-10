@@ -45,6 +45,8 @@ class AvailabilityTranslations {
     required this.pauseDialogPeriodDescription,
     required this.saveButton,
     required this.addButton,
+    required this.confirmText,
+    required this.cancelText,
     required this.timeFormatter,
     required this.dayMonthFormatter,
     required this.periodFormatter,
@@ -91,6 +93,8 @@ class AvailabilityTranslations {
         "Select between which times you want to take a break",
     this.saveButton = "Save",
     this.addButton = "Add",
+    this.confirmText = "Yes",
+    this.cancelText = "No",
     this.dayMonthFormatter = _defaultDayMonthFormatter,
     this.periodFormatter = _defaultPeriodFormatter,
     this.monthYearFormatter = _defaultMonthYearFormatter,
@@ -200,6 +204,12 @@ class AvailabilityTranslations {
 
   /// The text on the add button
   final String addButton;
+
+  /// The text on the confirm button in the confirmation dialog
+  final String confirmText;
+
+  /// The text on the cancel button in the confirmation dialog
+  final String cancelText;
 
   /// Gets the day and month formatted as a string
   ///
