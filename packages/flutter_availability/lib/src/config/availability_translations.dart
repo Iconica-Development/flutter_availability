@@ -18,6 +18,11 @@ class AvailabilityTranslations {
     required this.availabilityWithoutTemplateLabel,
     required this.overviewScreenTitle,
     required this.createTemplateButton,
+    required this.unavailableForDay,
+    required this.unavailableForMultipleDays,
+    required this.availabilityAddTemplateTitle,
+    required this.availabilityTimeTitle,
+    required this.availabilitiesTimeTitle,
     required this.templateScreenTitle,
     required this.dayTemplates,
     required this.weekTemplates,
@@ -41,6 +46,8 @@ class AvailabilityTranslations {
     required this.saveButton,
     required this.addButton,
     required this.timeFormatter,
+    required this.dayMonthFormatter,
+    required this.periodFormatter,
     required this.monthYearFormatter,
     required this.weekDayAbbreviatedFormatter,
   });
@@ -54,6 +61,11 @@ class AvailabilityTranslations {
     this.templateSelectionLabel = "Selected day(s)",
     this.availabilityWithoutTemplateLabel = "Availabilty without template",
     this.createTemplateButton = "Create a new template",
+    this.unavailableForDay = "I am not available this day",
+    this.unavailableForMultipleDays = "I am not available these days",
+    this.availabilityAddTemplateTitle = "Add template to availability",
+    this.availabilityTimeTitle = "Start and end time workday",
+    this.availabilitiesTimeTitle = "Start and end time workdays",
     this.overviewScreenTitle = "Availability",
     this.templateScreenTitle = "Templates",
     this.dayTemplates = "Day templates",
@@ -79,6 +91,8 @@ class AvailabilityTranslations {
         "Select between which times you want to take a break",
     this.saveButton = "Save",
     this.addButton = "Add",
+    this.dayMonthFormatter = _defaultDayMonthFormatter,
+    this.periodFormatter = _defaultPeriodFormatter,
     this.monthYearFormatter = _defaultMonthYearFormatter,
     this.weekDayAbbreviatedFormatter = _defaultWeekDayAbbreviatedFormatter,
     this.timeFormatter = _defaultTimeFormatter,
@@ -104,6 +118,21 @@ class AvailabilityTranslations {
 
   /// The label on the button to go to the template screen
   final String createTemplateButton;
+
+  /// The text shown to clear the availability for a day
+  final String unavailableForDay;
+
+  /// The text shown to clear the availability for multiple days
+  final String unavailableForMultipleDays;
+
+  /// The title on the template selection section for adding availabilities
+  final String availabilityAddTemplateTitle;
+
+  /// The title on the time selection section for adding a single availability
+  final String availabilityTimeTitle;
+
+  /// The title on the time selection section for adding multiple availabilities
+  final String availabilitiesTimeTitle;
 
   /// The title on the template screen
   final String templateScreenTitle;
@@ -172,6 +201,16 @@ class AvailabilityTranslations {
   /// The text on the add button
   final String addButton;
 
+  /// Gets the day and month formatted as a string
+  ///
+  /// The default implementation is `Dayname day monthname` in english
+  final String Function(BuildContext, DateTime) dayMonthFormatter;
+
+  /// Gets the period between two dates formatted as a string
+  ///
+  /// The default implementation is `day monthname to day monthname` in english
+  final String Function(BuildContext, DateTimeRange) periodFormatter;
+
   /// Gets the month and year formatted as a string
   ///
   /// The default implementation is `MonthName Year` in english
@@ -190,8 +229,15 @@ class AvailabilityTranslations {
 }
 
 String _defaultTimeFormatter(BuildContext context, DateTime date) =>
-    "${date.hour}:${date.minute}";
+    "${date.hour.toString().padLeft(2, '0')}:"
+    "${date.minute.toString().padLeft(2, '0')}";
 
+String _defaultDayMonthFormatter(BuildContext context, DateTime date) =>
+    "${_getDayName(date.weekday)} ${date.day} ${_getMonthName(date.month)}";
+
+String _defaultPeriodFormatter(BuildContext context, DateTimeRange range) =>
+    "${range.start.day} ${_getMonthName(range.start.month)} to "
+    "${range.end.day} ${_getMonthName(range.end.month)}";
 String _defaultWeekDayAbbreviatedFormatter(
   BuildContext context,
   DateTime date,
@@ -201,16 +247,8 @@ String _defaultWeekDayAbbreviatedFormatter(
 String _defaultMonthYearFormatter(BuildContext context, DateTime date) =>
     "${_getMonthName(date.month)} ${date.year}";
 
-String _getWeekDayAbbreviation(int weekday) => switch (weekday) {
-      1 => "Mo",
-      2 => "Tu",
-      3 => "We",
-      4 => "Th",
-      5 => "Fr",
-      6 => "Sa",
-      7 => "Su",
-      _ => "",
-    };
+String _getWeekDayAbbreviation(int weekday) =>
+    _getDayName(weekday).substring(0, 2);
 
 String _getMonthName(int month) => switch (month) {
       1 => "January",
@@ -225,5 +263,16 @@ String _getMonthName(int month) => switch (month) {
       10 => "October",
       11 => "November",
       12 => "December",
+      _ => "",
+    };
+
+String _getDayName(int day) => switch (day) {
+      1 => "Monday",
+      2 => "Tuesday",
+      3 => "Wednesday",
+      4 => "Thursday",
+      5 => "Friday",
+      6 => "Saturday",
+      7 => "Sunday",
       _ => "",
     };
