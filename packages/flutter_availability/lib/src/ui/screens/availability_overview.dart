@@ -71,6 +71,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
         });
       },
       availabilities: availabilitySnapshot,
+      selectedRange: _selectedRange,
     );
 
     var templateLegend = TemplateLegend(
@@ -96,6 +97,9 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
               _selectedRange!,
               availabilitesWithinSelectedRange,
             );
+            setState(() {
+              _selectedRange = null;
+            });
           };
 
     var startEditButton = options.primaryButtonBuilder(
