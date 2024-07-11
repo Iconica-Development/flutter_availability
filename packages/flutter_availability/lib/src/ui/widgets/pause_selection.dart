@@ -63,15 +63,10 @@ class PauseSelection extends StatelessWidget {
     var sortedBreaks = breaks.toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    var addButton = DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: theme.colorScheme.primary,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: options.bigTextButtonBuilder(
+    var addButton = options.bigTextButtonWrapperBuilder(
+      context,
+      onClickAddBreak,
+      options.bigTextButtonBuilder(
         context,
         onClickAddBreak,
         Text(translations.addButton),

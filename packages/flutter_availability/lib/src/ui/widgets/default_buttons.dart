@@ -105,6 +105,46 @@ class DefaultBigTextButton extends StatelessWidget {
       );
 }
 
+///
+class DefaultBigTextButtonWrapper extends StatelessWidget {
+  ///
+  const DefaultBigTextButtonWrapper({
+    required this.child,
+    required this.onPressed,
+    super.key,
+  });
+
+  ///
+  final Widget? child;
+
+  ///
+  final FutureOr<void> Function()? onPressed;
+
+  ///
+  static Widget builder(
+    BuildContext context,
+    FutureOr<void> Function()? onPressed,
+    Widget? child,
+  ) =>
+      DefaultBigTextButtonWrapper(onPressed: onPressed, child: child);
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onPressed,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Theme.of(context).colorScheme.primary,
+              width: 1,
+            ),
+          ),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: child,
+        ),
+      );
+}
+
 /// The default small text button used in the component when no custom
 /// button is provided. This button is used as a smaller variant of the
 /// tertiary button

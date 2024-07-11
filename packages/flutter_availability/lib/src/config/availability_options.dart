@@ -18,6 +18,7 @@ class AvailabilityOptions {
     this.secondaryButtonBuilder = DefaultSecondaryButton.builder,
     this.bigTextButtonBuilder = DefaultBigTextButton.builder,
     this.smallTextButtonBuilder = DefaultSmallTextButton.builder,
+    this.bigTextButtonWrapperBuilder = DefaultBigTextButtonWrapper.builder,
     this.spacing = const AvailabilitySpacing(),
     this.textStyles = const AvailabilityTextStyles(),
     this.colors = const AvailabilityColors(),
@@ -53,6 +54,10 @@ class AvailabilityOptions {
   /// A way to provide your own small text button implementation
   /// This is used as a smaller variant of the tertiary button
   final ButtonBuilder smallTextButtonBuilder;
+
+  /// A way to provide your own element wrapper for the [bigTextButtonBuilder]
+  /// On some screens this button is wrapped in a container with a padding
+  final ButtonBuilder bigTextButtonWrapperBuilder;
 
   /// The spacing between elements
   final AvailabilitySpacing spacing;
