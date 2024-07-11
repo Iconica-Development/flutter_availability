@@ -113,7 +113,7 @@ class CalendarView extends StatelessWidget {
     return Column(
       children: [
         monthDateSelector,
-        const Divider(),
+        const Divider(height: 1),
         const SizedBox(height: 20),
         calendarGrid,
       ],
