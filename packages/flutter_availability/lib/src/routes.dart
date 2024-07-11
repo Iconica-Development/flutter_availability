@@ -18,7 +18,8 @@ MaterialPageRoute homePageRoute(VoidCallback onExit) => MaterialPageRoute(
     );
 
 ///
-MaterialPageRoute templateOverviewRoute() => MaterialPageRoute(
+MaterialPageRoute<AvailabilityTemplateModel?> templateOverviewRoute() =>
+    MaterialPageRoute(
       builder: (context) => AvailabilityTemplateOverview(
         onExit: () => Navigator.of(context).pop(),
         onEditTemplate: (template) async {
@@ -30,6 +31,9 @@ MaterialPageRoute templateOverviewRoute() => MaterialPageRoute(
           if (type == AvailabilityTemplateType.day) {
             await Navigator.of(context).push(templateEditDayRoute(null));
           }
+        },
+        onSelectTemplate: (template) async {
+          Navigator.of(context).pop(template);
         },
       ),
     );
@@ -52,8 +56,11 @@ MaterialPageRoute availabilityViewRoute(
       builder: (context) => AvailabilitiesModificationScreen(
         dateRange: dateRange,
         initialAvailabilities: initialAvailabilities,
-        onExit: () {
-          Navigator.of(context).pop();
+        onTemplateSelection: () async {
+          var selectedTemplate =
+              Navigator.of(context).push(templateOverviewRoute());
+          return selectedTemplate;
         },
+        onExit: () => Navigator.of(context).pop(),
       ),
     );

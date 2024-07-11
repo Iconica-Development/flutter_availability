@@ -16,6 +16,7 @@ class AvailabilitiesModificationScreen extends StatefulWidget {
     required this.dateRange,
     required this.onExit,
     required this.initialAvailabilities,
+    required this.onTemplateSelection,
     super.key,
   });
 
@@ -33,6 +34,10 @@ class AvailabilitiesModificationScreen extends StatefulWidget {
   /// availabilities have been saved
   final VoidCallback onExit;
 
+  /// Callback for when the user wants to go to the template overview screen to
+  /// select a template
+  final Future<AvailabilityTemplateModel?> Function() onTemplateSelection;
+
   @override
   State<AvailabilitiesModificationScreen> createState() =>
       _AvailabilitiesModificationScreenState();
@@ -41,6 +46,7 @@ class AvailabilitiesModificationScreen extends StatefulWidget {
 class _AvailabilitiesModificationScreenState
     extends State<AvailabilitiesModificationScreen> {
   late AvailabilityModel _availability;
+  late List<AvailabilityTemplateModel> _selectedTemplates;
   bool _clearAvailability = false;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
@@ -56,6 +62,7 @@ class _AvailabilitiesModificationScreenState
               endDate: widget.dateRange.end,
               breaks: [],
             );
+    _selectedTemplates = widget.initialAvailabilities.getUniqueTemplates();
   }
 
   @override
@@ -121,7 +128,22 @@ class _AvailabilitiesModificationScreenState
       },
     );
 
-    var templateSelection = const AvailabilityTemplateSelection();
+    var templateSelection = AvailabilityTemplateSelection(
+      selectedTemplates: _selectedTemplates,
+      onTemplateAdd: () async {
+        var template = await widget.onTemplateSelection();
+        if (template != null) {
+          setState(() {
+            _selectedTemplates = [template];
+          });
+        }
+      },
+      onTemplatesRemoved: () {
+        setState(() {
+          _selectedTemplates = [];
+        });
+      },
+    );
 
     var timeSelection = AvailabilityTimeSelection(
       dateRange: widget.dateRange,
