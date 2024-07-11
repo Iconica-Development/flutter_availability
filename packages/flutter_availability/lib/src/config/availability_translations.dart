@@ -24,6 +24,8 @@ class AvailabilityTranslations {
     required this.unavailableForDay,
     required this.unavailableForMultipleDays,
     required this.availabilityAddTemplateTitle,
+    required this.availabilityUsedTemplate,
+    required this.availabilityUsedTemplates,
     required this.availabilityTimeTitle,
     required this.availabilitiesTimeTitle,
     required this.availabilityDialogConfirmTitle,
@@ -75,6 +77,8 @@ class AvailabilityTranslations {
     this.unavailableForDay = "I am not available this day",
     this.unavailableForMultipleDays = "I am not available these days",
     this.availabilityAddTemplateTitle = "Add template to availability",
+    this.availabilityUsedTemplate = "Used template",
+    this.availabilityUsedTemplates = "Used templates",
     this.availabilityTimeTitle = "Start and end time workday",
     this.availabilitiesTimeTitle = "Start and end time workdays",
     this.availabilityDialogConfirmTitle =
@@ -155,6 +159,12 @@ class AvailabilityTranslations {
 
   /// The title on the template selection section for adding availabilities
   final String availabilityAddTemplateTitle;
+
+  /// The title on the template selection section when a single template is used
+  final String availabilityUsedTemplate;
+
+  /// The title on the template selection section when more templates are used
+  final String availabilityUsedTemplates;
 
   /// The title on the time selection section for adding a single availability
   final String availabilityTimeTitle;
