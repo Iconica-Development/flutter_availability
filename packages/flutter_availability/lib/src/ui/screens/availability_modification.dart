@@ -7,10 +7,12 @@ import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
-///
-class AvailabilityModificationView extends StatefulWidget {
-  ///
-  const AvailabilityModificationView({
+/// Screen for modifying the availabilities for a specific daterange
+/// There might already be availabilities for the selected period but they
+/// will be overwritten
+class AvailabilitiesModificationScreen extends StatefulWidget {
+  /// Constructor
+  const AvailabilitiesModificationScreen({
     required this.dateRange,
     required this.onExit,
     required this.initialAvailabilities,
@@ -18,9 +20,13 @@ class AvailabilityModificationView extends StatefulWidget {
   });
 
   /// The date for which the availability is being managed
+  /// If the daterange is only 1 day the [AvailabilitiesModificationScreen] will
+  /// show the layout for a single day otherwise it will show the layout
+  /// for a period
   final DateTimeRange dateRange;
 
   /// The initial availabilities for the selected period
+  /// If empty the user will be creating new availabilities
   final List<AvailabilityWithTemplate> initialAvailabilities;
 
   /// Callback for when the user wants to navigate back or the
@@ -28,12 +34,12 @@ class AvailabilityModificationView extends StatefulWidget {
   final VoidCallback onExit;
 
   @override
-  State<AvailabilityModificationView> createState() =>
-      _AvailabilityModificationViewState();
+  State<AvailabilitiesModificationScreen> createState() =>
+      _AvailabilitiesModificationScreenState();
 }
 
-class _AvailabilityModificationViewState
-    extends State<AvailabilityModificationView> {
+class _AvailabilitiesModificationScreenState
+    extends State<AvailabilitiesModificationScreen> {
   late AvailabilityModel _availability;
   bool _clearAvailability = false;
   TimeOfDay? _startTime;
