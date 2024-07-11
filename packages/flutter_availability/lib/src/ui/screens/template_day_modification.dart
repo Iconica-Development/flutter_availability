@@ -7,9 +7,9 @@ import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// Page for creating or editing a day template
-class AvailabilityDayTemplateEdit extends StatefulWidget {
-  ///
-  const AvailabilityDayTemplateEdit({
+class DayTemplateModificationScreen extends StatefulWidget {
+  /// Constructor
+  const DayTemplateModificationScreen({
     required this.template,
     required this.onExit,
     super.key,
@@ -22,12 +22,12 @@ class AvailabilityDayTemplateEdit extends StatefulWidget {
   final VoidCallback onExit;
 
   @override
-  State<AvailabilityDayTemplateEdit> createState() =>
-      _AvailabilityDayTemplateEditState();
+  State<DayTemplateModificationScreen> createState() =>
+      _DayTemplateModificationScreenState();
 }
 
-class _AvailabilityDayTemplateEditState
-    extends State<AvailabilityDayTemplateEdit> {
+class _DayTemplateModificationScreenState
+    extends State<DayTemplateModificationScreen> {
   late int? _selectedColor;
   late AvailabilityTemplateModel _template;
 
