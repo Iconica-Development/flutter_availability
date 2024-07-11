@@ -92,11 +92,22 @@ class _AvailabilitiesModificationScreenState
       widget.onExit();
     }
 
+    Future<void> onClickSave() async {
+      var confirmed = await options.confirmationDialogBuilder(
+        context,
+        title: translations.availabilityDialogConfirmTitle,
+        description: translations.availabilityDialogConfirmDescription,
+      );
+      if (confirmed ?? false) {
+        await onSave();
+      }
+    }
+
     var canSave =
         _clearAvailability || (_startTime != null && _endTime != null);
     var saveButton = options.primaryButtonBuilder(
       context,
-      canSave ? onSave : null,
+      canSave ? onClickSave : null,
       Text(translations.saveButton),
     );
 
