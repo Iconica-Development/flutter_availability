@@ -10,6 +10,7 @@ class AvailabilityTemplateOverview extends HookWidget {
     required this.onExit,
     required this.onEditTemplate,
     required this.onAddTemplate,
+    this.onSelectTemplate,
     super.key,
   });
 
@@ -21,6 +22,9 @@ class AvailabilityTemplateOverview extends HookWidget {
 
   /// Callback for when the user goes to create a new template
   final void Function(AvailabilityTemplateType type) onAddTemplate;
+
+  /// Callback for when the user selects a template
+  final void Function(AvailabilityTemplateModel template)? onSelectTemplate;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +52,7 @@ class AvailabilityTemplateOverview extends HookWidget {
       sectionTitle: translations.dayTemplates,
       createButtonText: translations.createDayTemplate,
       onEditTemplate: onEditTemplate,
+      onSelectTemplate: onSelectTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.day),
       templatesSnapshot: dayTemplatesSnapshot,
     );
@@ -57,6 +62,7 @@ class AvailabilityTemplateOverview extends HookWidget {
       createButtonText: translations.createWeekTemplate,
       templatesSnapshot: weekTemplatesSnapshot,
       onEditTemplate: onEditTemplate,
+      onSelectTemplate: onSelectTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.week),
     );
 
@@ -89,6 +95,7 @@ class _TemplateListSection extends StatelessWidget {
     required this.templatesSnapshot,
     required this.onEditTemplate,
     required this.onAddTemplate,
+    required this.onSelectTemplate,
   });
 
   final String sectionTitle;
@@ -96,6 +103,7 @@ class _TemplateListSection extends StatelessWidget {
   final AsyncSnapshot<List<AvailabilityTemplateModel>> templatesSnapshot;
   final void Function(AvailabilityTemplateModel template) onEditTemplate;
   final VoidCallback onAddTemplate;
+  final void Function(AvailabilityTemplateModel template)? onSelectTemplate;
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +111,12 @@ class _TemplateListSection extends StatelessWidget {
     var textTheme = theme.textTheme;
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+
+    void onClickTemplate(AvailabilityTemplateModel template) {
+      // if the onSelectTemplate is set the user can select a template
+      // The user will need to click on the edit button to edit
+      (onSelectTemplate ?? onEditTemplate).call(template);
+    }
 
     var templateCreationButton = InkWell(
       hoverColor: Colors.transparent,
@@ -136,7 +150,7 @@ class _TemplateListSection extends StatelessWidget {
         for (var template
             in templatesSnapshot.data ?? <AvailabilityTemplateModel>[]) ...[
           GestureDetector(
-            onTap: () => onEditTemplate(template),
+            onTap: () => onClickTemplate(template),
             child: Container(
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(top: 8),
@@ -157,7 +171,10 @@ class _TemplateListSection extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(template.name, style: textTheme.bodyLarge),
                   const Spacer(),
-                  const Icon(Icons.edit),
+                  GestureDetector(
+                    onTap: () => onEditTemplate(template),
+                    child: const Icon(Icons.edit),
+                  ),
                 ],
               ),
             ),
