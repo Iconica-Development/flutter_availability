@@ -58,6 +58,7 @@ class DefaultConfirmationDialog extends StatelessWidget {
           Text(
             title,
             style: textTheme.titleMedium,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
