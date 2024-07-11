@@ -71,7 +71,7 @@ class PauseSelection extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(4),
       ),
-      child: options.textButtonBuilder(
+      child: options.bigTextButtonBuilder(
         context,
         onClickAddBreak,
         Text(translations.addButton),

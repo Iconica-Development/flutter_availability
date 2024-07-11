@@ -16,7 +16,8 @@ class AvailabilityOptions {
     this.baseScreenBuilder = DefaultBaseScreen.builder,
     this.primaryButtonBuilder = DefaultPrimaryButton.builder,
     this.secondaryButtonBuilder = DefaultSecondaryButton.builder,
-    this.textButtonBuilder = DefaultTextButton.builder,
+    this.bigTextButtonBuilder = DefaultBigTextButton.builder,
+    this.smallTextButtonBuilder = DefaultSmallTextButton.builder,
     this.spacing = const AvailabilitySpacing(),
     this.textStyles = const AvailabilityTextStyles(),
     this.colors = const AvailabilityColors(),
@@ -45,8 +46,13 @@ class AvailabilityOptions {
   /// A way to provide your own secondary button implementation
   final ButtonBuilder secondaryButtonBuilder;
 
-  /// A way to provide your own text button implementation
-  final ButtonBuilder textButtonBuilder;
+  /// A way to provide your own big text button implementation
+  /// This is used as a tertiary button
+  final ButtonBuilder bigTextButtonBuilder;
+
+  /// A way to provide your own small text button implementation
+  /// This is used as a smaller variant of the tertiary button
+  final ButtonBuilder smallTextButtonBuilder;
 
   /// The spacing between elements
   final AvailabilitySpacing spacing;

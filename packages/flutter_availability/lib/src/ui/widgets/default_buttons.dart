@@ -64,10 +64,11 @@ class DefaultSecondaryButton extends StatelessWidget {
       OutlinedButton(onPressed: onPressed, child: child);
 }
 
-///
-class DefaultTextButton extends StatelessWidget {
+/// The default big text button used in the component when no custom
+/// button is provided. This button is used as a teritary button
+class DefaultBigTextButton extends StatelessWidget {
   ///
-  const DefaultTextButton({
+  const DefaultBigTextButton({
     required this.child,
     required this.onPressed,
     super.key,
@@ -79,7 +80,7 @@ class DefaultTextButton extends StatelessWidget {
     FutureOr<void> Function()? onPressed,
     Widget child,
   ) =>
-      DefaultTextButton(
+      DefaultBigTextButton(
         onPressed: onPressed,
         child: child,
       );
@@ -91,6 +92,57 @@ class DefaultTextButton extends StatelessWidget {
   final FutureOr<void> Function()? onPressed;
 
   @override
-  Widget build(BuildContext context) =>
-      TextButton(onPressed: onPressed, child: child);
+  Widget build(BuildContext context) => TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.underline,
+            fontSize: 16,
+          ),
+        ),
+        child: child,
+      );
+}
+
+/// The default small text button used in the component when no custom
+/// button is provided. This button is used as a smaller variant of the
+/// tertiary button
+class DefaultSmallTextButton extends StatelessWidget {
+  ///
+  const DefaultSmallTextButton({
+    required this.child,
+    required this.onPressed,
+    super.key,
+  });
+
+  ///
+  static Widget builder(
+    BuildContext context,
+    FutureOr<void> Function()? onPressed,
+    Widget child,
+  ) =>
+      DefaultSmallTextButton(
+        onPressed: onPressed,
+        child: child,
+      );
+
+  ///
+  final Widget child;
+
+  ///
+  final FutureOr<void> Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          textStyle: const TextStyle(
+            decoration: TextDecoration.underline,
+          ),
+          overlayColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+        ),
+        child: child,
+      );
 }
