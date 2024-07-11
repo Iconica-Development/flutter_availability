@@ -43,28 +43,26 @@ class CalendarGrid extends StatelessWidget {
       return translations.weekDayAbbreviatedFormatter(context, day);
     });
 
-    var calendarDaysRow = GridView.builder(
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      itemCount: 7,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 7,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 0,
-      ),
-      itemBuilder: (context, index) {
-        var day = dayNames[index];
-        return Text(
-          day,
-          style: textTheme.bodyLarge,
-          textAlign: TextAlign.center,
+    var calendarDaysRow = Row(
+      children: List.generate(13, (index) {
+        // This adds a space between the days of the week
+        if ((index % 2).isOdd) return const SizedBox(width: 12);
+
+        var day = dayNames[index ~/ 2];
+        return Expanded(
+          child: Text(
+            day,
+            style: textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
         );
-      },
+      }),
     );
 
     return Column(
       children: [
         calendarDaysRow,
+        const SizedBox(height: 10),
         GridView.builder(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
