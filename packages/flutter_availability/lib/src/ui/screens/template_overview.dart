@@ -104,7 +104,8 @@ class _TemplateListSection extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
 
-    var templateCreationButton = GestureDetector(
+    var templateCreationButton = InkWell(
+      hoverColor: Colors.transparent,
       onTap: onAddTemplate,
       child: Container(
         color: Colors.transparent,
@@ -115,10 +116,11 @@ class _TemplateListSection extends StatelessWidget {
           children: [
             const Icon(Icons.add),
             const SizedBox(width: 8),
-            Text(
-              createButtonText,
-              style: textTheme.bodyLarge?.copyWith(
-                decoration: TextDecoration.underline,
+            options.smallTextButtonBuilder(
+              context,
+              onAddTemplate,
+              Text(
+                createButtonText,
               ),
             ),
           ],

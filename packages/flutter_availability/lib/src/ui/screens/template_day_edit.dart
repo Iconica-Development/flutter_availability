@@ -80,7 +80,7 @@ class _AvailabilityDayTemplateEditState
       Text(translations.saveButton),
     );
 
-    var deleteButton = options.textButtonBuilder(
+    var deleteButton = options.bigTextButtonBuilder(
       context,
       onDeletePressed,
       Text(translations.deleteTemplateButton),

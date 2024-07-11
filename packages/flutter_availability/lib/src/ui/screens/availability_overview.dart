@@ -120,7 +120,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       }
     }
 
-    var clearSelectedButton = options.textButtonBuilder(
+    var clearSelectedButton = options.bigTextButtonBuilder(
       context,
       onClearButtonClicked,
       Text(translations.clearAvailabilityButton),
