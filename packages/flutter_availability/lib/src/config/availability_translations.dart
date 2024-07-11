@@ -26,6 +26,8 @@ class AvailabilityTranslations {
     required this.availabilityAddTemplateTitle,
     required this.availabilityTimeTitle,
     required this.availabilitiesTimeTitle,
+    required this.availabilityDialogConfirmTitle,
+    required this.availabilityDialogConfirmDescription,
     required this.templateScreenTitle,
     required this.dayTemplates,
     required this.weekTemplates,
@@ -75,6 +77,11 @@ class AvailabilityTranslations {
     this.availabilityAddTemplateTitle = "Add template to availability",
     this.availabilityTimeTitle = "Start and end time workday",
     this.availabilitiesTimeTitle = "Start and end time workdays",
+    this.availabilityDialogConfirmTitle =
+        "Are you sure you want to save the changes?",
+    this.availabilityDialogConfirmDescription =
+        "This will update your availabilities but you can always "
+            "change them later",
     this.overviewScreenTitle = "Availability",
     this.templateScreenTitle = "Templates",
     this.dayTemplates = "Day templates",
@@ -154,6 +161,12 @@ class AvailabilityTranslations {
 
   /// The title on the time selection section for adding multiple availabilities
   final String availabilitiesTimeTitle;
+
+  /// The title on the dialog for confirming the availability update
+  final String availabilityDialogConfirmTitle;
+
+  /// The description on the dialog for confirming the availability update
+  final String availabilityDialogConfirmDescription;
 
   /// The title on the template screen
   final String templateScreenTitle;
