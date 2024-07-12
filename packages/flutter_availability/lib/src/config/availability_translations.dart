@@ -48,7 +48,8 @@ class AvailabilityTranslations {
     required this.pauseSectionTitle,
     required this.pauseSectionOptional,
     required this.pauseDialogTitle,
-    required this.pauseDialogDescription,
+    required this.pauseDialogDescriptionAvailability,
+    required this.pauseDialogDescriptionTemplate,
     required this.pauseDialogPeriodTitle,
     required this.pauseDialogPeriodDescription,
     required this.saveButton,
@@ -106,7 +107,10 @@ class AvailabilityTranslations {
     this.pauseSectionTitle = "Add a pause",
     this.pauseSectionOptional = "(Optional)",
     this.pauseDialogTitle = "Add a pause",
-    this.pauseDialogDescription = "Add a pause to your availability. "
+    this.pauseDialogDescriptionAvailability =
+        "Add a pause to your availability. "
+            "Choose how long you want to take a break",
+    this.pauseDialogDescriptionTemplate = "Add a pause to this template. "
         "Choose how long you want to take a break",
     this.pauseDialogPeriodTitle = "Time slot",
     this.pauseDialogPeriodDescription =
@@ -235,7 +239,12 @@ class AvailabilityTranslations {
   final String pauseDialogTitle;
 
   /// The description for the pause dialog displayed below the title
-  final String pauseDialogDescription;
+  /// This is used for availability modification
+  final String pauseDialogDescriptionAvailability;
+
+  /// The description for the pause dialog displayed below the title
+  /// This is used for template modification
+  final String pauseDialogDescriptionTemplate;
 
   /// The title for the section in the pause dialog where you select the period
   final String pauseDialogPeriodTitle;

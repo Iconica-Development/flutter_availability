@@ -163,6 +163,7 @@ class _DayTemplateModificationScreenState
 
     var pauseSection = PauseSelection(
       breaks: (_template.templateData as DayTemplateData).breaks,
+      editingTemplate: true,
       // TODO(Joey): Extrac this
       onBreaksChanged: (breaks) {
         setState(() {

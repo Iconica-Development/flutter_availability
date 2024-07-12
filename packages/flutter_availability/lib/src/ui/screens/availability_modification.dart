@@ -173,6 +173,7 @@ class _AvailabilitiesModificationScreenState
 
     var pauseSelection = PauseSelection(
       breaks: _availability.breaks,
+      editingTemplate: false,
       // TODO(Joey): Extract these
       onBreaksChanged: (breaks) {
         setState(() {
