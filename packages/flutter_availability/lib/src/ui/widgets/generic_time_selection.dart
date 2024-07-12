@@ -51,7 +51,11 @@ class TimeSelection extends StatelessWidget {
         Text(title, style: textTheme.titleMedium),
         if (description != null) ...[
           const SizedBox(height: 4),
-          Text(description!, style: textTheme.bodyMedium),
+          Text(
+            description!,
+            style: textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
         ],
         const SizedBox(height: 8),
         Row(

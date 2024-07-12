@@ -12,6 +12,7 @@ class PauseSelection extends StatelessWidget {
   const PauseSelection({
     required this.breaks,
     required this.onBreaksChanged,
+    required this.editingTemplate,
     super.key,
   });
 
@@ -20,6 +21,9 @@ class PauseSelection extends StatelessWidget {
 
   /// Callback for when the breaks are changed
   final void Function(List<AvailabilityBreakModel>) onBreaksChanged;
+
+  /// Whether the pause selection is used for editing a template
+  final bool editingTemplate;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +41,7 @@ class PauseSelection extends StatelessWidget {
           userId: availabilityScope.userId,
           options: options,
           service: availabilityScope.service,
+          editingTemplate: editingTemplate,
         );
 
     Future<void> onClickAddBreak() async {
@@ -173,11 +178,16 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
   ///
   const AvailabilityBreakSelectionDialog({
     required this.initialBreak,
+    required this.editingTemplate,
     super.key,
   });
 
   /// The initial break to show in the dialog if any
   final AvailabilityBreakModel? initialBreak;
+
+  /// Whether the dialog is used to edit a template
+  /// This will change the description of the dialog
+  final bool editingTemplate;
 
   /// Opens the dialog to add a break
   static Future<AvailabilityBreakModel?> show(
@@ -185,6 +195,7 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
     required AvailabilityOptions options,
     required String userId,
     required AvailabilityService service,
+    required bool editingTemplate,
     AvailabilityBreakModel? initialBreak,
   }) async =>
       showModalBottomSheet<AvailabilityBreakModel>(
@@ -202,6 +213,7 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
           service: service,
           child: AvailabilityBreakSelectionDialog(
             initialBreak: initialBreak,
+            editingTemplate: editingTemplate,
           ),
         ),
       );
@@ -291,6 +303,10 @@ class _AvailabilityBreakSelectionDialogState
       ),
     );
 
+    var descriptionText = widget.editingTemplate
+        ? translations.pauseDialogDescriptionTemplate
+        : translations.pauseDialogDescriptionAvailability;
+
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: spacing.sidePadding,
@@ -299,11 +315,16 @@ class _AvailabilityBreakSelectionDialogState
         child: Column(
           children: [
             const SizedBox(height: 44),
-            Text(translations.pauseDialogTitle, style: textTheme.titleMedium),
+            Text(
+              translations.pauseDialogTitle,
+              style: textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 4),
             Text(
-              translations.pauseDialogDescription,
+              descriptionText,
               style: textTheme.bodyMedium,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             Row(
