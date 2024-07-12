@@ -1,7 +1,8 @@
 name: flutter_availability_data_interface
-description: "A new Flutter package project."
+description: "The data interface for the flutter_availability component"
 version: 1.0.0
-publish_to: none
+
+publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
 
 environment:
   sdk: ">=3.4.3 <4.0.0"

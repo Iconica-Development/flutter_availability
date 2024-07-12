@@ -1,7 +1,8 @@
 name: flutter_availability
 description: "Flutter availability userstory package"
 version: 1.0.0
-publish_to: none
+
+publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
 
 environment:
   sdk: ">=3.4.3 <4.0.0"
@@ -13,9 +14,8 @@ dependencies:
   rxdart: ^0.27.0
   flutter_hooks: ^0.20.5
   flutter_availability_data_interface:
-    git:
-      url: https://github.com/Iconica-Development/flutter_availability
-      ref: 1.0.0
+    hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
+    version: ^1.0.0
 
 dev_dependencies:
   flutter_test:
