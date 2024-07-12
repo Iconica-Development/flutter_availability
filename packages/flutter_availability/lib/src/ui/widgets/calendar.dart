@@ -63,11 +63,15 @@ class CalendarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var textTheme = theme.textTheme;
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
 
     var mappedCalendarDays = _mapAvailabilitiesToCalendarDays(availabilities);
+    var existsTemplateDeviations = mappedCalendarDays.any(
+      (element) => element.templateDeviation,
+    );
 
     var monthDateSelector = Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +90,7 @@ class CalendarView extends StatelessWidget {
           width: _calculateTextWidthOfLongestMonth(context, translations),
           child: Text(
             translations.monthYearFormatter(context, month),
-            style: theme.textTheme.titleMedium,
+            style: textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
         ),
@@ -110,12 +114,26 @@ class CalendarView extends StatelessWidget {
       selectedRange: selectedRange,
     );
 
+    var templateDeviationMarking = Row(
+      children: [
+        Text("* ", style: textTheme.bodySmall),
+        Text(
+          translations.availabilityTemplateDeviation,
+          style: textTheme.bodySmall,
+        ),
+      ],
+    );
+
     return Column(
       children: [
         monthDateSelector,
         const Divider(height: 1),
         const SizedBox(height: 20),
         calendarGrid,
+        if (existsTemplateDeviations) ...[
+          const SizedBox(height: 24),
+          templateDeviationMarking,
+        ],
       ],
     );
   }
