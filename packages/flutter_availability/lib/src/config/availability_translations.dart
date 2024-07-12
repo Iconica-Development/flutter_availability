@@ -16,6 +16,7 @@ class AvailabilityTranslations {
     required this.templateLegendTitle,
     required this.templateSelectionLabel,
     required this.availabilityWithoutTemplateLabel,
+    required this.availabilityTemplateDeviation,
     required this.overviewScreenTitle,
     required this.createTemplateButton,
     required this.clearAvailabilityButton,
@@ -69,6 +70,7 @@ class AvailabilityTranslations {
     this.templateLegendTitle = "Templates",
     this.templateSelectionLabel = "Selected day(s)",
     this.availabilityWithoutTemplateLabel = "Availabilty without template",
+    this.availabilityTemplateDeviation = "Template deviation",
     this.createTemplateButton = "Create a new template",
     this.clearAvailabilityButton = "Not available on these days",
     this.clearAvailabilityConfirmTitle = "Are you sure you want to clear?",
@@ -134,6 +136,9 @@ class AvailabilityTranslations {
 
   /// The label for the availabilities without a template in the template legend
   final String availabilityWithoutTemplateLabel;
+
+  /// The hint text for the availability template deviation
+  final String availabilityTemplateDeviation;
 
   /// The title on the overview screen
   final String overviewScreenTitle;
