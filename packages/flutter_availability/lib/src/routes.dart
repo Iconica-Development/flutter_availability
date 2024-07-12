@@ -18,7 +18,9 @@ MaterialPageRoute homePageRoute(VoidCallback onExit) => MaterialPageRoute(
     );
 
 ///
-MaterialPageRoute<AvailabilityTemplateModel?> templateOverviewRoute() =>
+MaterialPageRoute<AvailabilityTemplateModel?> templateOverviewRoute({
+  bool allowSelection = false,
+}) =>
     MaterialPageRoute(
       builder: (context) => AvailabilityTemplateOverview(
         onExit: () => Navigator.of(context).pop(),
@@ -32,9 +34,11 @@ MaterialPageRoute<AvailabilityTemplateModel?> templateOverviewRoute() =>
             await Navigator.of(context).push(templateEditDayRoute(null));
           }
         },
-        onSelectTemplate: (template) async {
-          Navigator.of(context).pop(template);
-        },
+        onSelectTemplate: allowSelection
+            ? (template) async {
+                Navigator.of(context).pop(template);
+              }
+            : null,
       ),
     );
 
@@ -57,8 +61,8 @@ MaterialPageRoute availabilityViewRoute(
         dateRange: dateRange,
         initialAvailabilities: initialAvailabilities,
         onTemplateSelection: () async {
-          var selectedTemplate =
-              Navigator.of(context).push(templateOverviewRoute());
+          var selectedTemplate = Navigator.of(context)
+              .push(templateOverviewRoute(allowSelection: true));
           return selectedTemplate;
         },
         onExit: () => Navigator.of(context).pop(),
