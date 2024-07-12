@@ -13,6 +13,7 @@ class AvailabilityOptions {
   /// AvailabilityOptions constructor where everything is optional.
   AvailabilityOptions({
     this.translations = const AvailabilityTranslations.empty(),
+    this.calendarDrawMode = CalendarDrawMode.background,
     this.baseScreenBuilder = DefaultBaseScreen.builder,
     this.primaryButtonBuilder = DefaultPrimaryButton.builder,
     this.secondaryButtonBuilder = DefaultSecondaryButton.builder,
@@ -33,6 +34,9 @@ class AvailabilityOptions {
 
   /// The implementation for communicating with the persistance layer
   final AvailabilityDataInterface dataInterface;
+
+  /// The draw mode for the calendar cells
+  final CalendarDrawMode calendarDrawMode;
 
   /// A method to wrap your availability screens with a base frame.
   ///
@@ -161,6 +165,15 @@ class AvailabilityColors {
 
   /// The colors that are used for the templates
   final List<Color> templateColors;
+}
+
+/// The draw mode for the calendar cells
+enum CalendarDrawMode {
+  /// The cell is drawn without a background but with a line under the text
+  underlined,
+
+  /// The cell is drawn with a background color
+  background,
 }
 
 /// Builder definition for providing a base screen surrounding each page

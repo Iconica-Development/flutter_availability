@@ -74,48 +74,88 @@ class CalendarGrid extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             var day = calendarDays[index];
-            var dayColor = day.color ??
-                colors.customAvailabilityColor ??
-                colorScheme.secondary;
-            var textColor = day.outsideMonth && !day.isSelected
-                ? colors.outsideMonthTextColor ?? colorScheme.onSurface
-                : _getTextColor(
-                    dayColor,
-                    colors.textLightColor ?? Colors.white,
-                    colors.textDarkColor,
-                  );
-            var textStyle = textTheme.bodyLarge?.copyWith(color: textColor);
 
             return GestureDetector(
               onTap: () => onDayTap(day.date),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: dayColor,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                    color: day.isSelected && !day.outsideMonth
-                        ? colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Text(day.date.day.toString(), style: textStyle),
-                    ),
-                    if (day.templateDeviation) ...[
-                      Positioned(
-                        right: 4,
-                        child: Text("*", style: textStyle),
-                      ),
-                    ],
-                  ],
-                ),
+              child: _CalendarGridCell(
+                day: day,
               ),
             );
           },
         ),
       ],
+    );
+  }
+}
+
+class _CalendarGridCell extends StatelessWidget {
+  const _CalendarGridCell({
+    required this.day,
+  });
+
+  final CalendarDay day;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var textTheme = theme.textTheme;
+    var colorScheme = theme.colorScheme;
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
+    var colors = options.colors;
+
+    var backgroundDrawMode =
+        options.calendarDrawMode == CalendarDrawMode.background;
+
+    var dayColor = day.color ?? Colors.transparent;
+    var textColor = day.outsideMonth && !day.isSelected
+        ? colors.outsideMonthTextColor ?? colorScheme.onSurface
+        : (backgroundDrawMode
+            ? _getTextColor(
+                dayColor,
+                colors.textLightColor ?? Colors.white,
+                colors.textDarkColor,
+              )
+            : day.color);
+    var textStyle = textTheme.bodyLarge?.copyWith(color: textColor);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: backgroundDrawMode ? dayColor : null,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(
+          color: day.isSelected && !day.outsideMonth
+              ? colorScheme.primary
+              : Colors.transparent,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              margin: const EdgeInsets.all(4),
+              // add a border at the bottom of the text
+              decoration: backgroundDrawMode || day.outsideMonth
+                  ? null
+                  : BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: textColor ?? Colors.transparent,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+              child: Text(day.date.day.toString(), style: textStyle),
+            ),
+          ),
+          if (day.templateDeviation) ...[
+            Positioned(
+              right: 4,
+              child: Text("*", style: textStyle),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -129,6 +169,7 @@ class CalendarDay {
     required this.color,
     required this.templateDeviation,
     this.outsideMonth = false,
+    this.hasAvailability = false,
   });
 
   /// The date of the day
@@ -140,6 +181,9 @@ class CalendarDay {
   /// The color of the day
   /// If there is no template for an availability the color will be null
   final Color? color;
+
+  /// Whether there is an availability on this day
+  final bool hasAvailability;
 
   /// Whether there is an availability on this day and it deviates from the
   /// used template
