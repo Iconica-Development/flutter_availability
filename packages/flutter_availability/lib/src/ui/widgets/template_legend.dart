@@ -110,11 +110,15 @@ class _TemplateLegendState extends State<TemplateLegend> {
           ),
           padding: const EdgeInsets.only(right: 2),
           child: _templateDrawerOpen && !templatesLoading
+              // TODO(Joey): A listview inside a scrollview inside the
+              // scrollable that each page has seems like really strange UX
+              // TODO(Joey): No ternary operators in the layout
               ? SingleChildScrollView(
                   child: Column(
                     children: [
                       Container(
                         constraints: const BoxConstraints(
+                          // TODO(Joey): Not divisible by 4
                           maxHeight: 150,
                         ),
                         child: Scrollbar(
@@ -125,9 +129,12 @@ class _TemplateLegendState extends State<TemplateLegend> {
                           child: ListView.builder(
                             controller: _scrollController,
                             shrinkWrap: true,
+                            // TODO(Joey): This seems like an odd way to
+                            // implement appending items
                             itemCount: templates.length + 2,
                             itemBuilder: (context, index) {
                               if (index == 0) {
+                                // TODO(Joey): Extract this as a widget
                                 return Column(
                                   children: [
                                     _TemplateLegendItem(
@@ -175,6 +182,9 @@ class _TemplateLegendState extends State<TemplateLegend> {
                   thickness: 1,
                 ),
         ),
+        // TODO(Joey): This is too complex of a check to read the layout
+        // There are 8 different combinations parameters with 2 different
+        // outcomes
         if (!templatesAvailable &&
             (!_templateDrawerOpen || templatesLoading)) ...[
           const SizedBox(height: 12),
@@ -213,6 +223,7 @@ class _TemplateLegendItem extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: backgroundColor,
+                // TODO(Joey): Use a global borderRadius
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(
                   color: borderColor ?? Colors.transparent,
@@ -221,6 +232,7 @@ class _TemplateLegendItem extends StatelessWidget {
               width: 20,
               height: 20,
             ),
+            // TODO(Joey): Not divisible by 4
             const SizedBox(width: 6),
             Text(name, style: Theme.of(context).textTheme.bodyLarge),
           ],

@@ -73,6 +73,7 @@ class CalendarGrid extends StatelessWidget {
             mainAxisSpacing: 12,
           ),
           itemBuilder: (context, index) {
+            // TODO(Joey): Extract all this as a widget
             var day = calendarDays[index];
             var dayColor = day.color ??
                 colors.customAvailabilityColor ??
@@ -86,6 +87,7 @@ class CalendarGrid extends StatelessWidget {
                   );
             var textStyle = textTheme.bodyLarge?.copyWith(color: textColor);
 
+            // TODO(Joey): Watch out for using gesture detectors
             return GestureDetector(
               onTap: () => onDayTap(day.date),
               child: DecoratedBox(
@@ -186,6 +188,8 @@ List<CalendarDay> _generateCalendarDays(
     required bool isNextMonth,
   }) {
     for (var i = 0; i < count; i++) {
+      // TODO(Joey): Never increase days with duration, always use internal
+      // datetime math.
       var day = isNextMonth
           ? startDay.add(Duration(days: i + 1))
           : startDay.subtract(Duration(days: count - i));

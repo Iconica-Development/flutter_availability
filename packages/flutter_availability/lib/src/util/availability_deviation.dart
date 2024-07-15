@@ -11,6 +11,8 @@ bool isTemplateDeviated(
   DateTime? templateStartDate;
   DateTime? templateEndDate;
 
+  // TODO(Joey): Add a method to a templateModel: getEndTimeForDayOfWeek()
+  // as well as for start time. Allow polymorphism to resolve this if statement
   if (template.templateType == AvailabilityTemplateType.week) {
     templateStartDate = (template.templateData as WeekTemplateData)
         .data[WeekDay.values[dayOfWeek - 1]]

@@ -100,6 +100,7 @@ class _TemplateListSection extends StatelessWidget {
 
   final String sectionTitle;
   final String createButtonText;
+  // transform the stream to a snapshot as low as possible to reduce rebuilds
   final AsyncSnapshot<List<AvailabilityTemplateModel>> templatesSnapshot;
   final void Function(AvailabilityTemplateModel template) onEditTemplate;
   final VoidCallback onAddTemplate;
@@ -147,8 +148,13 @@ class _TemplateListSection extends StatelessWidget {
         Text(sectionTitle, style: textTheme.titleMedium),
         const SizedBox(height: 8),
         const Divider(height: 1),
+        // TODO(Joey): Do not make this nullable, in the build make sure to
+        // have the expected value ready.
         for (var template
             in templatesSnapshot.data ?? <AvailabilityTemplateModel>[]) ...[
+          // TODO(Joey): Extract this as a widget
+          // TODO(Joey): Do not simply use gesture detectors, always think of
+          // semantics, interaction and other UX
           GestureDetector(
             onTap: () => onClickTemplate(template),
             child: Container(
@@ -171,6 +177,8 @@ class _TemplateListSection extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(template.name, style: textTheme.bodyLarge),
                   const Spacer(),
+                  // TODO(Joey): Do not simply use gesture detectors, always
+                  // think of semantics, interaction and other UX
                   GestureDetector(
                     onTap: () => onEditTemplate(template),
                     child: const Icon(Icons.edit),

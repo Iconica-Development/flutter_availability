@@ -24,6 +24,7 @@ class AvailabilityOptions {
     this.colors = const AvailabilityColors(),
     this.confirmationDialogBuilder = DefaultConfirmationDialog.builder,
     this.timePickerBuilder,
+    // TODO(Joey): Also have a DefaultLoader.builder
     this.loadingIndicatorBuilder = defaultLoader,
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();

@@ -140,6 +140,7 @@ class BreakDisplay extends StatelessWidget {
       TimeOfDay.fromDateTime(breakModel.endTime),
     );
 
+    // TODO(Joey): Watch out with gesture detectors
     return GestureDetector(
       onTap: onClick,
       child: Container(
@@ -158,6 +159,7 @@ class BreakDisplay extends StatelessWidget {
               "$endTime",
             ),
             const Spacer(),
+            // TODO(Joey): Watch out with gesturedetectors
             GestureDetector(onTap: onRemove, child: const Icon(Icons.remove)),
           ],
         ),

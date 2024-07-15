@@ -35,6 +35,7 @@ class AvailabilityTemplateSelection extends StatelessWidget {
     var options = availabilityScope.options;
     var translations = options.translations;
 
+    // TODO(Joey): Do not nest ternairy operators
     var titleText = selectedTemplates.isEmpty
         ? translations.availabilityAddTemplateTitle
         : selectedTemplates.length > 1
@@ -62,6 +63,7 @@ class AvailabilityTemplateSelection extends StatelessWidget {
         if (selectedTemplates.isEmpty) ...[
           addButton,
         ] else ...[
+          // TODO(Joey): Extract this as a widget
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -69,6 +71,9 @@ class AvailabilityTemplateSelection extends StatelessWidget {
                 color: theme.colorScheme.primary,
                 width: 1,
               ),
+              // TODO(Joey): This seems like a repeating borderRadius. I can
+              // understand if these are not configurable, but I do think that
+              // they should be defined only once.
               borderRadius: BorderRadius.circular(5),
             ),
             child: Row(
@@ -79,6 +84,7 @@ class AvailabilityTemplateSelection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     for (var template in selectedTemplates) ...[
+                      // TODO(Joey): Extract this as a widget
                       Row(
                         children: [
                           Container(

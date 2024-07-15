@@ -104,12 +104,15 @@ class _DayTemplateModificationScreenState
 
     var timeSection = TemplateTimeSelection(
       key: ValueKey(_template.templateData),
+      // TODO(Joey): Extract this
       startTime: TimeOfDay.fromDateTime(
         (_template.templateData as DayTemplateData).startTime,
       ),
+      // TODO(Joey): Extract this
       endTime: TimeOfDay.fromDateTime(
         (_template.templateData as DayTemplateData).endTime,
       ),
+      // TODO(Joey): Extract this
       onStartChanged: (start) {
         var startTime = (_template.templateData as DayTemplateData).startTime;
         var updatedStartTime = DateTime(
@@ -127,6 +130,7 @@ class _DayTemplateModificationScreenState
           );
         });
       },
+      // TODO(Joey): Extract this
       onEndChanged: (end) {
         var endTime = (_template.templateData as DayTemplateData).endTime;
         var updatedEndTime = DateTime(
@@ -148,6 +152,7 @@ class _DayTemplateModificationScreenState
 
     var colorSection = TemplateColorSelection(
       selectedColor: _selectedColor,
+      // TODO(Joey): Extract this
       onColorSelected: (color) {
         setState(() {
           _selectedColor = color;
@@ -158,6 +163,7 @@ class _DayTemplateModificationScreenState
 
     var pauseSection = PauseSelection(
       breaks: (_template.templateData as DayTemplateData).breaks,
+      // TODO(Joey): Extrac this
       onBreaksChanged: (breaks) {
         setState(() {
           _template = _template.copyWith(
