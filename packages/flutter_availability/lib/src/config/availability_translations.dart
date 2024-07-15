@@ -38,6 +38,8 @@ class AvailabilityTranslations {
     required this.createWeekTemplate,
     required this.deleteTemplateButton,
     required this.dayTemplateTitle,
+    required this.weekTemplateTitle,
+    required this.weekTemplateDayTitle,
     required this.templateTitleHintText,
     required this.templateTitleLabel,
     required this.templateColorLabel,
@@ -61,6 +63,7 @@ class AvailabilityTranslations {
     required this.periodFormatter,
     required this.monthYearFormatter,
     required this.weekDayAbbreviatedFormatter,
+    required this.weekDayFormatter,
   });
 
   /// AvailabilityTranslations constructor where everything is optional.
@@ -97,6 +100,8 @@ class AvailabilityTranslations {
     this.createWeekTemplate = "Create week template",
     this.deleteTemplateButton = "Delete template",
     this.dayTemplateTitle = "Day template",
+    this.weekTemplateTitle = "Week template",
+    this.weekTemplateDayTitle = "When",
     this.templateTitleHintText = "What do you want to call this template?",
     this.templateTitleLabel = "Template Title",
     this.templateColorLabel = "Colorlabel",
@@ -123,6 +128,7 @@ class AvailabilityTranslations {
     this.periodFormatter = _defaultPeriodFormatter,
     this.monthYearFormatter = _defaultMonthYearFormatter,
     this.weekDayAbbreviatedFormatter = _defaultWeekDayAbbreviatedFormatter,
+    this.weekDayFormatter = _defaultWeekDayFormatter,
     this.timeFormatter = _defaultTimeFormatter,
   });
 
@@ -208,6 +214,12 @@ class AvailabilityTranslations {
   /// The title for the day template edit screen
   final String dayTemplateTitle;
 
+  /// The title for the week template edit screen
+  final String weekTemplateTitle;
+
+  /// The title above the section with the week template days
+  final String weekTemplateDayTitle;
+
   /// The hint text for the template title input field
   final String templateTitleHintText;
 
@@ -286,11 +298,19 @@ class AvailabilityTranslations {
   /// the weekday in english
   final String Function(BuildContext, DateTime) weekDayAbbreviatedFormatter;
 
+  /// Gets the weekday formatted as a string
+  /// 
+  /// The default implementation is the full name of the weekday in english
+  final String Function(BuildContext, DateTime) weekDayFormatter;
+
   /// Get the time formatted as a string
   ///
   /// The default implementation is `HH:mm`
   final String Function(BuildContext, TimeOfDay) timeFormatter;
 }
+
+String _defaultWeekDayFormatter(BuildContext context, DateTime date) =>
+    _getDayName(date.weekday);
 
 String _defaultTimeFormatter(BuildContext context, TimeOfDay time) =>
     "${time.hour.toString().padLeft(2, '0')}:"
