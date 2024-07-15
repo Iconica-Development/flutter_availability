@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/models/view_template_daydata.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
-import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
-import "package:flutter_availability/src/ui/widgets/template_time_selection.dart";
+import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
@@ -102,54 +102,6 @@ class _DayTemplateModificationScreenState
       },
     );
 
-    var timeSection = TemplateTimeSelection(
-      key: ValueKey(_template.templateData),
-      // TODO(Joey): Extract this
-      startTime: TimeOfDay.fromDateTime(
-        (_template.templateData as DayTemplateData).startTime,
-      ),
-      // TODO(Joey): Extract this
-      endTime: TimeOfDay.fromDateTime(
-        (_template.templateData as DayTemplateData).endTime,
-      ),
-      // TODO(Joey): Extract this
-      onStartChanged: (start) {
-        var startTime = (_template.templateData as DayTemplateData).startTime;
-        var updatedStartTime = DateTime(
-          startTime.year,
-          startTime.month,
-          startTime.day,
-          start.hour,
-          start.minute,
-        );
-        setState(() {
-          _template = _template.copyWith(
-            templateData: (_template.templateData as DayTemplateData).copyWith(
-              startTime: updatedStartTime,
-            ),
-          );
-        });
-      },
-      // TODO(Joey): Extract this
-      onEndChanged: (end) {
-        var endTime = (_template.templateData as DayTemplateData).endTime;
-        var updatedEndTime = DateTime(
-          endTime.year,
-          endTime.month,
-          endTime.day,
-          end.hour,
-          end.minute,
-        );
-        setState(() {
-          _template = _template.copyWith(
-            templateData: (_template.templateData as DayTemplateData).copyWith(
-              endTime: updatedEndTime,
-            ),
-          );
-        });
-      },
-    );
-
     var colorSection = TemplateColorSelection(
       selectedColor: _selectedColor,
       // TODO(Joey): Extract this
@@ -161,15 +113,14 @@ class _DayTemplateModificationScreenState
       },
     );
 
-    var pauseSection = PauseSelection(
-      breaks: (_template.templateData as DayTemplateData).breaks,
-      editingTemplate: true,
-      // TODO(Joey): Extrac this
-      onBreaksChanged: (breaks) {
+    var availabilitySection = TemplateTimeAndBreakSection(
+      dayData: ViewDayTemplateData.fromDayTemplateData(
+        _template.templateData as DayTemplateData,
+      ),
+      onDayDataChanged: (data) {
         setState(() {
           _template = _template.copyWith(
-            templateData: (_template.templateData as DayTemplateData)
-                .copyWith(breaks: breaks),
+            templateData: data.toDayTemplateData(),
           );
         });
       },
@@ -186,11 +137,9 @@ class _DayTemplateModificationScreenState
               const SizedBox(height: 24),
               templateTitleSection,
               const SizedBox(height: 24),
-              timeSection,
+              availabilitySection,
               const SizedBox(height: 24),
               colorSection,
-              const SizedBox(height: 24),
-              pauseSection,
               const SizedBox(height: 32),
             ],
           ),
