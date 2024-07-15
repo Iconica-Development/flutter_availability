@@ -51,6 +51,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     var availabilitySnapshot = useStream(availabilityStream);
 
+    // TODO(Joey): Way too complex of a function
     var selectedAvailabilities = _selectedRange != null
         ? availabilitySnapshot.data
                 ?.where(
@@ -93,6 +94,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       availabilities: availabilitySnapshot,
     );
 
+    // TODO(Joey): too complex of a definition for the function
     var onButtonPress = _selectedRange == null
         ? null
         : () {
@@ -111,6 +113,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
         title: translations.clearAvailabilityConfirmTitle,
         description: translations.clearAvailabilityConfirmDescription,
       );
+      // TODO(Joey): Expect a non nullable
       if (confirmed ?? false) {
         await service
             .clearAvailabilities(selectedAvailabilities.getAvailabilities());
@@ -132,6 +135,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       Text(translations.editAvailabilityButton),
     );
 
+    // TODO(Joey): This structure is defined multiple times
     var body = CustomScrollView(
       slivers: [
         SliverPadding(

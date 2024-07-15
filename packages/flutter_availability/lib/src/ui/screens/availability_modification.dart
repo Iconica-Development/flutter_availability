@@ -54,6 +54,8 @@ class _AvailabilitiesModificationScreenState
   @override
   void initState() {
     super.initState();
+    // TODO(Joey): These can be immediately assigned to the properties
+    // This removes the need for an initState
     _availability =
         widget.initialAvailabilities.getAvailabilities().firstOrNull ??
             AvailabilityModel(
@@ -76,6 +78,8 @@ class _AvailabilitiesModificationScreenState
     // TODO(freek): the selected period might be longer than 1 month
     //so we need to get all the availabilites through a stream
 
+    // TODO(Joey): separate logic from layout to adhere to the single
+    // responsibility principle
     Future<void> onSave() async {
       if (_clearAvailability) {
         await service.clearAvailabilities(
@@ -100,11 +104,15 @@ class _AvailabilitiesModificationScreenState
     }
 
     Future<void> onClickSave() async {
+      // TODO(Joey): The name confirmationDialogBuilder does not represent the
+      // expected implementation.
       var confirmed = await options.confirmationDialogBuilder(
         context,
         title: translations.availabilityDialogConfirmTitle,
         description: translations.availabilityDialogConfirmDescription,
       );
+      // TODO(Joey): We should make the interface of the dialog function return
+      // a non nullable bool. Now we are implicitly setting default behaviour
       if (confirmed ?? false) {
         await onSave();
       }
@@ -121,6 +129,7 @@ class _AvailabilitiesModificationScreenState
     var clearSection = AvailabilityClearSection(
       range: widget.dateRange,
       clearAvailable: _clearAvailability,
+      // TODO(Joey): Extract this function
       onChanged: (isChecked) {
         setState(() {
           _clearAvailability = isChecked;
@@ -130,6 +139,7 @@ class _AvailabilitiesModificationScreenState
 
     var templateSelection = AvailabilityTemplateSelection(
       selectedTemplates: _selectedTemplates,
+      // TODO(Joey): Extract this function
       onTemplateAdd: () async {
         var template = await widget.onTemplateSelection();
         if (template != null) {
@@ -138,6 +148,7 @@ class _AvailabilitiesModificationScreenState
           });
         }
       },
+      // TODO(Joey): Extract these functions
       onTemplatesRemoved: () {
         setState(() {
           _selectedTemplates = [];
@@ -150,9 +161,11 @@ class _AvailabilitiesModificationScreenState
       startTime: _startTime,
       endTime: _endTime,
       key: ValueKey([_startTime, _endTime]),
+      // TODO(Joey): Extract these
       onStartChanged: (start) => setState(() {
         _startTime = start;
       }),
+      // TODO(Joey): Extract these
       onEndChanged: (end) => setState(() {
         _endTime = end;
       }),
@@ -160,6 +173,7 @@ class _AvailabilitiesModificationScreenState
 
     var pauseSelection = PauseSelection(
       breaks: _availability.breaks,
+      // TODO(Joey): Extract these
       onBreaksChanged: (breaks) {
         setState(() {
           _availability = _availability.copyWith(breaks: breaks);
@@ -167,6 +181,8 @@ class _AvailabilitiesModificationScreenState
       },
     );
 
+    // TODO(Joey): this structure is defined multiple times, we should create
+    // a widget to handle this consistently
     var body = CustomScrollView(
       slivers: [
         SliverPadding(
@@ -181,6 +197,7 @@ class _AvailabilitiesModificationScreenState
                 templateSelection,
                 const SizedBox(height: 24),
                 timeSelection,
+                // TODO(Joey): Not divisible by 4
                 const SizedBox(height: 26),
                 pauseSelection,
               ],
