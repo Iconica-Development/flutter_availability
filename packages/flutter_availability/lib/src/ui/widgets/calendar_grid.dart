@@ -37,11 +37,8 @@ class CalendarGrid extends StatelessWidget {
     var calendarDays =
         _generateCalendarDays(month, days, selectedRange, colors, colorScheme);
 
-    // get the names of the days of the week
-    var dayNames = List.generate(7, (index) {
-      var day = DateTime(2024, 7, 8 + index); // this is a monday
-      return translations.weekDayAbbreviatedFormatter(context, day);
-    });
+    var dayNames =
+        getDaysOfTheWeekAsAbbreviatedStrings(translations, context);
 
     var calendarDaysRow = Row(
       children: List.generate(13, (index) {
@@ -120,6 +117,31 @@ class CalendarGrid extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Returns the days of the week as abbreviated strings
+/// The first day of the week is monday
+List<String> getDaysOfTheWeekAsAbbreviatedStrings(
+  AvailabilityTranslations translations,
+  BuildContext context,
+) {
+  var dayNames = List.generate(7, (index) {
+    var day = DateTime(2024, 7, 8 + index); // this is a monday
+    return translations.weekDayAbbreviatedFormatter(context, day);
+  });
+  return dayNames;
+}
+
+/// Returns the days of the week as strings
+List<String> getDaysOfTheWeekAsStrings(
+  AvailabilityTranslations translations,
+  BuildContext context,
+) {
+  var dayNames = List.generate(7, (index) {
+    var day = DateTime(2024, 7, 8 + index); // this is a monday
+    return translations.weekDayFormatter(context, day);
+  });
+  return dayNames;
 }
 
 /// A Special day in the calendar that needs to be displayed differently
