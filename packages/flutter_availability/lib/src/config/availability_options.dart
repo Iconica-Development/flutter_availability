@@ -125,6 +125,7 @@ class AvailabilityColors {
     this.outsideMonthTextColor,
     this.textDarkColor,
     this.textLightColor,
+    this.templateWeekOverviewBackgroundColor,
     this.templateColors = const [
       Color(0xFF9bb8f2),
       Color(0xFF4b77d0),
@@ -159,6 +160,11 @@ class AvailabilityColors {
   /// color. This is used to make sure the text is readable on light backgrounds
   /// If not provided the text color will be the theme's text color
   final Color? textDarkColor;
+
+  /// The color of the background in the template week overview that creates a 
+  /// layered effect by interchanging a color and a transparent color
+  /// If not provided the color will be the theme's [ColorScheme.surface]
+  final Color? templateWeekOverviewBackgroundColor;
 
   /// The colors that are used for the templates
   final List<Color> templateColors;
