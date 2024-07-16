@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/generic_time_selection.dart";
 import "package:flutter_availability/src/ui/widgets/input_fields.dart";
 import "package:flutter_availability/src/util/scope.dart";
-import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 ///
 class PauseSelection extends StatelessWidget {
@@ -17,10 +17,10 @@ class PauseSelection extends StatelessWidget {
   });
 
   /// The breaks that are currently set
-  final List<AvailabilityBreakModel> breaks;
+  final List<BreakViewModel> breaks;
 
   /// Callback for when the breaks are changed
-  final void Function(List<AvailabilityBreakModel>) onBreaksChanged;
+  final void Function(List<BreakViewModel>) onBreaksChanged;
 
   /// Whether the pause selection is used for editing a template
   final bool editingTemplate;
@@ -33,11 +33,12 @@ class PauseSelection extends StatelessWidget {
     var options = availabilityScope.options;
     var translations = options.translations;
 
-    Future<AvailabilityBreakModel?> openBreakDialog(
-      AvailabilityBreakModel? initialBreak,
+    Future<BreakViewModel?> openBreakDialog(
+      BreakViewModel? initialBreak,
     ) async =>
         AvailabilityBreakSelectionDialog.show(
           context,
+          initialBreak: initialBreak,
           userId: availabilityScope.userId,
           options: options,
           service: availabilityScope.service,
@@ -52,7 +53,7 @@ class PauseSelection extends StatelessWidget {
       onBreaksChanged(updatedBreaks);
     }
 
-    Future<void> onEditBreak(AvailabilityBreakModel availabilityBreak) async {
+    Future<void> onEditBreak(BreakViewModel availabilityBreak) async {
       var updatedBreak = await openBreakDialog(availabilityBreak);
       if (updatedBreak == null) return;
 
@@ -60,13 +61,12 @@ class PauseSelection extends StatelessWidget {
       onBreaksChanged(updatedBreaks);
     }
 
-    void onDeleteBreak(AvailabilityBreakModel availabilityBreak) {
+    void onDeleteBreak(BreakViewModel availabilityBreak) {
       var updatedBreaks = breaks.where((b) => b != availabilityBreak).toList();
       onBreaksChanged(updatedBreaks);
     }
 
-    var sortedBreaks = breaks.toList()
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    var sortedBreaks = breaks.toList()..sort((a, b) => a.compareTo(b));
 
     var addButton = options.bigTextButtonWrapperBuilder(
       context,
@@ -120,7 +120,7 @@ class BreakDisplay extends StatelessWidget {
   });
 
   /// The break to display
-  final AvailabilityBreakModel breakModel;
+  final BreakViewModel breakModel;
 
   /// Callback for when the minus button is clicked
   final VoidCallback onRemove;
@@ -138,11 +138,11 @@ class BreakDisplay extends StatelessWidget {
 
     var starTime = translations.timeFormatter(
       context,
-      TimeOfDay.fromDateTime(breakModel.startTime),
+      breakModel.startTime!,
     );
     var endTime = translations.timeFormatter(
       context,
-      TimeOfDay.fromDateTime(breakModel.endTime),
+      breakModel.endTime!,
     );
 
     // TODO(Joey): Watch out with gesture detectors
@@ -158,7 +158,7 @@ class BreakDisplay extends StatelessWidget {
         child: Row(
           children: [
             Text(
-              "${breakModel.duration.inMinutes} "
+              "${breakModel.duration!.inMinutes} "
               "${translations.timeMinutes}  |  "
               "$starTime - "
               "$endTime",
@@ -183,22 +183,22 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
   });
 
   /// The initial break to show in the dialog if any
-  final AvailabilityBreakModel? initialBreak;
+  final BreakViewModel? initialBreak;
 
   /// Whether the dialog is used to edit a template
   /// This will change the description of the dialog
   final bool editingTemplate;
 
   /// Opens the dialog to add a break
-  static Future<AvailabilityBreakModel?> show(
+  static Future<BreakViewModel?> show(
     BuildContext context, {
     required AvailabilityOptions options,
     required String userId,
     required AvailabilityService service,
     required bool editingTemplate,
-    AvailabilityBreakModel? initialBreak,
+    BreakViewModel? initialBreak,
   }) async =>
-      showModalBottomSheet<AvailabilityBreakModel>(
+      showModalBottomSheet<BreakViewModel>(
         context: context,
         useSafeArea: false,
         shape: const RoundedRectangleBorder(
@@ -225,20 +225,12 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
 
 class _AvailabilityBreakSelectionDialogState
     extends State<AvailabilityBreakSelectionDialog> {
-  late TimeOfDay? _startTime;
-  late TimeOfDay? _endTime;
-  late Duration? _duration;
+  late BreakViewModel _breakViewModel;
 
   @override
   void initState() {
     super.initState();
-    _startTime = widget.initialBreak != null
-        ? TimeOfDay.fromDateTime(widget.initialBreak!.startTime)
-        : null;
-    _endTime = widget.initialBreak != null
-        ? TimeOfDay.fromDateTime(widget.initialBreak!.endTime)
-        : null;
-    _duration = widget.initialBreak?.duration;
+    _breakViewModel = widget.initialBreak ?? const BreakViewModel();
   }
 
   @override
@@ -252,44 +244,31 @@ class _AvailabilityBreakSelectionDialogState
 
     void onUpdateDuration(Duration duration) {
       setState(() {
-        _duration = duration;
+        _breakViewModel = _breakViewModel.copyWith(duration: duration);
       });
     }
 
     void onUpdateStart(TimeOfDay start) {
       setState(() {
-        _startTime = start;
+        _breakViewModel = _breakViewModel.copyWith(startTime: start);
       });
     }
 
     void onUpdateEnd(TimeOfDay end) {
       setState(() {
-        _endTime = end;
+        _breakViewModel = _breakViewModel.copyWith(endTime: end);
       });
     }
 
-    var canSave = _startTime != null && _endTime != null;
+    var canSave = _breakViewModel.canSave;
 
     var onSaveButtonPress = canSave
         ? () {
-            var breakModel = AvailabilityBreakModel(
-              startTime: DateTime(
-                DateTime.now().year,
-                DateTime.now().month,
-                DateTime.now().day,
-                _startTime!.hour,
-                _startTime!.minute,
-              ),
-              endTime: DateTime(
-                DateTime.now().year,
-                DateTime.now().month,
-                DateTime.now().day,
-                _endTime!.hour,
-                _endTime!.minute,
-              ),
-              duration: _duration,
-            );
-            Navigator.of(context).pop(breakModel);
+            if (_breakViewModel.isValid) {
+              Navigator.of(context).pop(_breakViewModel);
+            }
+            debugPrint("Break is not valid");
+            // TODO(freek): show error message
           }
         : null;
 
@@ -333,7 +312,7 @@ class _AvailabilityBreakSelectionDialogState
                 Expanded(
                   flex: 2,
                   child: DurationInputField(
-                    initialValue: _duration,
+                    initialValue: _breakViewModel.duration,
                     onDurationChanged: onUpdateDuration,
                   ),
                 ),
@@ -342,13 +321,15 @@ class _AvailabilityBreakSelectionDialogState
             ),
             const SizedBox(height: 24),
             TimeSelection(
+              key: ValueKey(
+                [_breakViewModel.startTime, _breakViewModel.endTime],
+              ),
               // rebuild the widget when the start or end time changes
-              key: ValueKey([_startTime, _endTime]),
               title: translations.pauseDialogPeriodTitle,
               description: translations.pauseDialogPeriodDescription,
               crossAxisAlignment: CrossAxisAlignment.center,
-              startTime: _startTime,
-              endTime: _endTime,
+              startTime: _breakViewModel.startTime,
+              endTime: _breakViewModel.endTime,
               onStartChanged: onUpdateStart,
               onEndChanged: onUpdateEnd,
             ),

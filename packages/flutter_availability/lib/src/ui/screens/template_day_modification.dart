@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/ui/models/view_template_daydata.dart";
+import "package:flutter_availability/src/ui/view_models/day_template_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
@@ -28,25 +28,16 @@ class DayTemplateModificationScreen extends StatefulWidget {
 
 class _DayTemplateModificationScreenState
     extends State<DayTemplateModificationScreen> {
-  late int? _selectedColor;
-  late AvailabilityTemplateModel _template;
+  late DayTemplateViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _selectedColor = widget.template?.color;
-    _template = widget.template ??
-        AvailabilityTemplateModel(
-          userId: "1",
-          name: "",
-          color: 0,
-          templateType: AvailabilityTemplateType.day,
-          templateData: DayTemplateData(
-            startTime: DateTime.now(),
-            endTime: DateTime.now(),
-            breaks: [],
-          ),
-        );
+    if (widget.template != null) {
+      _viewModel = DayTemplateViewModel.fromTemplate(widget.template!);
+    } else {
+      _viewModel = const DayTemplateViewModel();
+    }
   }
 
   @override
@@ -59,20 +50,21 @@ class _DayTemplateModificationScreenState
     var spacing = options.spacing;
 
     Future<void> onDeletePressed() async {
-      await service.deleteTemplate(_template);
+      await service.deleteTemplate(widget.template!);
       widget.onExit();
     }
 
     Future<void> onSavePressed() async {
+      var template = _viewModel.toTemplate();
       if (widget.template == null) {
-        await service.createTemplate(_template);
+        await service.createTemplate(template);
       } else {
-        await service.updateTemplate(_template);
+        await service.updateTemplate(template);
       }
       widget.onExit();
     }
 
-    var canSave = _template.name.isNotEmpty && _selectedColor != null;
+    var canSave = _viewModel.canSave;
 
     var saveButton = options.primaryButtonBuilder(
       context,
@@ -94,34 +86,29 @@ class _DayTemplateModificationScreenState
     );
 
     var templateTitleSection = TemplateNameInput(
-      initialValue: _template.name,
+      initialValue: _viewModel.name,
       onNameChanged: (name) {
         setState(() {
-          _template = _template.copyWith(name: name);
+          _viewModel = _viewModel.copyWith(name: name);
         });
       },
     );
 
     var colorSection = TemplateColorSelection(
-      selectedColor: _selectedColor,
+      selectedColor: _viewModel.color,
       // TODO(Joey): Extract this
       onColorSelected: (color) {
         setState(() {
-          _selectedColor = color;
-          _template = _template.copyWith(color: color);
+          _viewModel = _viewModel.copyWith(color: color);
         });
       },
     );
 
     var availabilitySection = TemplateTimeAndBreakSection(
-      dayData: ViewDayTemplateData.fromDayTemplateData(
-        _template.templateData as DayTemplateData,
-      ),
+      dayData: _viewModel.data,
       onDayDataChanged: (data) {
         setState(() {
-          _template = _template.copyWith(
-            templateData: data.toDayTemplateData(),
-          );
+          _viewModel = _viewModel.copyWith(data: data);
         });
       },
     );

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/availability_clear.dart";
 import "package:flutter_availability/src/ui/widgets/availability_template_selection.dart";
 import "package:flutter_availability/src/ui/widgets/availabillity_time_selection.dart";
@@ -172,12 +173,16 @@ class _AvailabilitiesModificationScreenState
     );
 
     var pauseSelection = PauseSelection(
-      breaks: _availability.breaks,
+      breaks: _availability.breaks
+          .map(BreakViewModel.fromAvailabilityBreakModel)
+          .toList(),
       editingTemplate: false,
       // TODO(Joey): Extract these
       onBreaksChanged: (breaks) {
         setState(() {
-          _availability = _availability.copyWith(breaks: breaks);
+          _availability = _availability.copyWith(
+            breaks: breaks.map((b) => b.toBreak()).toList(),
+          );
         });
       },
     );

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/ui/models/view_template_daydata.dart";
+import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
+import "package:flutter_availability/src/ui/view_models/week_template_view_models.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
@@ -30,23 +31,16 @@ class WeekTemplateModificationScreen extends StatefulWidget {
 
 class _WeekTemplateModificationScreenState
     extends State<WeekTemplateModificationScreen> {
-  late int? _selectedColor;
-  late AvailabilityTemplateModel _template;
   bool _editing = true;
   WeekDay _selectedDay = WeekDay.monday;
+  late WeekTemplateViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _selectedColor = widget.template?.color;
-    _template = widget.template ??
-        AvailabilityTemplateModel(
-          userId: "1",
-          name: "",
-          color: 0,
-          templateType: AvailabilityTemplateType.week,
-          templateData: WeekTemplateData.forDays(),
-        );
+    _viewModel = widget.template != null
+        ? WeekTemplateViewModel.fromTemplate(widget.template!)
+        : const WeekTemplateViewModel();
   }
 
   @override
@@ -59,11 +53,31 @@ class _WeekTemplateModificationScreenState
     var translations = options.translations;
     var spacing = options.spacing;
 
-    var weekTemplateDate = _template.templateData as WeekTemplateData;
-    var selectedDayData = weekTemplateDate.data[_selectedDay];
+    var weekTemplateDate = _viewModel.data;
+    var selectedDayData = weekTemplateDate[_selectedDay];
+
+    void onDayDataChanged(DayTemplateDataViewModel data) {
+      setState(() {
+        // create a new copy of an unmodifiable map that can be modified
+        var updatedDays =
+            Map<WeekDay, DayTemplateDataViewModel>.from(weekTemplateDate);
+        if (data.isEmpty) {
+          updatedDays.remove(_selectedDay);
+        } else {
+          updatedDays[_selectedDay] = data;
+        }
+        _viewModel = _viewModel.copyWith(data: updatedDays);
+      });
+    }
+
+    void onDaySelected(int day) {
+      setState(() {
+        _selectedDay = WeekDay.values[day];
+      });
+    }
 
     Future<void> onDeletePressed() async {
-      await service.deleteTemplate(_template);
+      await service.deleteTemplate(widget.template!);
       widget.onExit();
     }
 
@@ -84,15 +98,20 @@ class _WeekTemplateModificationScreenState
     }
 
     Future<void> onSavePressed() async {
+      if (!_viewModel.isValid) {
+        // TODO(freek): show error message
+        return;
+      }
+      var template = _viewModel.toTemplate();
       if (widget.template == null) {
-        await service.createTemplate(_template);
+        await service.createTemplate(template);
       } else {
-        await service.updateTemplate(_template);
+        await service.updateTemplate(template);
       }
       widget.onExit();
     }
 
-    var canSave = _template.name.isNotEmpty && _selectedColor != null;
+    var canSave = _viewModel.canSave;
     var nextButton = options.primaryButtonBuilder(
       context,
       canSave ? onNextPressed : null,
@@ -125,20 +144,19 @@ class _WeekTemplateModificationScreenState
     );
 
     var templateTitleSection = TemplateNameInput(
-      initialValue: _template.name,
+      initialValue: _viewModel.name,
       onNameChanged: (name) {
         setState(() {
-          _template = _template.copyWith(name: name);
+          _viewModel = _viewModel.copyWith(name: name);
         });
       },
     );
 
     var colorSection = TemplateColorSelection(
-      selectedColor: _selectedColor,
+      selectedColor: _viewModel.color,
       onColorSelected: (color) {
         setState(() {
-          _selectedColor = color;
-          _template = _template.copyWith(color: color);
+          _viewModel = _viewModel.copyWith(color: color);
         });
       },
     );
@@ -148,37 +166,13 @@ class _WeekTemplateModificationScreenState
       const SizedBox(height: 24),
       Padding(
         padding: EdgeInsets.only(left: spacing.sidePadding),
-        child: TemplateWeekDaySelection(
-          onDaySelected: (day) {
-            setState(() {
-              _selectedDay = WeekDay.values[day];
-            });
-          },
-        ),
+        child: TemplateWeekDaySelection(onDaySelected: onDaySelected),
       ),
       const SizedBox(height: 24),
       _WeekTemplateSidePadding(
         child: TemplateTimeAndBreakSection(
-          dayData: selectedDayData != null
-              ? ViewDayTemplateData.fromDayTemplateData(
-                  selectedDayData,
-                )
-              : const ViewDayTemplateData(),
-          onDayDataChanged: (data) {
-            setState(() {
-              _template = _template.copyWith(
-                templateData:
-                    // create a copy of the week template data
-                    WeekTemplateData(
-                  data: {
-                    for (var entry in weekTemplateDate.data.entries)
-                      entry.key: entry.value,
-                    _selectedDay: data.toDayTemplateData(),
-                  },
-                ),
-              );
-            });
-          },
+          dayData: selectedDayData ?? const DayTemplateDataViewModel(),
+          onDayDataChanged: onDayDataChanged,
         ),
       ),
       const SizedBox(height: 24),
@@ -203,20 +197,20 @@ class _WeekTemplateModificationScreenState
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Color(_template.color),
+                    color: Color(_viewModel.color ?? 0),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   width: 20,
                   height: 20,
                 ),
                 const SizedBox(width: 12),
-                Text(_template.name, style: textTheme.bodyLarge),
+                Text(_viewModel.name ?? "", style: textTheme.bodyLarge),
               ],
             ),
           ),
           const SizedBox(height: 30),
           TemplateWeekOverview(
-            template: _template,
+            template: _viewModel,
           ),
         ],
       ),
