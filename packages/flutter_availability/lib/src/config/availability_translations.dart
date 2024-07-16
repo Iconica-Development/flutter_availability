@@ -37,6 +37,7 @@ class AvailabilityTranslations {
     required this.createDayTemplate,
     required this.createWeekTemplate,
     required this.deleteTemplateButton,
+    required this.editTemplateButton,
     required this.dayTemplateTitle,
     required this.weekTemplateTitle,
     required this.weekTemplateDayTitle,
@@ -60,6 +61,7 @@ class AvailabilityTranslations {
     required this.pauseDialogPeriodDescription,
     required this.saveButton,
     required this.addButton,
+    required this.nextButton,
     required this.confirmText,
     required this.cancelText,
     required this.timeFormatter,
@@ -103,6 +105,7 @@ class AvailabilityTranslations {
     this.createDayTemplate = "Create day template",
     this.createWeekTemplate = "Create week template",
     this.deleteTemplateButton = "Delete template",
+    this.editTemplateButton = "Edit template",
     this.dayTemplateTitle = "Day template",
     this.weekTemplateTitle = "Week template",
     this.weekTemplateDayTitle = "When",
@@ -130,6 +133,7 @@ class AvailabilityTranslations {
         "Select between which times you want to take a break",
     this.saveButton = "Save",
     this.addButton = "Add",
+    this.nextButton = "Next",
     this.confirmText = "Yes",
     this.cancelText = "No",
     this.dayMonthFormatter = _defaultDayMonthFormatter,
@@ -219,6 +223,9 @@ class AvailabilityTranslations {
   /// The label on the button to delete a template
   final String deleteTemplateButton;
 
+  /// The label on the button to edit a template
+  final String editTemplateButton;
+
   /// The title for the day template edit screen
   final String dayTemplateTitle;
 
@@ -291,6 +298,9 @@ class AvailabilityTranslations {
   /// The text on the add button
   final String addButton;
 
+  /// The text on the next button
+  final String nextButton;
+
   /// The text on the confirm button in the confirmation dialog
   final String confirmText;
 
@@ -319,7 +329,7 @@ class AvailabilityTranslations {
   final String Function(BuildContext, DateTime) weekDayAbbreviatedFormatter;
 
   /// Gets the weekday formatted as a string
-  /// 
+  ///
   /// The default implementation is the full name of the weekday in english
   final String Function(BuildContext, DateTime) weekDayFormatter;
 

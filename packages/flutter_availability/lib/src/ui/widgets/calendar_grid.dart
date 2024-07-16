@@ -37,8 +37,7 @@ class CalendarGrid extends StatelessWidget {
     var calendarDays =
         _generateCalendarDays(month, days, selectedRange, colors, colorScheme);
 
-    var dayNames =
-        getDaysOfTheWeekAsAbbreviatedStrings(translations, context);
+    var dayNames = getDaysOfTheWeekAsAbbreviatedStrings(translations, context);
 
     var calendarDaysRow = Row(
       children: List.generate(13, (index) {

@@ -3,7 +3,7 @@ import "package:flutter_availability/src/ui/models/view_template_daydata.dart";
 import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_selection.dart";
 
-/// Section for selecting the time and breaks for a single day 
+/// Section for selecting the time and breaks for a single day
 class TemplateTimeAndBreakSection extends StatelessWidget {
   ///
   const TemplateTimeAndBreakSection({
