@@ -4,6 +4,7 @@ import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/screens/availability_modification.dart";
 import "package:flutter_availability/src/ui/screens/template_day_modification.dart";
 import "package:flutter_availability/src/ui/screens/template_overview.dart";
+import "package:flutter_availability/src/ui/screens/template_week_modification.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 ///
@@ -17,6 +18,17 @@ MaterialPageRoute homePageRoute(VoidCallback onExit) => MaterialPageRoute(
       ),
     );
 
+Future _routeToTemplateEditScreen(
+  BuildContext context,
+  AvailabilityTemplateModel template,
+) async {
+  if (template.templateType == AvailabilityTemplateType.day) {
+    await Navigator.of(context).push(templateEditDayRoute(template));
+  } else if (template.templateType == AvailabilityTemplateType.week) {
+    await Navigator.of(context).push(templateEditWeekRoute(template));
+  }
+}
+
 ///
 MaterialPageRoute<AvailabilityTemplateModel?> templateOverviewRoute({
   bool allowSelection = false,
@@ -24,21 +36,22 @@ MaterialPageRoute<AvailabilityTemplateModel?> templateOverviewRoute({
     MaterialPageRoute(
       builder: (context) => AvailabilityTemplateOverview(
         onExit: () => Navigator.of(context).pop(),
-        onEditTemplate: (template) async {
-          if (template.templateType == AvailabilityTemplateType.day) {
-            await Navigator.of(context).push(templateEditDayRoute(template));
-          }
-        },
+        onEditTemplate: (template) async =>
+            _routeToTemplateEditScreen(context, template),
         onAddTemplate: (type) async {
           if (type == AvailabilityTemplateType.day) {
             await Navigator.of(context).push(templateEditDayRoute(null));
+          } else if (type == AvailabilityTemplateType.week) {
+            await Navigator.of(context).push(templateEditWeekRoute(null));
           }
         },
-        onSelectTemplate: allowSelection
-            ? (template) async {
-                Navigator.of(context).pop(template);
-              }
-            : null,
+        onSelectTemplate: (template) async {
+          if (allowSelection) {
+            Navigator.of(context).pop(template);
+          } else {
+            await _routeToTemplateEditScreen(context, template);
+          }
+        },
       ),
     );
 
@@ -46,6 +59,15 @@ MaterialPageRoute<AvailabilityTemplateModel?> templateOverviewRoute({
 MaterialPageRoute templateEditDayRoute(AvailabilityTemplateModel? template) =>
     MaterialPageRoute(
       builder: (context) => DayTemplateModificationScreen(
+        template: template,
+        onExit: () => Navigator.of(context).pop(),
+      ),
+    );
+
+///
+MaterialPageRoute templateEditWeekRoute(AvailabilityTemplateModel? template) =>
+    MaterialPageRoute(
+      builder: (context) => WeekTemplateModificationScreen(
         template: template,
         onExit: () => Navigator.of(context).pop(),
       ),
