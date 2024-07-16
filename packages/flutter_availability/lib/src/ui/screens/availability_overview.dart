@@ -51,18 +51,16 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     var availabilitySnapshot = useStream(availabilityStream);
 
-    // TODO(Joey): Way too complex of a function
-    var selectedAvailabilities = _selectedRange != null
-        ? availabilitySnapshot.data
-                ?.where(
-                  (a) =>
-                      !a.availabilityModel.startDate
-                          .isBefore(_selectedRange!.start) &&
-                      !a.availabilityModel.endDate.isAfter(_selectedRange!.end),
-                )
-                .toList() ??
-            <AvailabilityWithTemplate>[]
-        : <AvailabilityWithTemplate>[];
+    var selectedAvailabilities = [
+      if (_selectedRange != null) ...[
+        ...?availabilitySnapshot.data?.where(
+          (item) => item.availabilityModel.isInRange(
+            _selectedRange!.start,
+            _selectedRange!.end,
+          ),
+        ),
+      ],
+    ];
 
     var availabilitiesAreSelected = selectedAvailabilities.isNotEmpty;
 
@@ -85,13 +83,13 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
           _selectedRange = range;
         });
       },
-      availabilities: availabilitySnapshot,
+      availabilitiesStream: availabilityStream,
       selectedRange: _selectedRange,
     );
 
     var templateLegend = TemplateLegend(
       onViewTemplates: widget.onViewTemplates,
-      availabilities: availabilitySnapshot,
+      availabilitiesStream: availabilityStream,
     );
 
     // TODO(Joey): too complex of a definition for the function

@@ -52,6 +52,26 @@ class AvailabilityModel {
         endDate: endDate ?? this.endDate,
         breaks: breaks ?? this.breaks,
       );
+
+  /// returns true if the date of the availability overlaps with the given range
+  /// This disregards the time of the date
+  bool isInRange(DateTime start, DateTime end) {
+    var startDate = DateTime(start.year, start.month, start.day);
+    var endDate = DateTime(end.year, end.month, end.day);
+    var availabilityStartDate = DateTime(
+      this.startDate.year,
+      this.startDate.month,
+      this.startDate.day,
+    );
+    var availabilityEndDate = DateTime(
+      this.endDate.year,
+      this.endDate.month,
+      this.endDate.day,
+    );
+    return startDate.isAtSameMomentAs(availabilityStartDate) ||
+        (startDate.isBefore(availabilityEndDate) &&
+            endDate.isAfter(availabilityStartDate));
+  }
 }
 
 /// A model defining the structure of a break within an [AvailabilityModel]

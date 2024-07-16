@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/src/ui/widgets/calendar.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
@@ -7,7 +9,7 @@ class CalendarGrid extends StatelessWidget {
   ///
   const CalendarGrid({
     required this.month,
-    required this.days,
+    required this.availabilitiesStream,
     required this.onDayTap,
     required this.selectedRange,
     super.key,
@@ -16,8 +18,8 @@ class CalendarGrid extends StatelessWidget {
   /// The current month to display
   final DateTime month;
 
-  /// A list of days that need to be displayed differently
-  final List<CalendarDay> days;
+  /// The stream of availabilities with templates for the current month
+  final Stream<List<AvailabilityWithTemplate>> availabilitiesStream;
 
   /// A callback that is called when a day is tapped
   final void Function(DateTime) onDayTap;
@@ -34,8 +36,6 @@ class CalendarGrid extends StatelessWidget {
     var options = availabilityScope.options;
     var colors = options.colors;
     var translations = options.translations;
-    var calendarDays =
-        _generateCalendarDays(month, days, selectedRange, colors, colorScheme);
 
     var dayNames = getDaysOfTheWeekAsAbbreviatedStrings(translations, context);
 
@@ -59,57 +59,71 @@ class CalendarGrid extends StatelessWidget {
       children: [
         calendarDaysRow,
         const SizedBox(height: 10),
-        GridView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          itemCount: calendarDays.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 7,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-          ),
-          itemBuilder: (context, index) {
-            // TODO(Joey): Extract all this as a widget
-            var day = calendarDays[index];
-            var dayColor = day.color ??
-                colors.customAvailabilityColor ??
-                colorScheme.secondary;
-            var textColor = day.outsideMonth && !day.isSelected
-                ? colors.outsideMonthTextColor ?? colorScheme.onSurface
-                : _getTextColor(
-                    dayColor,
-                    colors.textLightColor ?? Colors.white,
-                    colors.textDarkColor,
-                  );
-            var textStyle = textTheme.bodyLarge?.copyWith(color: textColor);
-
-            // TODO(Joey): Watch out for using gesture detectors
-            return GestureDetector(
-              onTap: () => onDayTap(day.date),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: dayColor,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                    color: day.isSelected && !day.outsideMonth
-                        ? colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Text(day.date.day.toString(), style: textStyle),
-                    ),
-                    if (day.templateDeviation) ...[
-                      Positioned(
-                        right: 4,
-                        child: Text("*", style: textStyle),
-                      ),
-                    ],
-                  ],
-                ),
+        StreamBuilder<List<AvailabilityWithTemplate>>(
+          stream: null,
+          builder: (context, snapshot) {
+            var days = mapAvailabilitiesToCalendarDays(snapshot);
+            var calendarDays = _generateCalendarDays(
+              month,
+              days,
+              selectedRange,
+              colors,
+              colorScheme,
+            );
+            return GridView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: calendarDays.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
               ),
+              itemBuilder: (context, index) {
+                // TODO(Joey): Extract all this as a widget
+                var day = calendarDays[index];
+                var dayColor = day.color ??
+                    colors.customAvailabilityColor ??
+                    colorScheme.secondary;
+                var textColor = day.outsideMonth && !day.isSelected
+                    ? colors.outsideMonthTextColor ?? colorScheme.onSurface
+                    : _getTextColor(
+                        dayColor,
+                        colors.textLightColor ?? Colors.white,
+                        colors.textDarkColor,
+                      );
+                var textStyle = textTheme.bodyLarge?.copyWith(color: textColor);
+
+                // TODO(Joey): Watch out for using gesture detectors
+                return GestureDetector(
+                  onTap: () => onDayTap(day.date),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: dayColor,
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: day.isSelected && !day.outsideMonth
+                            ? colorScheme.primary
+                            : Colors.transparent,
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child:
+                              Text(day.date.day.toString(), style: textStyle),
+                        ),
+                        if (day.templateDeviation) ...[
+                          Positioned(
+                            right: 4,
+                            child: Text("*", style: textStyle),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
             );
           },
         ),

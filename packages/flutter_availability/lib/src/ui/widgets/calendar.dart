@@ -10,7 +10,7 @@ class CalendarView extends StatelessWidget {
   ///
   const CalendarView({
     required this.month,
-    required this.availabilities,
+    required this.availabilitiesStream,
     required this.onMonthChanged,
     required this.onEditDateRange,
     required this.selectedRange,
@@ -21,7 +21,7 @@ class CalendarView extends StatelessWidget {
   final DateTime month;
 
   /// The stream of availabilities with templates for the current month
-  final AsyncSnapshot<List<AvailabilityWithTemplate>> availabilities;
+  final Stream<List<AvailabilityWithTemplate>> availabilitiesStream;
 
   ///
   final void Function(DateTime month) onMonthChanged;
@@ -68,11 +68,6 @@ class CalendarView extends StatelessWidget {
     var options = availabilityScope.options;
     var translations = options.translations;
 
-    var mappedCalendarDays = _mapAvailabilitiesToCalendarDays(availabilities);
-    var existsTemplateDeviations = mappedCalendarDays.any(
-      (element) => element.templateDeviation,
-    );
-
     var monthDateSelector = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -109,7 +104,7 @@ class CalendarView extends StatelessWidget {
 
     var calendarGrid = CalendarGrid(
       month: month,
-      days: mappedCalendarDays,
+      availabilitiesStream: availabilitiesStream,
       onDayTap: _onTapDate,
       selectedRange: selectedRange,
     );
@@ -124,16 +119,37 @@ class CalendarView extends StatelessWidget {
       ],
     );
 
+    var templeDeviationSection = StreamBuilder<List<AvailabilityWithTemplate>>(
+      stream: availabilitiesStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return options.loadingIndicatorBuilder(context);
+        }
+        var mappedCalendarDays = mapAvailabilitiesToCalendarDays(snapshot);
+        var existsTemplateDeviations = mappedCalendarDays.any(
+          (element) => element.templateDeviation,
+        );
+
+        if (existsTemplateDeviations) {
+          return Column(
+            children: [
+              const SizedBox(height: 24),
+              templateDeviationMarking,
+            ],
+          );
+        }
+
+        return const SizedBox.shrink();
+      },
+    );
+
     return Column(
       children: [
         monthDateSelector,
         const Divider(height: 1),
         const SizedBox(height: 20),
         calendarGrid,
-        if (existsTemplateDeviations) ...[
-          const SizedBox(height: 24),
-          templateDeviationMarking,
-        ],
+        templeDeviationSection,
       ],
     );
   }
@@ -166,7 +182,7 @@ double _calculateTextWidthOfLongestMonth(
 /// Maps the availabilities to CalendarDays
 /// This is a helper function to make the code more readable
 /// It also determines if the template is a deviation from the original
-List<CalendarDay> _mapAvailabilitiesToCalendarDays(
+List<CalendarDay> mapAvailabilitiesToCalendarDays(
   AsyncSnapshot<List<AvailabilityWithTemplate>> availabilitySnapshot,
 ) =>
     availabilitySnapshot.data?.map(

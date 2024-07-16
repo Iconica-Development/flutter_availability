@@ -38,9 +38,6 @@ class AvailabilityTemplateOverview extends HookWidget {
     var dayTemplateStream = useMemoized(() => service.getDayTemplates());
     var weekTemplateStream = useMemoized(() => service.getWeekTemplates());
 
-    var dayTemplatesSnapshot = useStream(dayTemplateStream);
-    var weekTemplatesSnapshot = useStream(weekTemplateStream);
-
     var title = Center(
       child: Text(
         translations.templateScreenTitle,
@@ -54,13 +51,13 @@ class AvailabilityTemplateOverview extends HookWidget {
       onEditTemplate: onEditTemplate,
       onSelectTemplate: onSelectTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.day),
-      templatesSnapshot: dayTemplatesSnapshot,
+      templatesStream: dayTemplateStream,
     );
 
     var weekTemplateSection = _TemplateListSection(
       sectionTitle: translations.weekTemplates,
       createButtonText: translations.createWeekTemplate,
-      templatesSnapshot: weekTemplatesSnapshot,
+      templatesStream: weekTemplateStream,
       onEditTemplate: onEditTemplate,
       onSelectTemplate: onSelectTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.week),
@@ -92,7 +89,7 @@ class _TemplateListSection extends StatelessWidget {
   const _TemplateListSection({
     required this.sectionTitle,
     required this.createButtonText,
-    required this.templatesSnapshot,
+    required this.templatesStream,
     required this.onEditTemplate,
     required this.onAddTemplate,
     required this.onSelectTemplate,
@@ -101,7 +98,7 @@ class _TemplateListSection extends StatelessWidget {
   final String sectionTitle;
   final String createButtonText;
   // transform the stream to a snapshot as low as possible to reduce rebuilds
-  final AsyncSnapshot<List<AvailabilityTemplateModel>> templatesSnapshot;
+  final Stream<List<AvailabilityTemplateModel>> templatesStream;
   final void Function(AvailabilityTemplateModel template) onEditTemplate;
   final VoidCallback onAddTemplate;
   final void Function(AvailabilityTemplateModel template)? onSelectTemplate;
@@ -143,57 +140,60 @@ class _TemplateListSection extends StatelessWidget {
       ),
     );
 
-    return Column(
-      children: [
-        Text(sectionTitle, style: textTheme.titleMedium),
-        const SizedBox(height: 8),
-        const Divider(height: 1),
-        // TODO(Joey): Do not make this nullable, in the build make sure to
-        // have the expected value ready.
-        for (var template
-            in templatesSnapshot.data ?? <AvailabilityTemplateModel>[]) ...[
-          // TODO(Joey): Extract this as a widget
-          // TODO(Joey): Do not simply use gesture detectors, always think of
-          // semantics, interaction and other UX
-          GestureDetector(
-            onTap: () => onClickTemplate(template),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(top: 8),
-              decoration: BoxDecoration(
-                border: Border.all(color: theme.dividerColor, width: 1),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color(template.color),
-                      borderRadius: BorderRadius.circular(5),
+    return StreamBuilder<List<AvailabilityTemplateModel>>(
+      stream: templatesStream,
+      builder: (context, snapshot) => Column(
+        children: [
+          Text(sectionTitle, style: textTheme.titleMedium),
+          const SizedBox(height: 8),
+          const Divider(height: 1),
+          // TODO(Joey): Do not make this nullable, in the build make sure to
+          // have the expected value ready.
+          for (var template
+              in snapshot.data ?? <AvailabilityTemplateModel>[]) ...[
+            // TODO(Joey): Extract this as a widget
+            // TODO(Joey): Do not simply use gesture detectors, always think of
+            // semantics, interaction and other UX
+            GestureDetector(
+              onTap: () => onClickTemplate(template),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(top: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: theme.dividerColor, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color(template.color),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      height: 20,
+                      width: 20,
                     ),
-                    height: 20,
-                    width: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(template.name, style: textTheme.bodyLarge),
-                  const Spacer(),
-                  // TODO(Joey): Do not simply use gesture detectors, always
-                  // think of semantics, interaction and other UX
-                  GestureDetector(
-                    onTap: () => onEditTemplate(template),
-                    child: const Icon(Icons.edit),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(template.name, style: textTheme.bodyLarge),
+                    const Spacer(),
+                    // TODO(Joey): Do not simply use gesture detectors, always
+                    // think of semantics, interaction and other UX
+                    GestureDetector(
+                      onTap: () => onEditTemplate(template),
+                      child: const Icon(Icons.edit),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
+          if (snapshot.connectionState == ConnectionState.waiting) ...[
+            Center(child: options.loadingIndicatorBuilder(context)),
+          ],
+          const SizedBox(height: 8),
+          templateCreationButton,
         ],
-        if (templatesSnapshot.connectionState == ConnectionState.waiting) ...[
-          Center(child: options.loadingIndicatorBuilder(context)),
-        ],
-        const SizedBox(height: 8),
-        templateCreationButton,
-      ],
+      ),
     );
   }
 }
