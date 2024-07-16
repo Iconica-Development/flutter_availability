@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/ui/models/view_template_daydata.dart";
+import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_selection.dart";
 
@@ -8,15 +8,15 @@ class TemplateTimeAndBreakSection extends StatelessWidget {
   ///
   const TemplateTimeAndBreakSection({
     required this.onDayDataChanged,
-    this.dayData = const ViewDayTemplateData(),
+    this.dayData = const DayTemplateDataViewModel(),
     super.key,
   });
 
   /// The day data to display and edit
-  final ViewDayTemplateData dayData;
+  final DayTemplateDataViewModel dayData;
 
   /// Callback for when the day data changes
-  final void Function(ViewDayTemplateData data) onDayDataChanged;
+  final void Function(DayTemplateDataViewModel data) onDayDataChanged;
 
   @override
   Widget build(BuildContext context) => Column(

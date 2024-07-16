@@ -161,7 +161,7 @@ class AvailabilityColors {
   /// If not provided the text color will be the theme's text color
   final Color? textDarkColor;
 
-  /// The color of the background in the template week overview that creates a 
+  /// The color of the background in the template week overview that creates a
   /// layered effect by interchanging a color and a transparent color
   /// If not provided the color will be the theme's [ColorScheme.surface]
   final Color? templateWeekOverviewBackgroundColor;

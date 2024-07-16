@@ -1,21 +1,23 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// The data for creating or editing a day template
-class ViewDayTemplateData {
+class DayTemplateDataViewModel {
   /// Constructor
-  const ViewDayTemplateData({
+  const DayTemplateDataViewModel({
     this.startTime,
     this.endTime,
     this.breaks = const [],
   });
 
   /// Create a new instance from a [DayTemplateData]
-  factory ViewDayTemplateData.fromDayTemplateData(DayTemplateData data) =>
-      ViewDayTemplateData(
+  factory DayTemplateDataViewModel.fromDayTemplateData(DayTemplateData data) =>
+      DayTemplateDataViewModel(
         startTime: TimeOfDay.fromDateTime(data.startTime),
         endTime: TimeOfDay.fromDateTime(data.endTime),
-        breaks: data.breaks,
+        breaks:
+            data.breaks.map(BreakViewModel.fromAvailabilityBreakModel).toList(),
       );
 
   /// The start time to apply on a new availability
@@ -25,18 +27,28 @@ class ViewDayTemplateData {
   final TimeOfDay? endTime;
 
   /// A list of breaks to apply to every new availability
-  final List<AvailabilityBreakModel> breaks;
+  final List<BreakViewModel> breaks;
 
-  /// Whether the data is valid for saving
-  bool get isValid => startTime != null && endTime != null;
+  /// Whether the data is valid
+  /// The start is before the end
+  /// There are no breaks that are invalid
+  /// The breaks are not outside the start and end time
+  /// The breaks are not overlapping
+  bool get isValid => canSave && breaks.every((b) => b.isValid);
+
+  /// Whether the save/next button should be enabled
+  bool get canSave => startTime != null && endTime != null;
+
+  /// Whether the day is empty and can be removed from the template when saving
+  bool get isEmpty => startTime == null && endTime == null && breaks.isEmpty;
 
   /// Create a copy with new values
-  ViewDayTemplateData copyWith({
+  DayTemplateDataViewModel copyWith({
     TimeOfDay? startTime,
     TimeOfDay? endTime,
-    List<AvailabilityBreakModel>? breaks,
+    List<BreakViewModel>? breaks,
   }) =>
-      ViewDayTemplateData(
+      DayTemplateDataViewModel(
         startTime: startTime ?? this.startTime,
         endTime: endTime ?? this.endTime,
         breaks: breaks ?? this.breaks,
@@ -47,6 +59,6 @@ class ViewDayTemplateData {
         startTime:
             DateTime(0, 0, 0, startTime?.hour ?? 0, startTime?.minute ?? 0),
         endTime: DateTime(0, 0, 0, endTime?.hour ?? 0, endTime?.minute ?? 0),
-        breaks: breaks,
+        breaks: breaks.map((b) => b.toBreak()).toList(),
       );
 }

@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/ui/models/view_template_daydata.dart";
+import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
+import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
+import "package:flutter_availability/src/ui/view_models/week_template_view_models.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
@@ -13,7 +15,7 @@ class TemplateWeekOverview extends StatelessWidget {
   });
 
   /// The template to show
-  final AvailabilityTemplateModel template;
+  final WeekTemplateViewModel template;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class TemplateWeekOverview extends StatelessWidget {
 
     var dayNames = getDaysOfTheWeekAsStrings(translations, context);
 
-    var templateData = template.templateData as WeekTemplateData;
+    var templateData = template.data;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,11 +52,8 @@ class TemplateWeekOverview extends StatelessWidget {
               for (var day in WeekDay.values) ...[
                 _TemplateDayDetailRow(
                   dayName: dayNames[day.index],
-                  dayData: templateData.data.containsKey(day)
-                      ? ViewDayTemplateData.fromDayTemplateData(
-                          templateData.data[day]!,
-                        )
-                      : null,
+                  dayData:
+                      templateData.containsKey(day) ? templateData[day] : null,
                   isOdd: day.index.isOdd,
                 ),
               ],
@@ -81,7 +80,7 @@ class _TemplateDayDetailRow extends StatelessWidget {
   final bool isOdd;
 
   /// The data of the day
-  final ViewDayTemplateData? dayData;
+  final DayTemplateDataViewModel? dayData;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +101,7 @@ class _TemplateDayDetailRow extends StatelessWidget {
       dayPeriod = translations.unavailable;
     }
 
-    var breaks = dayData?.breaks ?? <AvailabilityBreakModel>[];
+    var breaks = dayData?.breaks ?? <BreakViewModel>[];
 
     BoxDecoration? boxDecoration;
     if (isOdd) {
@@ -134,7 +133,7 @@ class _TemplateDayDetailRow extends StatelessWidget {
           // for each break add a line
           for (var dayBreak in breaks) ...[
             const SizedBox(height: 4),
-            _TemplateDayDetailPauseRow(dayBreak: dayBreak),
+            _TemplateDayDetailPauseRow(dayBreakViewModel: dayBreak),
           ],
         ],
       ),
@@ -144,10 +143,10 @@ class _TemplateDayDetailRow extends StatelessWidget {
 
 class _TemplateDayDetailPauseRow extends StatelessWidget {
   const _TemplateDayDetailPauseRow({
-    required this.dayBreak,
+    required this.dayBreakViewModel,
   });
 
-  final AvailabilityBreakModel dayBreak;
+  final BreakViewModel dayBreakViewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +156,7 @@ class _TemplateDayDetailPauseRow extends StatelessWidget {
     var options = availabilityScope.options;
     var translations = options.translations;
 
+    var dayBreak = dayBreakViewModel.toBreak();
     var startTime = TimeOfDay.fromDateTime(dayBreak.startTime);
     var endTime = TimeOfDay.fromDateTime(dayBreak.endTime);
     var startTimeString = translations.timeFormatter(context, startTime);
