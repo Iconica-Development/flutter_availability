@@ -43,9 +43,13 @@ class AvailabilityTranslations {
     required this.templateTitleHintText,
     required this.templateTitleLabel,
     required this.templateColorLabel,
+    required this.weekTemplateOverviewTitle,
+    required this.pause,
+    required this.unavailable,
     required this.time,
     required this.timeSeparator,
     required this.timeMinutes,
+    required this.timeMinutesShort,
     required this.templateTimeLabel,
     required this.pauseSectionTitle,
     required this.pauseSectionOptional,
@@ -105,9 +109,13 @@ class AvailabilityTranslations {
     this.templateTitleHintText = "What do you want to call this template?",
     this.templateTitleLabel = "Template Title",
     this.templateColorLabel = "Colorlabel",
+    this.weekTemplateOverviewTitle = "Overview availability",
+    this.pause = "Pause",
+    this.unavailable = "Unavailable",
     this.time = "Time",
     this.timeSeparator = "to",
     this.timeMinutes = "minutes",
+    this.timeMinutesShort = "min",
     this.templateTimeLabel = "When are you available?",
     this.pauseSectionTitle = "Add a pause",
     this.pauseSectionOptional = "(Optional)",
@@ -229,6 +237,15 @@ class AvailabilityTranslations {
   /// The title above the color selection for templates
   final String templateColorLabel;
 
+  /// The title for the week overview section
+  final String weekTemplateOverviewTitle;
+
+  /// The label used for pause
+  final String pause;
+
+  /// The label used for unavailable
+  final String unavailable;
+
   /// The title for time sections
   final String time;
 
@@ -237,6 +254,9 @@ class AvailabilityTranslations {
 
   /// The text used for minutes
   final String timeMinutes;
+
+  /// The text used for minutes in a short form
+  final String timeMinutesShort;
 
   /// The label for the template time input
   final String templateTimeLabel;
