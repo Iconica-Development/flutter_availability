@@ -183,6 +183,7 @@ List<CalendarDay> _mapAvailabilitiesToCalendarDays(
               : null,
           templateDeviation: templateIsDeviated,
           isSelected: false,
+          hasAvailability: true,
         );
       },
     ).toList() ??
