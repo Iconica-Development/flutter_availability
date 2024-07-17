@@ -69,51 +69,86 @@ class CalendarGrid extends StatelessWidget {
             mainAxisSpacing: 12,
           ),
           itemBuilder: (context, index) {
-            // TODO(Joey): Extract all this as a widget
             var day = calendarDays[index];
-            var dayColor = day.color ??
-                colors.customAvailabilityColor ??
-                colorScheme.secondary;
-            var textColor = day.outsideMonth && !day.isSelected
-                ? colors.outsideMonthTextColor ?? colorScheme.onSurface
-                : _getTextColor(
-                    dayColor,
-                    colors.textLightColor ?? Colors.white,
-                    colors.textDarkColor,
-                  );
-            var textStyle = textTheme.bodyLarge?.copyWith(color: textColor);
-
-            // TODO(Joey): Watch out for using gesture detectors
-            return GestureDetector(
-              onTap: () => onDayTap(day.date),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: dayColor,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                    color: day.isSelected && !day.outsideMonth
-                        ? colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Text(day.date.day.toString(), style: textStyle),
-                    ),
-                    if (day.templateDeviation) ...[
-                      Positioned(
-                        right: 4,
-                        child: Text("*", style: textStyle),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+            return _CalendarDayTile(
+              day: day,
+              onDayTap: onDayTap,
             );
           },
         ),
       ],
+    );
+  }
+}
+
+class _CalendarDayTile extends StatelessWidget {
+  const _CalendarDayTile({
+    required this.day,
+    required this.onDayTap,
+  });
+
+  final CalendarDay day;
+  final void Function(DateTime) onDayTap;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var textTheme = theme.textTheme;
+    var colorScheme = theme.colorScheme;
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
+    var colors = options.colors;
+
+    var dayColor =
+        day.color ?? colors.customAvailabilityColor ?? colorScheme.secondary;
+    Color? textColor;
+    TextStyle? textStyle;
+    if (day.outsideMonth) {
+      textColor = colors.outsideMonthTextColor ?? colorScheme.onSurface;
+      textStyle = textTheme.bodyMedium?.copyWith(color: textColor);
+    } else if (day.hasAvailability) {
+      textColor = dayColor;
+      textStyle = textTheme.titleMedium?.copyWith(color: textColor);
+    }
+
+    var decoration = day.outsideMonth
+        ? null
+        : BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: textColor ?? Colors.transparent,
+                width: 1,
+              ),
+            ),
+          );
+
+    return InkWell(
+      onTap: () => onDayTap(day.date),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+            color: day.isSelected ? theme.dividerColor : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: decoration,
+                child: Text(day.date.day.toString(), style: textStyle),
+              ),
+            ),
+            if (day.templateDeviation)
+              Positioned(
+                right: 4,
+                child: Text("*", style: textStyle),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -151,6 +186,7 @@ class CalendarDay {
     required this.isSelected,
     required this.color,
     required this.templateDeviation,
+    required this.hasAvailability,
     this.outsideMonth = false,
   });
 
@@ -171,6 +207,9 @@ class CalendarDay {
   /// Whether the day is outside of the current month
   final bool outsideMonth;
 
+  /// Whether the day has availability
+  final bool hasAvailability;
+
   /// Creates a copy of the current day with the provided values
   CalendarDay copyWith({
     DateTime? date,
@@ -178,6 +217,7 @@ class CalendarDay {
     Color? color,
     bool? templateDeviation,
     bool? outsideMonth,
+    bool? hasAvailability,
   }) =>
       CalendarDay(
         date: date ?? this.date,
@@ -185,6 +225,7 @@ class CalendarDay {
         color: color ?? this.color,
         templateDeviation: templateDeviation ?? this.templateDeviation,
         outsideMonth: outsideMonth ?? this.outsideMonth,
+        hasAvailability: hasAvailability ?? this.hasAvailability,
       );
 }
 
@@ -226,6 +267,7 @@ List<CalendarDay> _generateCalendarDays(
               : Colors.transparent,
           templateDeviation: false,
           outsideMonth: true,
+          hasAvailability: false,
         ),
       );
     }
@@ -247,17 +289,14 @@ List<CalendarDay> _generateCalendarDays(
         isSelected: false,
         color: colors.blankDayColor ?? colorScheme.surfaceDim,
         templateDeviation: false,
+        hasAvailability: false,
       ),
     );
     var dayIsSelected = selectedRange != null &&
         !day.isBefore(selectedRange.start) &&
         !day.isAfter(selectedRange.end);
     specialDay = specialDay.copyWith(
-      color: dayIsSelected
-          ? colors.selectedDayColor ?? colorScheme.primaryFixedDim
-          : specialDay.color,
       isSelected: dayIsSelected,
-      templateDeviation: !dayIsSelected && specialDay.templateDeviation,
     );
     calendarDays.add(specialDay);
   }
@@ -267,10 +306,3 @@ List<CalendarDay> _generateCalendarDays(
 
   return calendarDays;
 }
-
-Color? _getTextColor(
-  Color backgroundColor,
-  Color lightColor,
-  Color? darkColor,
-) =>
-    backgroundColor.computeLuminance() > 0.5 ? darkColor : lightColor;
