@@ -1,6 +1,12 @@
 import "package:flutter_availability_data_interface/src/models/availability.dart";
 import "package:flutter_availability_data_interface/src/models/templates.dart";
 
+/// Exception thrown when the requested availability can not be found
+class AvailabilityNotFoundException implements Exception {}
+
+/// Exception thrown when the requested template can not be found
+class TemplateNotFoundException implements Exception {}
+
 /// A base interface that defines the communication from the availability user
 /// story to its persistance solution.
 ///
