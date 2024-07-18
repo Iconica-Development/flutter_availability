@@ -24,8 +24,7 @@ class AvailabilityOptions {
     this.colors = const AvailabilityColors(),
     this.confirmationDialogBuilder = DefaultConfirmationDialog.builder,
     this.timePickerBuilder,
-    // TODO(Joey): Also have a DefaultLoader.builder
-    this.loadingIndicatorBuilder = defaultLoader,
+    this.loadingIndicatorBuilder = DefaultLoader.builder,
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
 
@@ -200,8 +199,18 @@ typedef ConfirmationDialogBuilder = Future<bool?> Function(
   required String description,
 });
 
-/// Builder definition for providing a loading indicator implementation
-Widget defaultLoader(
-  BuildContext context,
-) =>
-    const CircularProgressIndicator.adaptive();
+///
+class DefaultLoader extends StatelessWidget {
+  ///
+  const DefaultLoader({super.key});
+
+  /// Builder definition for providing a loading indicator implementation
+  static Widget builder(
+    BuildContext context,
+  ) =>
+      const DefaultLoader();
+
+  @override
+  Widget build(BuildContext context) =>
+      const CircularProgressIndicator.adaptive();
+}
