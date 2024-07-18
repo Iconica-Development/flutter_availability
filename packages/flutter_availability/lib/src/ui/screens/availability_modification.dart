@@ -73,9 +73,6 @@ class _AvailabilitiesModificationScreenState
 
     // TODO(freek): the selected period might be longer than 1 month
     //so we need to get all the availabilites through a stream
-
-    // TODO(Joey): separate logic from layout to adhere to the single
-    // responsibility principle
     Future<void> onSave() async {
       if (_clearAvailability) {
         await service.clearAvailabilities(
