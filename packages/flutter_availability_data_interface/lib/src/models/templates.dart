@@ -95,6 +95,24 @@ class AvailabilityTemplateModel {
         templateType: templateType ?? this.templateType,
         templateData: templateData ?? this.templateData,
       );
+
+  /// Get the start time for the specified day in the week for this template
+  DateTime? getStartTimeForDayOfWeek(WeekDay weekDay) {
+    if (templateType == AvailabilityTemplateType.week) {
+      return (templateData as WeekTemplateData).data[weekDay]?.startTime;
+    }
+
+    return (templateData as DayTemplateData).startTime;
+  }
+
+  /// Get the end time for the specified day in the week for this template
+  DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) {
+    if (templateType == AvailabilityTemplateType.week) {
+      return (templateData as WeekTemplateData).data[weekDay]?.endTime;
+    }
+
+    return (templateData as DayTemplateData).endTime;
+  }
 }
 
 /// Used as the key for defining week-based templates

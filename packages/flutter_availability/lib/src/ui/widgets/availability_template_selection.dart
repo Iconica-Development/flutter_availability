@@ -65,55 +65,88 @@ class AvailabilityTemplateSelection extends StatelessWidget {
         if (selectedTemplates.isEmpty) ...[
           addButton,
         ] else ...[
-          // TODO(Joey): Extract this as a widget
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: theme.colorScheme.primary,
-                width: 1,
-              ),
-              // TODO(Joey): This seems like a repeating borderRadius. I can
-              // understand if these are not configurable, but I do think that
-              // they should be defined only once.
-              borderRadius: options.borderRadius,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var template in selectedTemplates) ...[
-                      // TODO(Joey): Extract this as a widget
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Color(template.color),
-                              borderRadius: options.borderRadius,
-                            ),
-                            width: 20,
-                            height: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(template.name, style: textTheme.bodyLarge),
-                        ],
-                      ),
-                      if (template != selectedTemplates.last)
-                        const SizedBox(height: 12),
-                    ],
-                  ],
-                ),
-                GestureDetector(
-                  onTap: onTemplatesRemoved,
-                  child: const Icon(Icons.remove),
-                ),
-              ],
-            ),
+          _TemplateList(
+            selectedTemplates: selectedTemplates,
+            onTemplatesRemoved: onTemplatesRemoved,
           ),
         ],
+      ],
+    );
+  }
+}
+
+class _TemplateList extends StatelessWidget {
+  const _TemplateList({
+    required this.selectedTemplates,
+    required this.onTemplatesRemoved,
+  });
+
+  final List<AvailabilityTemplateModel> selectedTemplates;
+  final VoidCallback onTemplatesRemoved;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: theme.colorScheme.primary,
+          width: 1,
+        ),
+        borderRadius: options.borderRadius,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var template in selectedTemplates) ...[
+                _TemplateListItem(template: template),
+                if (template != selectedTemplates.last) ...[
+                  const SizedBox(height: 12),
+                ],
+              ],
+            ],
+          ),
+          InkWell(
+            onTap: onTemplatesRemoved,
+            child: const Icon(Icons.remove),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TemplateListItem extends StatelessWidget {
+  const _TemplateListItem({required this.template});
+
+  final AvailabilityTemplateModel template;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
+
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Color(template.color),
+            borderRadius: options.borderRadius,
+          ),
+          width: 20,
+          height: 20,
+        ),
+        const SizedBox(width: 12),
+        Text(template.name, style: theme.textTheme.bodyLarge),
       ],
     );
   }
