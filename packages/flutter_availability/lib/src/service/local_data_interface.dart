@@ -207,8 +207,7 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
         return availabilities[index];
       }
     }
-    // TODO(Joey): Throw proper exceptions here
-    throw Exception("Availability not found");
+    throw AvailabilityNotFoundException();
   }
 
   @override
@@ -226,9 +225,7 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
         return templates[index];
       }
     }
-    // TODO(Joey): Add proper exceptions in the data interface and throw them
-    // here
-    throw Exception("Template not found");
+    throw TemplateNotFoundException();
   }
 
   int _id = 1;
