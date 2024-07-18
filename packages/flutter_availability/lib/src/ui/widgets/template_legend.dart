@@ -45,6 +45,8 @@ class _TemplateLegendState extends State<TemplateLegend> {
             ?.any((element) => element.template == null) ??
         false;
 
+    var templatesVisible = templatesAvailable && _templateDrawerOpen;
+
     void onDrawerHeaderClick() {
       if (!templatesAvailable && !_templateDrawerOpen) {
         return;
@@ -71,6 +73,77 @@ class _TemplateLegendState extends State<TemplateLegend> {
         ),
       ),
     );
+
+    Widget body = const Divider(
+      height: 1,
+      thickness: 1,
+    );
+
+    if (_templateDrawerOpen && !templatesLoading) {
+      body = SingleChildScrollView(
+        controller: _scrollController,
+        child: Container(
+          constraints: const BoxConstraints(maxHeight: 152),
+          child: Scrollbar(
+            controller: _scrollController,
+            thumbVisibility: true,
+            trackVisibility: true,
+            thickness: 2,
+            child: Column(
+              children: [
+                for (final (index, template) in templates.indexed) ...[
+                  if (index == 0) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        left: 12,
+                      ),
+                      child: _TemplateLegendItem(
+                        name: translations.templateSelectionLabel,
+                        backgroundColor: colors.selectedDayColor ??
+                            colorScheme.primaryFixedDim,
+                        borderColor: colorScheme.primary,
+                      ),
+                    ),
+                    if (existAvailabilitiesWithoutTemplate) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          left: 12,
+                        ),
+                        child: _TemplateLegendItem(
+                          name: translations.availabilityWithoutTemplateLabel,
+                          backgroundColor: colors.customAvailabilityColor ??
+                              colorScheme.secondary,
+                        ),
+                      ),
+                    ],
+                  ] else ...[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        left: 12,
+                      ),
+                      child: _TemplateLegendItem(
+                        name: template.name,
+                        backgroundColor: Color(template.color),
+                      ),
+                    ),
+                  ],
+                ],
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 10,
+                    bottom: 8,
+                  ),
+                  child: createNewTemplateButton,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return Column(
       children: [
@@ -106,101 +179,16 @@ class _TemplateLegendState extends State<TemplateLegend> {
           constraints: BoxConstraints(maxHeight: _templateDrawerOpen ? 150 : 0),
           decoration: BoxDecoration(
             border: _templateDrawerOpen
-                ? Border.all(color: theme.colorScheme.onSurface, width: 1)
+                ? Border.all(
+                    color: theme.colorScheme.onSurface,
+                    width: 1,
+                  )
                 : null,
           ),
           padding: const EdgeInsets.only(right: 2),
-          child: _templateDrawerOpen && !templatesLoading
-              // TODO(Joey): A listview inside a scrollview inside the
-              // scrollable that each page has seems like really strange UX
-              // TODO(Joey): No ternary operators in the layout
-              ? SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                        constraints: const BoxConstraints(
-                          // TODO(Joey): Not divisible by 4
-                          maxHeight: 150,
-                        ),
-                        child: Scrollbar(
-                          controller: _scrollController,
-                          thumbVisibility: true,
-                          trackVisibility: true,
-                          thickness: 2,
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            shrinkWrap: true,
-                            // TODO(Joey): This seems like an odd way to
-                            // implement appending items
-                            itemCount: templates.length + 2,
-                            itemBuilder: (context, index) {
-                              if (index == 0) {
-                                // TODO(Joey): Extract this as a widget
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        top: 10,
-                                        left: 12,
-                                      ),
-                                      child: _TemplateLegendItem(
-                                        name:
-                                            translations.templateSelectionLabel,
-                                        backgroundColor:
-                                            colors.selectedDayColor ??
-                                                colorScheme.primaryFixedDim,
-                                        borderColor: colorScheme.primary,
-                                      ),
-                                    ),
-                                    if (existAvailabilitiesWithoutTemplate) ...[
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 10,
-                                          left: 12,
-                                        ),
-                                        child: _TemplateLegendItem(
-                                          name: translations
-                                              .availabilityWithoutTemplateLabel,
-                                          backgroundColor:
-                                              colors.customAvailabilityColor ??
-                                                  colorScheme.secondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                );
-                              }
-                              if (index == templates.length + 1) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 10,
-                                    bottom: 8,
-                                  ),
-                                  child: createNewTemplateButton,
-                                );
-                              }
-                              var template = templates[index - 1];
-                              return _TemplateLegendItem(
-                                name: template.name,
-                                backgroundColor: Color(template.color),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : const Divider(
-                  height: 1,
-                  thickness: 1,
-                ),
+          child: body,
         ),
-        // TODO(Joey): This is too complex of a check to read the layout
-        // There are 8 different combinations parameters with 2 different
-        // outcomes
-        if (!templatesAvailable &&
-            (!_templateDrawerOpen || templatesLoading)) ...[
+        if (!templatesVisible) ...[
           const SizedBox(height: 12),
           if (templatesLoading) ...[
             options.loadingIndicatorBuilder(context),
