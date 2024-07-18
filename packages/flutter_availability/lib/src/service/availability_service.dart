@@ -41,6 +41,7 @@ class AvailabilityService {
         endTime.hour,
         endTime.minute,
       ),
+      userId: userId,
     );
 
     await dataInterface.createAvailabilitiesForUser(
@@ -147,9 +148,12 @@ class AvailabilityService {
 
   /// Creates a new template
   Future<void> createTemplate(AvailabilityTemplateModel template) async {
+    var updatedTemplate = template.copyWith(
+      userId: userId,
+    );
     await dataInterface.createTemplateForUser(
       userId,
-      template,
+      updatedTemplate,
     );
   }
 
