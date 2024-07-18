@@ -33,6 +33,14 @@ class BreakViewModel {
   /// [endTime]
   final Duration? duration;
 
+  /// Get the duration in minutes
+  /// If the duration is null, return the difference between the start and end
+  /// time in minutes
+  int get durationInMinutes =>
+      duration?.inMinutes ??
+      ((endTime!.hour * 60 + endTime!.minute) -
+          (startTime!.hour * 60 + startTime!.minute));
+
   /// Returns true if the break is valid
   /// The start is before the end and the duration is equal or lower than the
   /// difference between the start and end
