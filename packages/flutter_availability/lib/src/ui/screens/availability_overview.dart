@@ -116,7 +116,6 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
         title: translations.clearAvailabilityConfirmTitle,
         description: translations.clearAvailabilityConfirmDescription,
       );
-      // TODO(Joey): Expect a non nullable
       if (confirmed ?? false) {
         await service
             .clearAvailabilities(selectedAvailabilities.getAvailabilities());

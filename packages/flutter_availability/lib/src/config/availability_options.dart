@@ -81,6 +81,11 @@ class AvailabilityOptions {
   /// If not provided the [CircularProgressIndicator.adaptive()] will be used
   /// which shows a platform adaptive loading indicator
   final WidgetBuilder loadingIndicatorBuilder;
+
+  final _borderRadius = BorderRadius.circular(5);
+
+  ///
+  BorderRadius get borderRadius => _borderRadius;
 }
 
 /// All configurable paddings and whitespaces withing the userstory

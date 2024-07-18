@@ -46,7 +46,7 @@ class TemplateColorSelection extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: color,
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: options.borderRadius,
                     border: Border.all(
                       color: color.value == selectedColor
                           ? Colors.black

@@ -74,7 +74,7 @@ class AvailabilityTemplateSelection extends StatelessWidget {
               // TODO(Joey): This seems like a repeating borderRadius. I can
               // understand if these are not configurable, but I do think that
               // they should be defined only once.
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: options.borderRadius,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,7 +90,7 @@ class AvailabilityTemplateSelection extends StatelessWidget {
                           Container(
                             decoration: BoxDecoration(
                               color: Color(template.color),
-                              borderRadius: BorderRadius.circular(5),
+                              borderRadius: options.borderRadius,
                             ),
                             width: 20,
                             height: 20,

@@ -1,3 +1,5 @@
+import "dart:collection";
+
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";

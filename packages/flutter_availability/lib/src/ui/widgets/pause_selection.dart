@@ -152,7 +152,7 @@ class BreakDisplay extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.selectedDayColor,
           border: Border.all(color: theme.colorScheme.primary, width: 1),
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: options.borderRadius,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
