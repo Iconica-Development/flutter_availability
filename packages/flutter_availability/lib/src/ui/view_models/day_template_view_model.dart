@@ -7,6 +7,7 @@ class DayTemplateViewModel {
   const DayTemplateViewModel({
     this.data = const DayTemplateDataViewModel(),
     this.id,
+    this.userId,
     this.name,
     this.color,
   });
@@ -18,6 +19,7 @@ class DayTemplateViewModel {
     var data = template.templateData as DayTemplateData;
     return DayTemplateViewModel(
       id: template.id,
+      userId: template.userId,
       name: template.name,
       color: template.color,
       data: DayTemplateDataViewModel.fromDayTemplateData(data),
@@ -26,6 +28,9 @@ class DayTemplateViewModel {
 
   /// The identifier for this template
   final String? id;
+
+  /// The user id for which the template is created
+  final String? userId;
 
   /// The name by which the template can be visually identified
   final String? name;
@@ -46,7 +51,7 @@ class DayTemplateViewModel {
   /// Convert to [AvailabilityTemplateModel] for saving
   AvailabilityTemplateModel toTemplate() => AvailabilityTemplateModel(
         id: id,
-        userId: "",
+        userId: userId ?? "",
         name: name!,
         color: color!,
         templateType: AvailabilityTemplateType.day,
@@ -56,12 +61,14 @@ class DayTemplateViewModel {
   /// Create a copy with new values
   DayTemplateViewModel copyWith({
     String? id,
+    String? userId,
     String? name,
     int? color,
     DayTemplateDataViewModel? data,
   }) =>
       DayTemplateViewModel(
         id: id ?? this.id,
+        userId: userId ?? this.userId,
         name: name ?? this.name,
         color: color ?? this.color,
         data: data ?? this.data,

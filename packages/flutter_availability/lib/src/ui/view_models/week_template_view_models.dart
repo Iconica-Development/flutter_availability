@@ -6,6 +6,7 @@ class WeekTemplateViewModel {
   /// Constructor
   const WeekTemplateViewModel({
     this.data = const {},
+    this.userId,
     this.id,
     this.name,
     this.color,
@@ -18,6 +19,7 @@ class WeekTemplateViewModel {
     var data = template.templateData as WeekTemplateData;
     return WeekTemplateViewModel(
       id: template.id,
+      userId: template.userId,
       name: template.name,
       color: template.color,
       data: {
@@ -33,6 +35,9 @@ class WeekTemplateViewModel {
 
   /// The identifier for this template
   final String? id;
+
+  /// The user id for which the template is created
+  final String? userId;
 
   /// The name by which the template can be visually identified
   final String? name;
@@ -55,7 +60,7 @@ class WeekTemplateViewModel {
   /// Convert to [AvailabilityTemplateModel] for saving
   AvailabilityTemplateModel toTemplate() => AvailabilityTemplateModel(
         id: id,
-        userId: "",
+        userId: userId ?? "",
         name: name!,
         color: color!,
         templateType: AvailabilityTemplateType.week,
@@ -70,12 +75,14 @@ class WeekTemplateViewModel {
   /// Create a copy with new values
   WeekTemplateViewModel copyWith({
     String? id,
+    String? userId,
     String? name,
     int? color,
     Map<WeekDay, DayTemplateDataViewModel>? data,
   }) =>
       WeekTemplateViewModel(
         id: id ?? this.id,
+        userId: userId ?? this.userId,
         name: name ?? this.name,
         color: color ?? this.color,
         data: data ?? this.data,
