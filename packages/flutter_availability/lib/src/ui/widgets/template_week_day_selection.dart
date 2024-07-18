@@ -116,6 +116,8 @@ class _DaySelectionCardLayout extends StatelessWidget {
     var theme = Theme.of(context);
     var textTheme = theme.textTheme;
     var abbreviationTextStyle = textTheme.headlineMedium;
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
 
     abbreviationTextStyle = isSelected
         ? abbreviationTextStyle?.copyWith(
@@ -130,9 +132,7 @@ class _DaySelectionCardLayout extends StatelessWidget {
         height: isSelected ? 72 : 64,
         width: isSelected ? 72 : 64,
         child: ChoiceChip(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: options.borderRadius),
           padding: EdgeInsets.zero,
           label: Center(
             child: Text(

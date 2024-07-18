@@ -162,14 +162,14 @@ class _TemplateListSection extends StatelessWidget {
               margin: const EdgeInsets.only(top: 8),
               decoration: BoxDecoration(
                 border: Border.all(color: theme.dividerColor, width: 1),
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: options.borderRadius,
               ),
               child: Row(
                 children: [
                   Container(
                     decoration: BoxDecoration(
                       color: Color(template.color),
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: options.borderRadius,
                     ),
                     height: 20,
                     width: 20,

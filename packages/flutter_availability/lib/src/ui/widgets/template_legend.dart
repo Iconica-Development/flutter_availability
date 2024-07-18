@@ -71,6 +71,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
         ),
       ),
     );
+
     return Column(
       children: [
         // a button to open/close a drawer with all the templates
@@ -137,20 +138,33 @@ class _TemplateLegendState extends State<TemplateLegend> {
                                 // TODO(Joey): Extract this as a widget
                                 return Column(
                                   children: [
-                                    _TemplateLegendItem(
-                                      name: translations.templateSelectionLabel,
-                                      backgroundColor:
-                                          colors.selectedDayColor ??
-                                              colorScheme.primaryFixedDim,
-                                      borderColor: colorScheme.primary,
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 10,
+                                        left: 12,
+                                      ),
+                                      child: _TemplateLegendItem(
+                                        name:
+                                            translations.templateSelectionLabel,
+                                        backgroundColor:
+                                            colors.selectedDayColor ??
+                                                colorScheme.primaryFixedDim,
+                                        borderColor: colorScheme.primary,
+                                      ),
                                     ),
                                     if (existAvailabilitiesWithoutTemplate) ...[
-                                      _TemplateLegendItem(
-                                        name: translations
-                                            .availabilityWithoutTemplateLabel,
-                                        backgroundColor:
-                                            colors.customAvailabilityColor ??
-                                                colorScheme.secondary,
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 10,
+                                          left: 12,
+                                        ),
+                                        child: _TemplateLegendItem(
+                                          name: translations
+                                              .availabilityWithoutTemplateLabel,
+                                          backgroundColor:
+                                              colors.customAvailabilityColor ??
+                                                  colorScheme.secondary,
+                                        ),
                                       ),
                                     ],
                                   ],
@@ -213,29 +227,27 @@ class _TemplateLegendItem extends StatelessWidget {
   final Color? borderColor;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(
-          top: 10,
-          left: 12,
-        ),
-        child: Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                // TODO(Joey): Use a global borderRadius
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(
-                  color: borderColor ?? Colors.transparent,
-                ),
-              ),
-              width: 20,
-              height: 20,
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
+
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: options.borderRadius,
+            border: Border.all(
+              color: borderColor ?? Colors.transparent,
             ),
-            // TODO(Joey): Not divisible by 4
-            const SizedBox(width: 6),
-            Text(name, style: Theme.of(context).textTheme.bodyLarge),
-          ],
+          ),
+          width: 20,
+          height: 20,
         ),
-      );
+        const SizedBox(width: 8),
+        Text(name, style: theme.textTheme.bodyLarge),
+      ],
+    );
+  }
 }

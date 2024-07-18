@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/week_template_view_models.dart";
+import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
@@ -191,14 +192,14 @@ class _WeekTemplateModificationScreenState
                 color: theme.colorScheme.primary,
                 width: 1,
               ),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: options.borderRadius,
             ),
             child: Row(
               children: [
                 Container(
                   decoration: BoxDecoration(
                     color: Color(_viewModel.color ?? 0),
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: options.borderRadius,
                   ),
                   width: 20,
                   height: 20,
@@ -216,55 +217,34 @@ class _WeekTemplateModificationScreenState
       ),
     );
 
-    var body = CustomScrollView(
-      slivers: [
-        SliverList.list(
-          children: [
-            const SizedBox(height: 40),
-            _WeekTemplateSidePadding(child: title),
-            const SizedBox(height: 24),
-            if (_editing) ...[
-              ...editPage,
-            ] else ...[
-              overviewPage,
-            ],
-            const SizedBox(height: 32),
+    return options.baseScreenBuilder(
+      context,
+      onBackPressed,
+      BasePage(
+        body: [
+          _WeekTemplateSidePadding(child: title),
+          const SizedBox(height: 24),
+          if (_editing) ...[
+            ...editPage,
+          ] else ...[
+            overviewPage,
           ],
-        ),
-        SliverFillRemaining(
-          fillOverscroll: false,
-          hasScrollBody: false,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: spacing.sidePadding,
-            ).copyWith(
-              bottom: spacing.bottomButtonPadding,
-            ),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_editing) ...[
-                    nextButton,
-                  ] else ...[
-                    saveButton,
-                    const SizedBox(height: 8),
-                    previousButton,
-                  ],
-                  if (widget.template != null) ...[
-                    const SizedBox(height: 8),
-                    deleteButton,
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
+        ],
+        buttons: [
+          if (_editing) ...[
+            nextButton,
+          ] else ...[
+            saveButton,
+            const SizedBox(height: 8),
+            previousButton,
+          ],
+          if (widget.template != null) ...[
+            const SizedBox(height: 8),
+            deleteButton,
+          ],
+        ],
+      ),
     );
-
-    return options.baseScreenBuilder(context, onBackPressed, body);
   }
 }
 
