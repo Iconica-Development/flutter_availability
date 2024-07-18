@@ -41,6 +41,11 @@ class AvailabilityTemplateOverview extends HookWidget {
     var dayTemplatesSnapshot = useStream(dayTemplateStream);
     var weekTemplatesSnapshot = useStream(weekTemplateStream);
 
+    var dayTemplates =
+        dayTemplatesSnapshot.data ?? <AvailabilityTemplateModel>[];
+    var weekTemplates =
+        weekTemplatesSnapshot.data ?? <AvailabilityTemplateModel>[];
+
     var title = Center(
       child: Text(
         translations.templateScreenTitle,
@@ -54,13 +59,17 @@ class AvailabilityTemplateOverview extends HookWidget {
       onEditTemplate: onEditTemplate,
       onSelectTemplate: onSelectTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.day),
-      templatesSnapshot: dayTemplatesSnapshot,
+      templates: dayTemplates,
+      isLoading:
+          dayTemplatesSnapshot.connectionState == ConnectionState.waiting,
     );
 
     var weekTemplateSection = _TemplateListSection(
       sectionTitle: translations.weekTemplates,
       createButtonText: translations.createWeekTemplate,
-      templatesSnapshot: weekTemplatesSnapshot,
+      templates: weekTemplates,
+      isLoading:
+          weekTemplatesSnapshot.connectionState == ConnectionState.waiting,
       onEditTemplate: onEditTemplate,
       onSelectTemplate: onSelectTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.week),
@@ -92,7 +101,8 @@ class _TemplateListSection extends StatelessWidget {
   const _TemplateListSection({
     required this.sectionTitle,
     required this.createButtonText,
-    required this.templatesSnapshot,
+    required this.templates,
+    required this.isLoading,
     required this.onEditTemplate,
     required this.onAddTemplate,
     required this.onSelectTemplate,
@@ -101,7 +111,8 @@ class _TemplateListSection extends StatelessWidget {
   final String sectionTitle;
   final String createButtonText;
   // transform the stream to a snapshot as low as possible to reduce rebuilds
-  final AsyncSnapshot<List<AvailabilityTemplateModel>> templatesSnapshot;
+  final List<AvailabilityTemplateModel> templates;
+  final bool isLoading;
   final void Function(AvailabilityTemplateModel template) onEditTemplate;
   final VoidCallback onAddTemplate;
   final void Function(AvailabilityTemplateModel template)? onSelectTemplate;
@@ -148,52 +159,73 @@ class _TemplateListSection extends StatelessWidget {
         Text(sectionTitle, style: textTheme.titleMedium),
         const SizedBox(height: 8),
         const Divider(height: 1),
-        // TODO(Joey): Do not make this nullable, in the build make sure to
-        // have the expected value ready.
-        for (var template
-            in templatesSnapshot.data ?? <AvailabilityTemplateModel>[]) ...[
-          // TODO(Joey): Extract this as a widget
-          // TODO(Joey): Do not simply use gesture detectors, always think of
-          // semantics, interaction and other UX
-          GestureDetector(
-            onTap: () => onClickTemplate(template),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(top: 8),
-              decoration: BoxDecoration(
-                border: Border.all(color: theme.dividerColor, width: 1),
-                borderRadius: options.borderRadius,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color(template.color),
-                      borderRadius: options.borderRadius,
-                    ),
-                    height: 20,
-                    width: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(template.name, style: textTheme.bodyLarge),
-                  const Spacer(),
-                  // TODO(Joey): Do not simply use gesture detectors, always
-                  // think of semantics, interaction and other UX
-                  GestureDetector(
-                    onTap: () => onEditTemplate(template),
-                    child: const Icon(Icons.edit),
-                  ),
-                ],
-              ),
-            ),
+        for (var template in templates) ...[
+          _TemplateListSectionItem(
+            template: template,
+            onTemplateClicked: onClickTemplate,
+            onEditTemplate: onEditTemplate,
           ),
         ],
-        if (templatesSnapshot.connectionState == ConnectionState.waiting) ...[
+        if (isLoading) ...[
           Center(child: options.loadingIndicatorBuilder(context)),
         ],
         const SizedBox(height: 8),
         templateCreationButton,
       ],
+    );
+  }
+}
+
+class _TemplateListSectionItem extends StatelessWidget {
+  const _TemplateListSectionItem({
+    required this.template,
+    required this.onTemplateClicked,
+    required this.onEditTemplate,
+  });
+
+  final AvailabilityTemplateModel template;
+
+  final void Function(AvailabilityTemplateModel template) onTemplateClicked;
+  final void Function(AvailabilityTemplateModel template) onEditTemplate;
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
+
+    return InkWell(
+      onTap: () => onTemplateClicked(template),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(top: 8),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: theme.dividerColor,
+            width: 1,
+          ),
+          borderRadius: options.borderRadius,
+        ),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Color(template.color),
+                borderRadius: options.borderRadius,
+              ),
+              height: 20,
+              width: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(template.name, style: theme.textTheme.bodyLarge),
+            const Spacer(),
+            InkWell(
+              onTap: () => onEditTemplate(template),
+              child: const Icon(Icons.edit),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
