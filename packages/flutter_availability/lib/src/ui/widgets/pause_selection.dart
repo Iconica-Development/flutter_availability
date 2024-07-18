@@ -145,8 +145,7 @@ class BreakDisplay extends StatelessWidget {
       breakModel.endTime!,
     );
 
-    // TODO(Joey): Watch out with gesture detectors
-    return GestureDetector(
+    return InkWell(
       onTap: onClick,
       child: Container(
         decoration: BoxDecoration(
@@ -164,8 +163,10 @@ class BreakDisplay extends StatelessWidget {
               "$endTime",
             ),
             const Spacer(),
-            // TODO(Joey): Watch out with gesturedetectors
-            GestureDetector(onTap: onRemove, child: const Icon(Icons.remove)),
+            InkWell(
+              onTap: onRemove,
+              child: const Icon(Icons.remove),
+            ),
           ],
         ),
       ),

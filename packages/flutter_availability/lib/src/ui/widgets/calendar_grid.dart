@@ -2,6 +2,31 @@ import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
+/// Returns the days of the week as abbreviated strings
+/// The first day of the week is monday
+List<String> getDaysOfTheWeekAsAbbreviatedStrings(
+  AvailabilityTranslations translations,
+  BuildContext context,
+) {
+  var dayNames = List.generate(7, (index) {
+    var day = DateTime(2024, 7, 8 + index); // this is a monday
+    return translations.weekDayAbbreviatedFormatter(context, day);
+  });
+  return dayNames;
+}
+
+/// Returns the days of the week as strings
+List<String> getDaysOfTheWeekAsStrings(
+  AvailabilityTranslations translations,
+  BuildContext context,
+) {
+  var dayNames = List.generate(7, (index) {
+    var day = DateTime(2024, 7, 8 + index); // this is a monday
+    return translations.weekDayFormatter(context, day);
+  });
+  return dayNames;
+}
+
 ///
 class CalendarGrid extends StatelessWidget {
   ///
@@ -68,114 +93,73 @@ class CalendarGrid extends StatelessWidget {
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
-          itemBuilder: (context, index) {
-            var day = calendarDays[index];
-            return _CalendarDayTile(
-              day: day,
-              onDayTap: onDayTap,
-            );
-          },
+          itemBuilder: (context, index) => _CalendarDay(
+            day: calendarDays[index],
+            onDayTap: onDayTap,
+          ),
         ),
       ],
     );
   }
 }
 
-class _CalendarDayTile extends StatelessWidget {
-  const _CalendarDayTile({
+class _CalendarDay extends StatelessWidget {
+  const _CalendarDay({
     required this.day,
     required this.onDayTap,
   });
 
   final CalendarDay day;
-  final void Function(DateTime) onDayTap;
+  final void Function(DateTime date) onDayTap;
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var textTheme = theme.textTheme;
-    var colorScheme = theme.colorScheme;
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var colors = options.colors;
 
-    var dayColor =
-        day.color ?? colors.customAvailabilityColor ?? colorScheme.secondary;
+    var dayColor = day.color ??
+        colors.customAvailabilityColor ??
+        theme.colorScheme.secondary;
     Color? textColor;
     TextStyle? textStyle;
     if (day.outsideMonth) {
-      textColor = colors.outsideMonthTextColor ?? colorScheme.onSurface;
-      textStyle = textTheme.bodyMedium?.copyWith(color: textColor);
+      textColor = colors.outsideMonthTextColor ?? theme.colorScheme.onSurface;
+      textStyle = theme.textTheme.bodyMedium?.copyWith(color: textColor);
     } else if (day.hasAvailability) {
       textColor = dayColor;
-      textStyle = textTheme.titleMedium?.copyWith(color: textColor);
+      textStyle = theme.textTheme.titleMedium?.copyWith(color: textColor);
     }
-
-    var decoration = day.outsideMonth
-        ? null
-        : BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: textColor ?? Colors.transparent,
-                width: 1,
-              ),
-            ),
-          );
 
     return InkWell(
       onTap: () => onDayTap(day.date),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
+          color: dayColor,
+          borderRadius: options.borderRadius,
           border: Border.all(
-            color: day.isSelected ? theme.dividerColor : Colors.transparent,
-            width: 1.5,
+            color: day.isSelected && !day.outsideMonth
+                ? theme.colorScheme.primary
+                : Colors.transparent,
           ),
         ),
         child: Stack(
           children: [
             Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: decoration,
-                child: Text(day.date.day.toString(), style: textStyle),
-              ),
+              child: Text(day.date.day.toString(), style: textStyle),
             ),
-            if (day.templateDeviation)
+            if (day.templateDeviation) ...[
               Positioned(
                 right: 4,
                 child: Text("*", style: textStyle),
               ),
+            ],
           ],
         ),
       ),
     );
   }
-}
-
-/// Returns the days of the week as abbreviated strings
-/// The first day of the week is monday
-List<String> getDaysOfTheWeekAsAbbreviatedStrings(
-  AvailabilityTranslations translations,
-  BuildContext context,
-) {
-  var dayNames = List.generate(7, (index) {
-    var day = DateTime(2024, 7, 8 + index); // this is a monday
-    return translations.weekDayAbbreviatedFormatter(context, day);
-  });
-  return dayNames;
-}
-
-/// Returns the days of the week as strings
-List<String> getDaysOfTheWeekAsStrings(
-  AvailabilityTranslations translations,
-  BuildContext context,
-) {
-  var dayNames = List.generate(7, (index) {
-    var day = DateTime(2024, 7, 8 + index); // this is a monday
-    return translations.weekDayFormatter(context, day);
-  });
-  return dayNames;
 }
 
 /// A Special day in the calendar that needs to be displayed differently

@@ -8,22 +8,10 @@ bool isTemplateDeviated(
   AvailabilityTemplateModel template,
 ) {
   var dayOfWeek = availability.startDate.weekday;
-  DateTime? templateStartDate;
-  DateTime? templateEndDate;
-
-  // TODO(Joey): Add a method to a templateModel: getEndTimeForDayOfWeek()
-  // as well as for start time. Allow polymorphism to resolve this if statement
-  if (template.templateType == AvailabilityTemplateType.week) {
-    templateStartDate = (template.templateData as WeekTemplateData)
-        .data[WeekDay.values[dayOfWeek - 1]]
-        ?.startTime;
-    templateEndDate = (template.templateData as WeekTemplateData)
-        .data[WeekDay.values[dayOfWeek - 1]]
-        ?.endTime;
-  } else {
-    templateStartDate = (template.templateData as DayTemplateData).startTime;
-    templateEndDate = (template.templateData as DayTemplateData).endTime;
-  }
+  var templateStartDate =
+      template.getStartTimeForDayOfWeek(WeekDay.values[dayOfWeek - 1]);
+  var templateEndDate =
+      template.getEndTimeForDayOfWeek(WeekDay.values[dayOfWeek - 1]);
 
   if (templateStartDate == null || templateEndDate == null) {
     return true;
