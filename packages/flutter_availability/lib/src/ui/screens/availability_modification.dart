@@ -49,27 +49,19 @@ class AvailabilitiesModificationScreen extends StatefulWidget {
 
 class _AvailabilitiesModificationScreenState
     extends State<AvailabilitiesModificationScreen> {
-  late AvailabilityModel _availability;
-  late List<AvailabilityTemplateModel> _selectedTemplates;
+  late AvailabilityModel _availability =
+      widget.initialAvailabilities.getAvailabilities().firstOrNull ??
+          AvailabilityModel(
+            userId: "",
+            startDate: widget.dateRange.start,
+            endDate: widget.dateRange.end,
+            breaks: [],
+          );
+  late List<AvailabilityTemplateModel> _selectedTemplates =
+      widget.initialAvailabilities.getUniqueTemplates();
   bool _clearAvailability = false;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
-
-  @override
-  void initState() {
-    super.initState();
-    // TODO(Joey): These can be immediately assigned to the properties
-    // This removes the need for an initState
-    _availability =
-        widget.initialAvailabilities.getAvailabilities().firstOrNull ??
-            AvailabilityModel(
-              userId: "",
-              startDate: widget.dateRange.start,
-              endDate: widget.dateRange.end,
-              breaks: [],
-            );
-    _selectedTemplates = widget.initialAvailabilities.getUniqueTemplates();
-  }
 
   @override
   Widget build(BuildContext context) {
