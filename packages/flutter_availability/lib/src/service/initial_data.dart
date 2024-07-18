@@ -15,10 +15,16 @@ List<AvailabilityModel> getDefaultLocalAvailabilitiesForUser() {
       AvailabilityModel(
         id: availability.$1,
         userId: "",
-        // TODO(Joey): Even though this is testdata, Never use .add(duration)
-        // to move to the next day.
-        startDate: currentMonth.add(Duration(days: availability.$2)),
-        endDate: currentMonth.add(Duration(days: availability.$2)),
+        startDate: DateTime(
+          currentMonth.year,
+          currentMonth.month,
+          currentMonth.day + availability.$2,
+        ),
+        endDate: DateTime(
+          currentMonth.year,
+          currentMonth.month,
+          currentMonth.day + availability.$2,
+        ),
         breaks: [],
         templateId: availability.$3,
       ),

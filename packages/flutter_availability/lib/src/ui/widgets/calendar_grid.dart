@@ -250,11 +250,9 @@ List<CalendarDay> _generateCalendarDays(
     required bool isNextMonth,
   }) {
     for (var i = 0; i < count; i++) {
-      // TODO(Joey): Never increase days with duration, always use internal
-      // datetime math.
       var day = isNextMonth
-          ? startDay.add(Duration(days: i + 1))
-          : startDay.subtract(Duration(days: count - i));
+          ? DateTime(startDay.year, startDay.month, startDay.day + i + 1)
+          : DateTime(startDay.year, startDay.month, startDay.day - count - 1);
       var isSelected = selectedRange != null &&
           !day.isBefore(selectedRange.start) &&
           !day.isAfter(selectedRange.end);
