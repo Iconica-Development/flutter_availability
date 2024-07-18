@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/calendar.dart";
 import "package:flutter_availability/src/ui/widgets/template_legend.dart";
 import "package:flutter_availability/src/util/scope.dart";
@@ -42,7 +43,6 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
     var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
-    var spacing = options.spacing;
 
     var availabilityStream = useMemoized(
       () => service.getOverviewDataForMonth(_selectedDate),
@@ -51,18 +51,21 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     var availabilitySnapshot = useStream(availabilityStream);
 
-    // TODO(Joey): Way too complex of a function
-    var selectedAvailabilities = _selectedRange != null
-        ? availabilitySnapshot.data
-                ?.where(
-                  (a) =>
-                      !a.availabilityModel.startDate
-                          .isBefore(_selectedRange!.start) &&
-                      !a.availabilityModel.endDate.isAfter(_selectedRange!.end),
-                )
-                .toList() ??
-            <AvailabilityWithTemplate>[]
-        : <AvailabilityWithTemplate>[];
+    var selectedAvailabilities = <AvailabilityWithTemplate>[];
+    if (_selectedRange != null) {
+      var availabilities = availabilitySnapshot.data
+          ?.where(
+            (a) =>
+                !a.availabilityModel.startDate
+                    .isBefore(_selectedRange!.start) &&
+                !a.availabilityModel.endDate.isAfter(_selectedRange!.end),
+          )
+          .toList();
+
+      if (availabilities != null) {
+        selectedAvailabilities = availabilities;
+      }
+    }
 
     var availabilitiesAreSelected = selectedAvailabilities.isNotEmpty;
 
@@ -94,18 +97,18 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       availabilities: availabilitySnapshot,
     );
 
-    // TODO(Joey): too complex of a definition for the function
-    var onButtonPress = _selectedRange == null
-        ? null
-        : () {
-            widget.onEditDateRange(
-              _selectedRange!,
-              selectedAvailabilities,
-            );
-            setState(() {
-              _selectedRange = null;
-            });
-          };
+    VoidCallback? onButtonPress;
+    if (_selectedRange != null) {
+      onButtonPress = () {
+        widget.onEditDateRange(
+          _selectedRange!,
+          selectedAvailabilities,
+        );
+        setState(() {
+          _selectedRange = null;
+        });
+      };
+    }
 
     Future<void> onClearButtonClicked() async {
       var confirmed = await options.confirmationDialogBuilder(
@@ -135,53 +138,25 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       Text(translations.editAvailabilityButton),
     );
 
-    // TODO(Joey): This structure is defined multiple times
-    var body = CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: spacing.sidePadding),
-          sliver: SliverList.list(
-            children: [
-              const SizedBox(height: 40),
-              title,
-              const SizedBox(height: 24),
-              calendar,
-              const SizedBox(height: 32),
-              templateLegend,
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
-        SliverFillRemaining(
-          fillOverscroll: false,
-          hasScrollBody: false,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: spacing.sidePadding,
-            ).copyWith(
-              bottom: spacing.bottomButtonPadding,
-            ),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                children: [
-                  startEditButton,
-                  if (availabilitiesAreSelected) ...[
-                    const SizedBox(height: 8),
-                    clearSelectedButton,
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-
     return options.baseScreenBuilder(
       context,
       widget.onExit,
-      body,
+      BasePage(
+        body: [
+          title,
+          const SizedBox(height: 24),
+          calendar,
+          const SizedBox(height: 32),
+          templateLegend,
+        ],
+        buttons: [
+          startEditButton,
+          if (availabilitiesAreSelected) ...[
+            const SizedBox(height: 8),
+            clearSelectedButton,
+          ],
+        ],
+      ),
     );
   }
 }
