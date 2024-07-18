@@ -35,12 +35,14 @@ class AvailabilityTemplateSelection extends StatelessWidget {
     var options = availabilityScope.options;
     var translations = options.translations;
 
-    // TODO(Joey): Do not nest ternairy operators
-    var titleText = selectedTemplates.isEmpty
-        ? translations.availabilityAddTemplateTitle
-        : selectedTemplates.length > 1
-            ? translations.availabilityUsedTemplates
-            : translations.availabilityUsedTemplate;
+    var titleText = translations.availabilityAddTemplateTitle;
+    if (selectedTemplates.isEmpty) {
+      if (selectedTemplates.length > 1) {
+        titleText = translations.availabilityUsedTemplates;
+      } else {
+        titleText = translations.availabilityUsedTemplate;
+      }
+    }
 
     var addButton = options.bigTextButtonWrapperBuilder(
       context,
