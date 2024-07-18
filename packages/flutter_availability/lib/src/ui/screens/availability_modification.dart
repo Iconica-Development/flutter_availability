@@ -4,6 +4,7 @@ import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/availability_clear.dart";
 import "package:flutter_availability/src/ui/widgets/availability_template_selection.dart";
 import "package:flutter_availability/src/ui/widgets/availabillity_time_selection.dart";
+import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
@@ -127,111 +128,156 @@ class _AvailabilitiesModificationScreenState
       Text(translations.saveButton),
     );
 
-    var clearSection = AvailabilityClearSection(
-      range: widget.dateRange,
-      clearAvailable: _clearAvailability,
-      // TODO(Joey): Extract this function
-      onChanged: (isChecked) {
-        setState(() {
-          _clearAvailability = isChecked;
-        });
-      },
-    );
+    // ignore: avoid_positional_boolean_parameters
+    void onClearSection(bool isChecked) {
+      setState(() {
+        _clearAvailability = isChecked;
+      });
+    }
 
-    var templateSelection = AvailabilityTemplateSelection(
-      selectedTemplates: _selectedTemplates,
-      // TODO(Joey): Extract this function
-      onTemplateAdd: () async {
-        var template = await widget.onTemplateSelection();
-        if (template != null) {
-          setState(() {
-            _selectedTemplates = [template];
-          });
-        }
-      },
-      // TODO(Joey): Extract these functions
-      onTemplatesRemoved: () {
+    Future<void> onTemplateSelected() async {
+      var template = await widget.onTemplateSelection();
+      if (template != null) {
         setState(() {
-          _selectedTemplates = [];
+          _selectedTemplates = [template];
         });
-      },
-    );
+      }
+    }
 
-    var timeSelection = AvailabilityTimeSelection(
+    void onTemplatesRemoved() {
+      setState(() {
+        _selectedTemplates = [];
+      });
+    }
+
+    void onStartChanged(TimeOfDay start) {
+      setState(() {
+        _startTime = start;
+      });
+    }
+
+    void onEndChanged(TimeOfDay end) {
+      setState(() {
+        _endTime = end;
+      });
+    }
+
+    void onBreaksChanged(List<BreakViewModel> breaks) {
+      setState(() {
+        _availability = _availability.copyWith(
+          breaks: breaks.map((b) => b.toBreak()).toList(),
+        );
+      });
+    }
+
+    return _AvailabilitiesModificationScreenLayout(
       dateRange: widget.dateRange,
+      clearAvailability: _clearAvailability,
+      onClearSection: onClearSection,
+      selectedTemplates: _selectedTemplates,
+      onTemplateSelected: onTemplateSelected,
+      onTemplatesRemoved: onTemplatesRemoved,
       startTime: _startTime,
       endTime: _endTime,
-      key: ValueKey([_startTime, _endTime]),
-      // TODO(Joey): Extract these
-      onStartChanged: (start) => setState(() {
-        _startTime = start;
-      }),
-      // TODO(Joey): Extract these
-      onEndChanged: (end) => setState(() {
-        _endTime = end;
-      }),
-    );
-
-    var pauseSelection = PauseSelection(
+      onStartChanged: onStartChanged,
+      onEndChanged: onEndChanged,
       breaks: _availability.breaks
           .map(BreakViewModel.fromAvailabilityBreakModel)
           .toList(),
-      editingTemplate: false,
-      // TODO(Joey): Extract these
-      onBreaksChanged: (breaks) {
-        setState(() {
-          _availability = _availability.copyWith(
-            breaks: breaks.map((b) => b.toBreak()).toList(),
-          );
-        });
-      },
+      onBreaksChanged: onBreaksChanged,
+      sidePadding: spacing.sidePadding,
+      bottomButtonPadding: spacing.bottomButtonPadding,
+      saveButton: saveButton,
+      onExit: widget.onExit,
     );
+  }
+}
 
-    // TODO(Joey): this structure is defined multiple times, we should create
-    // a widget to handle this consistently
-    var body = CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding:
-              EdgeInsets.symmetric(horizontal: options.spacing.sidePadding),
-          sliver: SliverList.list(
-            children: [
-              const SizedBox(height: 40),
-              clearSection,
-              if (!_clearAvailability) ...[
-                const SizedBox(height: 24),
-                templateSelection,
-                const SizedBox(height: 24),
-                timeSelection,
-                // TODO(Joey): Not divisible by 4
-                const SizedBox(height: 26),
-                pauseSelection,
-              ],
-            ],
-          ),
-        ),
-        SliverFillRemaining(
-          fillOverscroll: false,
-          hasScrollBody: false,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: spacing.sidePadding,
-            ).copyWith(
-              bottom: spacing.bottomButtonPadding,
-            ),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: saveButton,
-            ),
-          ),
-        ),
-      ],
-    );
+class _AvailabilitiesModificationScreenLayout extends StatelessWidget {
+  const _AvailabilitiesModificationScreenLayout({
+    required this.dateRange,
+    required this.clearAvailability,
+    required this.onClearSection,
+    required this.selectedTemplates,
+    required this.onTemplateSelected,
+    required this.onTemplatesRemoved,
+    required this.startTime,
+    required this.endTime,
+    required this.onStartChanged,
+    required this.onEndChanged,
+    required this.breaks,
+    required this.onBreaksChanged,
+    required this.sidePadding,
+    required this.bottomButtonPadding,
+    required this.saveButton,
+    required this.onExit,
+  });
+
+  final DateTimeRange dateRange;
+  final bool clearAvailability;
+  // ignore: avoid_positional_boolean_parameters
+  final void Function(bool isChecked) onClearSection;
+
+  final List<AvailabilityTemplateModel> selectedTemplates;
+  final void Function() onTemplateSelected;
+  final void Function() onTemplatesRemoved;
+
+  final TimeOfDay? startTime;
+  final TimeOfDay? endTime;
+  final void Function(TimeOfDay start) onStartChanged;
+  final void Function(TimeOfDay start) onEndChanged;
+
+  final List<BreakViewModel> breaks;
+  final void Function(List<BreakViewModel> breaks) onBreaksChanged;
+
+  final double sidePadding;
+  final double bottomButtonPadding;
+
+  final Widget saveButton;
+
+  final VoidCallback onExit;
+
+  @override
+  Widget build(BuildContext context) {
+    var availabilityScope = AvailabilityScope.of(context);
+    var options = availabilityScope.options;
 
     return options.baseScreenBuilder(
       context,
-      widget.onExit,
-      body,
+      onExit,
+      BasePage(
+        body: [
+          AvailabilityClearSection(
+            range: dateRange,
+            clearAvailable: clearAvailability,
+            onChanged: onClearSection,
+          ),
+          if (!clearAvailability) ...[
+            const SizedBox(height: 24),
+            AvailabilityTemplateSelection(
+              selectedTemplates: selectedTemplates,
+              onTemplateAdd: onTemplateSelected,
+              onTemplatesRemoved: onTemplatesRemoved,
+            ),
+            const SizedBox(height: 24),
+            AvailabilityTimeSelection(
+              dateRange: dateRange,
+              startTime: startTime,
+              endTime: endTime,
+              key: ValueKey([startTime, endTime]),
+              onStartChanged: onStartChanged,
+              onEndChanged: onEndChanged,
+            ),
+            const SizedBox(height: 24),
+            PauseSelection(
+              breaks: breaks,
+              editingTemplate: false,
+              onBreaksChanged: onBreaksChanged,
+            ),
+          ],
+        ],
+        buttons: [saveButton],
+      ),
     );
   }
 }

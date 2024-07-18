@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/ui/view_models/day_template_view_model.dart";
+import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
+import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
@@ -47,7 +49,6 @@ class _DayTemplateModificationScreenState
     var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
-    var spacing = options.spacing;
 
     Future<void> onDeletePressed() async {
       await service.deleteTemplate(widget.template!);
@@ -66,97 +67,69 @@ class _DayTemplateModificationScreenState
 
     var canSave = _viewModel.canSave;
 
-    var saveButton = options.primaryButtonBuilder(
-      context,
-      canSave ? onSavePressed : null,
-      Text(translations.saveButton),
-    );
-
     var deleteButton = options.bigTextButtonBuilder(
       context,
       onDeletePressed,
       Text(translations.deleteTemplateButton),
     );
 
-    var title = Center(
-      child: Text(
-        translations.dayTemplateTitle,
-        style: theme.textTheme.displaySmall,
+    void onNameChanged(String name) {
+      setState(() {
+        _viewModel = _viewModel.copyWith(name: name);
+      });
+    }
+
+    void onColorSelected(int? color) {
+      setState(() {
+        _viewModel = _viewModel.copyWith(color: color);
+      });
+    }
+
+    void onDayDataChanged(DayTemplateDataViewModel data) {
+      setState(() {
+        _viewModel = _viewModel.copyWith(data: data);
+      });
+    }
+
+    return options.baseScreenBuilder(
+      context,
+      widget.onExit,
+      BasePage(
+        body: [
+          Center(
+            child: Text(
+              translations.dayTemplateTitle,
+              style: theme.textTheme.displaySmall,
+            ),
+          ),
+          const SizedBox(height: 24),
+          TemplateNameInput(
+            initialValue: _viewModel.name,
+            onNameChanged: onNameChanged,
+          ),
+          const SizedBox(height: 24),
+          TemplateTimeAndBreakSection(
+            dayData: _viewModel.data,
+            onDayDataChanged: onDayDataChanged,
+          ),
+          const SizedBox(height: 24),
+          TemplateColorSelection(
+            selectedColor: _viewModel.color,
+            onColorSelected: onColorSelected,
+          ),
+        ],
+        buttons: [
+          options.primaryButtonBuilder(
+            context,
+            canSave ? onSavePressed : null,
+            Text(translations.saveButton),
+          ),
+          if (widget.template != null) ...[
+            const SizedBox(height: 8),
+            deleteButton,
+          ],
+        ],
       ),
     );
-
-    var templateTitleSection = TemplateNameInput(
-      initialValue: _viewModel.name,
-      onNameChanged: (name) {
-        setState(() {
-          _viewModel = _viewModel.copyWith(name: name);
-        });
-      },
-    );
-
-    var colorSection = TemplateColorSelection(
-      selectedColor: _viewModel.color,
-      // TODO(Joey): Extract this
-      onColorSelected: (color) {
-        setState(() {
-          _viewModel = _viewModel.copyWith(color: color);
-        });
-      },
-    );
-
-    var availabilitySection = TemplateTimeAndBreakSection(
-      dayData: _viewModel.data,
-      onDayDataChanged: (data) {
-        setState(() {
-          _viewModel = _viewModel.copyWith(data: data);
-        });
-      },
-    );
-
-    var body = CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: spacing.sidePadding),
-          sliver: SliverList.list(
-            children: [
-              const SizedBox(height: 40),
-              title,
-              const SizedBox(height: 24),
-              templateTitleSection,
-              const SizedBox(height: 24),
-              availabilitySection,
-              const SizedBox(height: 24),
-              colorSection,
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
-        SliverFillRemaining(
-          fillOverscroll: false,
-          hasScrollBody: false,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: spacing.sidePadding,
-            ).copyWith(
-              bottom: spacing.bottomButtonPadding,
-            ),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                children: [
-                  saveButton,
-                  if (widget.template != null) ...[
-                    const SizedBox(height: 8),
-                    deleteButton,
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-
-    return options.baseScreenBuilder(context, widget.onExit, body);
   }
 }
