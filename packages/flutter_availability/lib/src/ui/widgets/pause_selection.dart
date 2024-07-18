@@ -56,8 +56,9 @@ class PauseSelection extends StatelessWidget {
     Future<void> onEditBreak(BreakViewModel availabilityBreak) async {
       var updatedBreak = await openBreakDialog(availabilityBreak);
       if (updatedBreak == null) return;
-
+      // remove the old break and add the updated one
       var updatedBreaks = [...breaks, updatedBreak];
+      updatedBreaks.remove(availabilityBreak);
       onBreaksChanged(updatedBreaks);
     }
 
@@ -145,6 +146,8 @@ class BreakDisplay extends StatelessWidget {
       breakModel.endTime!,
     );
 
+    var breakDuration = breakModel.durationInMinutes;
+
     return InkWell(
       onTap: onClick,
       child: Container(
@@ -157,7 +160,7 @@ class BreakDisplay extends StatelessWidget {
         child: Row(
           children: [
             Text(
-              "${breakModel.duration!.inMinutes} "
+              "$breakDuration "
               "${translations.timeMinutes}  |  "
               "$starTime - "
               "$endTime",
@@ -267,9 +270,10 @@ class _AvailabilityBreakSelectionDialogState
         ? () {
             if (_breakViewModel.isValid) {
               Navigator.of(context).pop(_breakViewModel);
+            } else {
+              debugPrint("Break is not valid");
+              // TODO(freek): show error message
             }
-            debugPrint("Break is not valid");
-            // TODO(freek): show error message
           }
         : null;
 
