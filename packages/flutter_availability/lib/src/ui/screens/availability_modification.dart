@@ -99,14 +99,13 @@ class _AvailabilitiesModificationScreenState
     Future<void> onClickSave() async {
       // TODO(Joey): The name confirmationDialogBuilder does not represent the
       // expected implementation.
-      var confirmed = await options.confirmationDialogBuilder(
+      var isConfirmed = await options.confirmationDialogBuilder(
         context,
         title: translations.availabilityDialogConfirmTitle,
         description: translations.availabilityDialogConfirmDescription,
       );
-      // TODO(Joey): We should make the interface of the dialog function return
-      // a non nullable bool. Now we are implicitly setting default behaviour
-      if (confirmed ?? false) {
+
+      if (isConfirmed) {
         await onSave();
       }
     }
