@@ -13,19 +13,26 @@ class DefaultConfirmationDialog extends StatelessWidget {
   });
 
   /// Shows a confirmation dialog with a title and a description
-  static Future<bool?> builder(
+  static Future<bool> builder(
     BuildContext context, {
     required String title,
     required String description,
-  }) =>
-      showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(),
-        builder: (context) => DefaultConfirmationDialog(
-          title: title,
-          description: description,
-        ),
-      );
+  }) async {
+    var isConfirmed = await showModalBottomSheet<bool>(
+      context: context,
+      shape: const RoundedRectangleBorder(),
+      builder: (context) => DefaultConfirmationDialog(
+        title: title,
+        description: description,
+      ),
+    );
+
+    if (isConfirmed == null) {
+      return false;
+    }
+
+    return isConfirmed;
+  }
 
   /// The title shown in the dialog
   final String title;

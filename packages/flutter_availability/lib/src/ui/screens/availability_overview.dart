@@ -111,12 +111,12 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
     }
 
     Future<void> onClearButtonClicked() async {
-      var confirmed = await options.confirmationDialogBuilder(
+      var isConfirmed = await options.confirmationDialogBuilder(
         context,
         title: translations.clearAvailabilityConfirmTitle,
         description: translations.clearAvailabilityConfirmDescription,
       );
-      if (confirmed ?? false) {
+      if (isConfirmed) {
         await service
             .clearAvailabilities(selectedAvailabilities.getAvailabilities());
         setState(() {

@@ -198,7 +198,7 @@ typedef TimePickerBuilder = Future<TimeOfDay?> Function(
 ///
 /// The function should return a [Future] that resolves to `true` if the user
 /// confirms.
-typedef ConfirmationDialogBuilder = Future<bool?> Function(
+typedef ConfirmationDialogBuilder = Future<bool> Function(
   BuildContext context, {
   required String title,
   required String description,
