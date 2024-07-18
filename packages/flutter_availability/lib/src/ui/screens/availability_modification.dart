@@ -130,6 +130,9 @@ class _AvailabilitiesModificationScreenState
       if (template != null) {
         setState(() {
           _selectedTemplates = [template];
+          _availability = _availability.copyWith(
+            templateId: template.id,
+          );
         });
       }
     }
