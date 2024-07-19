@@ -7,7 +7,7 @@ class BreakViewModel {
   const BreakViewModel({
     this.startTime,
     this.endTime,
-    this.duration,
+    this.submittedDuration,
   });
 
   /// Create a [BreakViewModel] from a [AvailabilityBreakModel]
@@ -17,7 +17,7 @@ class BreakViewModel {
       BreakViewModel(
         startTime: TimeOfDay.fromDateTime(data.startTime),
         endTime: TimeOfDay.fromDateTime(data.endTime),
-        duration: data.duration,
+        submittedDuration: data.submittedDuration,
       );
 
   /// The start time for this break
@@ -26,20 +26,18 @@ class BreakViewModel {
   /// The end time for this break
   final TimeOfDay? endTime;
 
-  /// The full duration of the actual break.
+  /// The full duration of the actual break. This is filled in by the users and
+  /// stays null if the user has not filled it in.
   ///
   /// This is allowed to diverge from the difference between [startTime] and
   /// [endTime] to indicate that the break is somewhere between [startTime] and
   /// [endTime]
-  final Duration? duration;
+  final Duration? submittedDuration;
 
-  /// Get the duration in minutes
+  /// Get the duration of the break
   /// If the duration is null, return the difference between the start and end
   /// time in minutes
-  int get durationInMinutes =>
-      duration?.inMinutes ??
-      ((endTime!.hour * 60 + endTime!.minute) -
-          (startTime!.hour * 60 + startTime!.minute));
+  Duration get duration => submittedDuration ?? toBreak().duration;
 
   /// Returns true if the break is valid
   /// The start is before the end and the duration is equal or lower than the
@@ -54,11 +52,11 @@ class BreakViewModel {
     if (startDateTime.isAfter(endDateTime)) {
       return false;
     }
-    if (duration == null) {
+    if (submittedDuration == null) {
       return true;
     }
     var actualDuration = endDateTime.difference(startDateTime);
-    return duration! <= actualDuration;
+    return submittedDuration! <= actualDuration;
   }
 
   /// Whether the save/next button should be enabled
@@ -66,21 +64,22 @@ class BreakViewModel {
 
   /// Convert to [AvailabilityBreakModel] for saving
   AvailabilityBreakModel toBreak() => AvailabilityBreakModel(
-        startTime: DateTime(0, 0, 0, startTime!.hour, startTime!.minute),
-        endTime: DateTime(0, 0, 0, endTime!.hour, endTime!.minute),
-        duration: duration,
+        startTime:
+            DateTime(0, 0, 0, startTime?.hour ?? 0, startTime?.minute ?? 0),
+        endTime: DateTime(0, 0, 0, endTime?.hour ?? 0, endTime?.minute ?? 0),
+        submittedDuration: submittedDuration,
       );
 
   /// Create a copy with new values
   BreakViewModel copyWith({
     TimeOfDay? startTime,
     TimeOfDay? endTime,
-    Duration? duration,
+    Duration? submittedDuration,
   }) =>
       BreakViewModel(
         startTime: startTime ?? this.startTime,
         endTime: endTime ?? this.endTime,
-        duration: duration ?? this.duration,
+        submittedDuration: submittedDuration ?? this.submittedDuration,
       );
 
   /// compareto method to order two breaks based on their start time
@@ -92,4 +91,11 @@ class BreakViewModel {
         other.startTime!.minute;
     return difference;
   }
+
+  /// Clear the duration of the break
+  BreakViewModel clearDuration() => BreakViewModel(
+        startTime: startTime,
+        endTime: endTime,
+        submittedDuration: null,
+      );
 }
