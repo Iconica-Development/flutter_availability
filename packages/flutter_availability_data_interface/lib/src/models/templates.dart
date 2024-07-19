@@ -97,22 +97,12 @@ class AvailabilityTemplateModel {
       );
 
   /// Get the start time for the specified day in the week for this template
-  DateTime? getStartTimeForDayOfWeek(WeekDay weekDay) {
-    if (templateType == AvailabilityTemplateType.week) {
-      return (templateData as WeekTemplateData).data[weekDay]?.startTime;
-    }
-
-    return (templateData as DayTemplateData).startTime;
-  }
+  DateTime? getStartTimeForDayOfWeek(WeekDay weekDay) =>
+      templateData.getStartTimeForDayOfWeek(weekDay);
 
   /// Get the end time for the specified day in the week for this template
-  DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) {
-    if (templateType == AvailabilityTemplateType.week) {
-      return (templateData as WeekTemplateData).data[weekDay]?.endTime;
-    }
-
-    return (templateData as DayTemplateData).endTime;
-  }
+  DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) =>
+      templateData.getEndTimeForDayOfWeek(weekDay);
 }
 
 /// Used as the key for defining week-based templates
@@ -171,6 +161,12 @@ abstract interface class TemplateData {
 
   /// Serialize the template to representational data
   Map<String, dynamic> toMap();
+
+  /// Get the start time for the specified day in the week for this template
+  DateTime? getStartTimeForDayOfWeek(WeekDay weekDay);
+
+  /// Get the end time for the specified day in the week for this template
+  DateTime? getEndTimeForDayOfWeek(WeekDay weekDay);
 }
 
 /// A week based template data structure
@@ -256,6 +252,15 @@ class WeekTemplateData implements TemplateData {
           ),
     ];
   }
+
+  /// Get the start time for the specified day in the week for this template
+  @override
+  DateTime? getStartTimeForDayOfWeek(WeekDay weekDay) =>
+      _data[weekDay]?.startTime;
+
+  /// Get the end time for the specified day in the week for this template
+  @override
+  DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) => _data[weekDay]?.endTime;
 }
 
 /// A day based template data structure
@@ -357,6 +362,14 @@ class DayTemplateData implements TemplateData {
           ],
         ],
       };
+
+  /// Get the start time for the specified day in the week for this template
+  @override
+  DateTime? getStartTimeForDayOfWeek(WeekDay weekDay) => startTime;
+
+  /// Get the end time for the specified day in the week for this template
+  @override
+  DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) => endTime;
 }
 
 List<DateTime> _getDatesBetween(DateTime startDate, DateTime endDate) {
