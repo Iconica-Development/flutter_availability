@@ -12,7 +12,7 @@ void main() {
             AvailabilityBreakModel(
               startTime: asTime(startHour),
               endTime: asTime(startHour + 1),
-              duration: const Duration(minutes: 30),
+              submittedDuration: const Duration(minutes: 30),
             );
 
         DayTemplateData createTemplate(int startHour) => DayTemplateData(

@@ -331,7 +331,8 @@ class DayTemplateData implements TemplateData {
               AvailabilityBreakModel(
                 startTime: date.mergeTime(templateBreak.startTime),
                 endTime: date.mergeTime(templateBreak.endTime),
-                duration: templateBreak.isTight ? null : templateBreak.duration,
+                submittedDuration:
+                    templateBreak.isTight ? null : templateBreak.duration,
               ),
             ],
           ],

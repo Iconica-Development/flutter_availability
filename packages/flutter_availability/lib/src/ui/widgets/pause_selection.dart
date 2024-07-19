@@ -146,7 +146,7 @@ class BreakDisplay extends StatelessWidget {
       breakModel.endTime!,
     );
 
-    var breakDuration = breakModel.durationInMinutes;
+    var breakDuration = breakModel.duration.inMinutes;
 
     return InkWell(
       onTap: onClick,
@@ -246,9 +246,14 @@ class _AvailabilityBreakSelectionDialogState
     var translations = options.translations;
     var spacing = options.spacing;
 
-    void onUpdateDuration(Duration duration) {
+    void onUpdateDuration(Duration? duration) {
       setState(() {
-        _breakViewModel = _breakViewModel.copyWith(duration: duration);
+        if (duration != null) {
+          _breakViewModel =
+              _breakViewModel.copyWith(submittedDuration: duration);
+        } else {
+          _breakViewModel = _breakViewModel.clearDuration();
+        }
       });
     }
 
@@ -317,7 +322,7 @@ class _AvailabilityBreakSelectionDialogState
                 Expanded(
                   flex: 2,
                   child: DurationInputField(
-                    initialValue: _breakViewModel.duration,
+                    initialValue: _breakViewModel.submittedDuration,
                     onDurationChanged: onUpdateDuration,
                   ),
                 ),

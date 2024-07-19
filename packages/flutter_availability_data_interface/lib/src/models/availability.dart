@@ -60,8 +60,8 @@ class AvailabilityBreakModel {
   const AvailabilityBreakModel({
     required this.startTime,
     required this.endTime,
-    Duration? duration,
-  }) : _duration = duration;
+    this.submittedDuration,
+  });
 
   /// Parses a break from a map.
   ///
@@ -74,7 +74,7 @@ class AvailabilityBreakModel {
             DateTime.fromMillisecondsSinceEpoch((map["startTime"] ?? 0) as int),
         endTime:
             DateTime.fromMillisecondsSinceEpoch((map["endTime"] ?? 0) as int),
-        duration: map["duration"] != null
+        submittedDuration: map["duration"] != null
             ? Duration(minutes: map["duration"] as int)
             : null,
       );
@@ -83,35 +83,36 @@ class AvailabilityBreakModel {
   ///
   /// If duration is not the same as the difference between [startTime] and
   /// [endTime], the [startTime] is considered the start of the period of which
-  /// a break of [_duration] can be held.
+  /// a break of [submittedDuration] can be held.
   final DateTime startTime;
 
   /// The end time for this break
   ///
   /// If duration is not the same as the difference between [startTime] and
   /// [endTime], the [endTime] is considered the end of the period of which
-  /// a break of [_duration] can be held.
+  /// a break of [submittedDuration] can be held.
   final DateTime endTime;
 
-  /// The full duration of the actual break.
+  /// The full duration of the actual break. This is filled in by the users and
+  /// stays null if the user has not filled it in.
   ///
   /// This is allowed to diverge from the difference between [startTime] and
   /// [endTime] to indicate that the break is somewhere between [startTime] and
   /// [endTime]
-  final Duration? _duration;
+  final Duration? submittedDuration;
 
   /// Results in the set duration, or the difference between [startTime] and
   /// [endTime] if no duration is set.
-  Duration get duration => _duration ?? period;
+  Duration get duration => submittedDuration ?? period;
 
   /// The period in which the break will take place.
   ///
-  /// Will be the same as [duration] if the initial [_duration] is null
+  /// Will be the same as [duration] if the initial [submittedDuration] is null
   Duration get period => endTime.difference(startTime);
 
   /// Whether the duration of the break matches the difference between
   /// [startTime] and [endTime]
-  bool get isTight => _duration == null || _duration == period;
+  bool get isTight => submittedDuration == null || submittedDuration == period;
 
   /// Copies the current properties into a new instance of
   /// [AvailabilityBreakModel], except for the properties provided
@@ -119,12 +120,12 @@ class AvailabilityBreakModel {
   AvailabilityBreakModel copyWith({
     DateTime? startTime,
     DateTime? endTime,
-    Duration? duration,
+    Duration? submittedDuration,
   }) =>
       AvailabilityBreakModel(
         startTime: startTime ?? this.startTime,
         endTime: endTime ?? this.endTime,
-        duration: duration ?? _duration,
+        submittedDuration: submittedDuration ?? this.submittedDuration,
       );
 
   /// Returns a map variant of this object.
@@ -135,6 +136,6 @@ class AvailabilityBreakModel {
   Map<String, dynamic> toMap() => <String, dynamic>{
         "startTime": startTime.millisecondsSinceEpoch,
         "endTime": endTime.millisecondsSinceEpoch,
-        "duration": _duration?.inMinutes,
+        "duration": submittedDuration?.inMinutes,
       };
 }

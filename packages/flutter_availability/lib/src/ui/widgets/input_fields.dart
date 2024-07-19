@@ -67,7 +67,7 @@ class DurationInputField extends StatelessWidget {
   final Duration? initialValue;
 
   ///
-  final void Function(Duration) onDurationChanged;
+  final void Function(Duration?) onDurationChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +79,8 @@ class DurationInputField extends StatelessWidget {
       var duration = int.tryParse(value);
       if (duration != null) {
         onDurationChanged(Duration(minutes: duration));
+      } else {
+        onDurationChanged(null);
       }
     }
 
