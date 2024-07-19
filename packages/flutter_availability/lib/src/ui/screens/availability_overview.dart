@@ -51,21 +51,16 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     var availabilitySnapshot = useStream(availabilityStream);
 
-    var selectedAvailabilities = <AvailabilityWithTemplate>[];
-    if (_selectedRange != null) {
-      var availabilities = availabilitySnapshot.data
-          ?.where(
-            (a) =>
-                !a.availabilityModel.startDate
-                    .isBefore(_selectedRange!.start) &&
-                !a.availabilityModel.endDate.isAfter(_selectedRange!.end),
-          )
-          .toList();
-
-      if (availabilities != null) {
-        selectedAvailabilities = availabilities;
-      }
-    }
+    var selectedAvailabilities = [
+      if (_selectedRange != null) ...[
+        ...?availabilitySnapshot.data?.where(
+          (item) => item.availabilityModel.isInRange(
+            _selectedRange!.start,
+            _selectedRange!.end,
+          ),
+        ),
+      ],
+    ];
 
     var availabilitiesAreSelected = selectedAvailabilities.isNotEmpty;
 

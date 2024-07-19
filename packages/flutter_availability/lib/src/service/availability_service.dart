@@ -22,8 +22,6 @@ class AvailabilityService {
   Future<void> createAvailability({
     required AvailabilityModel availability,
     required DateTimeRange range,
-    required TimeOfDay startTime,
-    required TimeOfDay endTime,
   }) async {
     // apply the startTime and endTime to the availability model
     var updatedAvailability = availability.copyWith(
@@ -31,15 +29,15 @@ class AvailabilityService {
         range.start.year,
         range.start.month,
         range.start.day,
-        startTime.hour,
-        startTime.minute,
+        availability.startDate.hour,
+        availability.startDate.minute,
       ),
       endDate: DateTime(
         range.start.year,
         range.start.month,
         range.start.day,
-        endTime.hour,
-        endTime.minute,
+        availability.endDate.hour,
+        availability.endDate.minute,
       ),
       userId: userId,
     );

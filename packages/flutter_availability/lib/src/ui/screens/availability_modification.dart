@@ -1,7 +1,6 @@
-import "dart:collection";
-
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/src/ui/view_models/availability_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/availability_clear.dart";
 import "package:flutter_availability/src/ui/widgets/availability_template_selection.dart";
@@ -49,19 +48,8 @@ class AvailabilitiesModificationScreen extends StatefulWidget {
 
 class _AvailabilitiesModificationScreenState
     extends State<AvailabilitiesModificationScreen> {
-  late AvailabilityModel _availability =
-      widget.initialAvailabilities.getAvailabilities().firstOrNull ??
-          AvailabilityModel(
-            userId: "",
-            startDate: widget.dateRange.start,
-            endDate: widget.dateRange.end,
-            breaks: [],
-          );
-  late List<AvailabilityTemplateModel> _selectedTemplates =
-      widget.initialAvailabilities.getUniqueTemplates();
-  bool _clearAvailability = false;
-  TimeOfDay? _startTime;
-  TimeOfDay? _endTime;
+  late AvailabilityViewModel _availabilityViewModel =
+      AvailabilityViewModel.fromModel(widget.initialAvailabilities);
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +62,7 @@ class _AvailabilitiesModificationScreenState
     // TODO(freek): the selected period might be longer than 1 month
     //so we need to get all the availabilites through a stream
     Future<void> onSave() async {
-      if (_clearAvailability) {
+      if (_availabilityViewModel.clearAvailability) {
         await service.clearAvailabilities(
           widget.initialAvailabilities.getAvailabilities(),
         );
@@ -88,10 +76,8 @@ class _AvailabilitiesModificationScreenState
       }
 
       await service.createAvailability(
-        availability: _availability,
+        availability: _availabilityViewModel.toModel(),
         range: widget.dateRange,
-        startTime: _startTime!,
-        endTime: _endTime!,
       );
       widget.onExit();
     }
@@ -110,8 +96,7 @@ class _AvailabilitiesModificationScreenState
       }
     }
 
-    var canSave =
-        _clearAvailability || (_startTime != null && _endTime != null);
+    var canSave = _availabilityViewModel.canSave;
     var saveButton = options.primaryButtonBuilder(
       context,
       canSave ? onClickSave : null,
@@ -121,7 +106,9 @@ class _AvailabilitiesModificationScreenState
     // ignore: avoid_positional_boolean_parameters
     void onClearSection(bool isChecked) {
       setState(() {
-        _clearAvailability = isChecked;
+        _availabilityViewModel = _availabilityViewModel.copyWith(
+          clearAvailability: isChecked,
+        );
       });
     }
 
@@ -129,54 +116,56 @@ class _AvailabilitiesModificationScreenState
       var template = await widget.onTemplateSelection();
       if (template != null) {
         setState(() {
-          _selectedTemplates = [template];
-          _availability = _availability.copyWith(
-            templateId: template.id,
-          );
+          _availabilityViewModel =
+              _availabilityViewModel.copyWith(templates: [template]);
         });
       }
     }
 
     void onTemplatesRemoved() {
       setState(() {
-        _selectedTemplates = [];
+        _availabilityViewModel = _availabilityViewModel.copyWith(
+          templates: [],
+        );
       });
     }
 
     void onStartChanged(TimeOfDay start) {
       setState(() {
-        _startTime = start;
+        _availabilityViewModel = _availabilityViewModel.copyWith(
+          startTime: start,
+        );
       });
     }
 
     void onEndChanged(TimeOfDay end) {
       setState(() {
-        _endTime = end;
+        _availabilityViewModel = _availabilityViewModel.copyWith(
+          endTime: end,
+        );
       });
     }
 
     void onBreaksChanged(List<BreakViewModel> breaks) {
       setState(() {
-        _availability = _availability.copyWith(
-          breaks: breaks.map((b) => b.toBreak()).toList(),
+        _availabilityViewModel = _availabilityViewModel.copyWith(
+          breaks: breaks,
         );
       });
     }
 
     return _AvailabilitiesModificationScreenLayout(
       dateRange: widget.dateRange,
-      clearAvailability: _clearAvailability,
+      clearAvailability: _availabilityViewModel.clearAvailability,
       onClearSection: onClearSection,
-      selectedTemplates: _selectedTemplates,
+      selectedTemplates: _availabilityViewModel.templates,
       onTemplateSelected: onTemplateSelected,
       onTemplatesRemoved: onTemplatesRemoved,
-      startTime: _startTime,
-      endTime: _endTime,
+      startTime: _availabilityViewModel.startTime,
+      endTime: _availabilityViewModel.endTime,
       onStartChanged: onStartChanged,
       onEndChanged: onEndChanged,
-      breaks: _availability.breaks
-          .map(BreakViewModel.fromAvailabilityBreakModel)
-          .toList(),
+      breaks: _availabilityViewModel.breaks,
       onBreaksChanged: onBreaksChanged,
       sidePadding: spacing.sidePadding,
       bottomButtonPadding: spacing.bottomButtonPadding,
