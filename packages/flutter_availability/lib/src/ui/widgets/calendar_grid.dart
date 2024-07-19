@@ -289,12 +289,7 @@ List<CalendarDay> _generateCalendarDays(
         hasAvailability: false,
       ),
     );
-    var dayIsSelected = selectedRange != null &&
-        !day.isBefore(selectedRange.start) &&
-        !day.isAfter(selectedRange.end);
-    specialDay = specialDay.copyWith(
-      isSelected: dayIsSelected,
-    );
+    specialDay = checkIfDayIsSelected(selectedRange, day, specialDay);
     calendarDays.add(specialDay);
   }
 
@@ -302,4 +297,22 @@ List<CalendarDay> _generateCalendarDays(
   addOutsideMonthDays(lastDayOfMonth, 7 - endWeekday, isNextMonth: true);
 
   return calendarDays;
+}
+
+/// Checks if the day is in the selected range
+/// Only the date part of the selected range is used
+CalendarDay checkIfDayIsSelected(
+  DateTimeRange? selectedRange,
+  DateTime day,
+  CalendarDay specialDay,
+) {
+  var dayIsSelected = false;
+  if (selectedRange != null) {
+    var startDate = DateUtils.dateOnly(selectedRange.start);
+    var endDate = DateUtils.dateOnly(selectedRange.end);
+    dayIsSelected = !day.isBefore(startDate) && !day.isAfter(endDate);
+  }
+  return specialDay.copyWith(
+    isSelected: dayIsSelected,
+  );
 }
