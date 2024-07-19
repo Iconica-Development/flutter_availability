@@ -115,6 +115,8 @@ class _CalendarDay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
+    var textTheme = theme.textTheme;
+    var colorScheme = theme.colorScheme;
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var colors = options.colors;
@@ -125,29 +127,42 @@ class _CalendarDay extends StatelessWidget {
     Color? textColor;
     TextStyle? textStyle;
     if (day.outsideMonth) {
-      textColor = colors.outsideMonthTextColor ?? theme.colorScheme.onSurface;
-      textStyle = theme.textTheme.bodyMedium?.copyWith(color: textColor);
+      textColor = colors.outsideMonthTextColor ?? colorScheme.onSurface;
+      textStyle = textTheme.bodyMedium?.copyWith(color: textColor);
     } else if (day.hasAvailability) {
       textColor = dayColor;
-      textStyle = theme.textTheme.titleMedium?.copyWith(color: textColor);
+      textStyle = textTheme.titleMedium?.copyWith(color: textColor);
     }
+
+    var decoration = day.outsideMonth
+        ? null
+        : BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: textColor ?? Colors.transparent,
+                width: 1,
+              ),
+            ),
+          );
 
     return InkWell(
       onTap: () => onDayTap(day.date),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: dayColor,
           borderRadius: options.borderRadius,
           border: Border.all(
-            color: day.isSelected && !day.outsideMonth
-                ? theme.colorScheme.primary
-                : Colors.transparent,
+            color: day.isSelected ? theme.dividerColor : Colors.transparent,
+            width: 1.5,
           ),
         ),
         child: Stack(
           children: [
             Center(
-              child: Text(day.date.day.toString(), style: textStyle),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: decoration,
+                child: Text(day.date.day.toString(), style: textStyle),
+              ),
             ),
             if (day.templateDeviation) ...[
               Positioned(
@@ -236,7 +251,7 @@ List<CalendarDay> _generateCalendarDays(
     for (var i = 0; i < count; i++) {
       var day = isNextMonth
           ? DateTime(startDay.year, startDay.month, startDay.day + i + 1)
-          : DateTime(startDay.year, startDay.month, startDay.day - count - 1);
+          : DateTime(startDay.year, startDay.month, startDay.day - count + i);
       var isSelected = selectedRange != null &&
           !day.isBefore(selectedRange.start) &&
           !day.isAfter(selectedRange.end);
