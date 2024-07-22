@@ -2,10 +2,12 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/config/availability_translations.dart";
+import "package:flutter_availability/src/service/errors.dart";
 import "package:flutter_availability/src/service/local_data_interface.dart";
 import "package:flutter_availability/src/ui/widgets/default_base_screen.dart";
 import "package:flutter_availability/src/ui/widgets/default_buttons.dart";
 import "package:flutter_availability/src/ui/widgets/default_confirmation_dialog.dart";
+import "package:flutter_availability/src/ui/widgets/default_error_display.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// Class that holds all options for the availability userstory
@@ -25,6 +27,7 @@ class AvailabilityOptions {
     this.confirmationDialogBuilder = DefaultConfirmationDialog.builder,
     this.timePickerBuilder,
     this.loadingIndicatorBuilder = DefaultLoader.builder,
+    this.errorDisplayBuilder = DefaultErrorDisplayDialog.defaultErrorDisplay,
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
 
@@ -81,6 +84,16 @@ class AvailabilityOptions {
   /// If not provided the [CircularProgressIndicator.adaptive()] will be used
   /// which shows a platform adaptive loading indicator
   final WidgetBuilder loadingIndicatorBuilder;
+
+  /// Builder for handling errors.
+  ///
+  /// The user should determine how to display the error, through a dialog,
+  /// popup or other method of user interaction.
+  ///
+  /// There is no guarantee that there is a scaffold in the tree for each of
+  /// the calls of the method. To ensure this, you can add a scaffold in the
+  /// base widget through [baseScreenBuilder].
+  final ErrorDisplayBuilder errorDisplayBuilder;
 
   final _borderRadius = BorderRadius.circular(5);
 
@@ -203,6 +216,13 @@ typedef ConfirmationDialogBuilder = Future<bool> Function(
   required String title,
   required String description,
 });
+
+/// Typedef for the handler of any errors that occur during the usage of this
+/// userstory.
+typedef ErrorDisplayBuilder = Future<void> Function(
+  BuildContext context,
+  AvailabilityError error,
+);
 
 ///
 class DefaultLoader extends StatelessWidget {
