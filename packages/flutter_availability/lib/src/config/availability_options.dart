@@ -84,7 +84,7 @@ class AvailabilityOptions {
 
   final _borderRadius = BorderRadius.circular(5);
 
-  ///
+  /// The border radius used on the individual elements
   BorderRadius get borderRadius => _borderRadius;
 }
 
