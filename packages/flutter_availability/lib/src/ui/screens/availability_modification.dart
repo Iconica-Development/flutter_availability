@@ -72,16 +72,17 @@ class _AvailabilitiesModificationScreenState
         widget.onExit();
         return;
       }
-      if (widget.initialAvailabilities.isNotEmpty) {
-        await service.clearAvailabilities(
-          widget.initialAvailabilities.getAvailabilities(),
+      if (_availabilityViewModel.templateSelected) {
+        await service.applyTemplate(
+          template: _availabilityViewModel.templates.first,
+          range: widget.dateRange,
+        );
+      } else {
+        await service.createAvailability(
+          availability: _availabilityViewModel.toModel(),
+          range: widget.dateRange,
         );
       }
-
-      await service.createAvailability(
-        availability: _availabilityViewModel.toModel(),
-        range: widget.dateRange,
-      );
       widget.onExit();
     }
 
@@ -135,6 +136,7 @@ class _AvailabilitiesModificationScreenState
       setState(() {
         _availabilityViewModel = _availabilityViewModel.copyWith(
           startTime: start,
+          templateSelected: false,
         );
       });
     }
@@ -143,6 +145,7 @@ class _AvailabilitiesModificationScreenState
       setState(() {
         _availabilityViewModel = _availabilityViewModel.copyWith(
           endTime: end,
+          templateSelected: false,
         );
       });
     }
@@ -151,6 +154,7 @@ class _AvailabilitiesModificationScreenState
       setState(() {
         _availabilityViewModel = _availabilityViewModel.copyWith(
           breaks: breaks,
+          templateSelected: false,
         );
       });
     }

@@ -62,6 +62,20 @@ class AvailabilityService {
     }
   }
 
+  /// Creates a set of availabilities for the given [range] by applying the
+  /// [template] to each day in the range
+  Future<void> applyTemplate({
+    required AvailabilityTemplateModel template,
+    required DateTimeRange range,
+  }) async {
+    await dataInterface.applyTemplateForUser(
+      userId,
+      template,
+      range.start,
+      range.end,
+    );
+  }
+
   /// Returns a stream where data from availabilities and templates are merged
   Stream<List<AvailabilityWithTemplate>> getOverviewDataForMonth(
     DateTime dayInMonth,
