@@ -47,7 +47,7 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
   }
 
   @override
-  Future<void> createAvailabilitiesForUser({
+  Future<void> setAvailabilitiesForUser({
     required String userId,
     required AvailabilityModel availability,
     required DateTime start,
