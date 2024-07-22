@@ -37,14 +37,17 @@ abstract interface class AvailabilityDataInterface {
   /// Updates the availability for the given [userId] and [availabilityId].
   ///
   /// This will not work if no [availabilityId] for [userId] exists.
-  Future<AvailabilityModel> updateAvailabilityForUser(
+  Future<void> updateAvailabilityForUser(
     String userId,
     String availabilityId,
     AvailabilityModel updatedModel,
   );
 
-  /// Creates a new persistant representation of an availability model.
-  Future<void> createAvailabilitiesForUser({
+  /// Creates / Updates availabilities for each day in range [start] ... [end].
+  ///
+  /// [end] is an inclusive date. [start] and [end] are processed ignoring any
+  /// non-date related information.
+  Future<void> setAvailabilitiesForUser({
     required String userId,
     required AvailabilityModel availability,
     required DateTime start,
@@ -74,20 +77,20 @@ abstract interface class AvailabilityDataInterface {
   /// Updates the availability for the given [userId] and [templateId].
   ///
   /// This will not work if no [templateId] for [userId] exists.
-  Future<AvailabilityTemplateModel> updateTemplateForUser(
+  Future<void> updateTemplateForUser(
     String userId,
     String templateId,
     AvailabilityTemplateModel updatedModel,
   );
 
   /// Creates a new persistant representation of an availability template model.
-  Future<AvailabilityTemplateModel> createTemplateForUser(
+  Future<void> createTemplateForUser(
     String userId,
     AvailabilityTemplateModel template,
   );
 
   /// Applies a given [template] for a [userId] and creates new availabilities.
-  Future<List<AvailabilityModel>> applyTemplateForUser(
+  Future<void> applyTemplateForUser(
     String userId,
     AvailabilityTemplateModel template,
     DateTime start,

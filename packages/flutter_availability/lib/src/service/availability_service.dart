@@ -44,7 +44,7 @@ class AvailabilityService {
       userId: userId,
     );
 
-    await dataInterface.createAvailabilitiesForUser(
+    await dataInterface.setAvailabilitiesForUser(
       userId: userId,
       availability: updatedAvailability,
       start: range.start,
