@@ -49,7 +49,10 @@ class AvailabilitiesModificationScreen extends StatefulWidget {
 class _AvailabilitiesModificationScreenState
     extends State<AvailabilitiesModificationScreen> {
   late AvailabilityViewModel _availabilityViewModel =
-      AvailabilityViewModel.fromModel(widget.initialAvailabilities);
+      AvailabilityViewModel.fromModel(
+    widget.initialAvailabilities,
+    widget.dateRange,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -117,16 +120,14 @@ class _AvailabilitiesModificationScreenState
       if (template != null) {
         setState(() {
           _availabilityViewModel =
-              _availabilityViewModel.copyWith(templates: [template]);
+              _availabilityViewModel.applyTemplate(template);
         });
       }
     }
 
     void onTemplatesRemoved() {
       setState(() {
-        _availabilityViewModel = _availabilityViewModel.copyWith(
-          templates: [],
-        );
+        _availabilityViewModel = _availabilityViewModel.removeTemplates();
       });
     }
 

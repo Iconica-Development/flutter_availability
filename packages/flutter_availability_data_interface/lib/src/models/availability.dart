@@ -1,4 +1,6 @@
 // ignore_for_file: Generated using data class generator
+import "package:flutter_availability_data_interface/src/utils.dart";
+
 /// A model defining the data structure for an availability
 class AvailabilityModel {
   /// Creates a new availability
@@ -56,23 +58,28 @@ class AvailabilityModel {
   /// returns true if the date of the availability overlaps with the given range
   /// This disregards the time of the date
   bool isInRange(DateTime start, DateTime end) {
-    var startDate = DateTime(start.year, start.month, start.day);
-    var endDate = DateTime(end.year, end.month, end.day);
-    var availabilityStartDate = DateTime(
-      this.startDate.year,
-      this.startDate.month,
-      this.startDate.day,
-    );
-    var availabilityEndDate = DateTime(
-      this.endDate.year,
-      this.endDate.month,
-      this.endDate.day,
-    );
+    var startDate = start.date;
+    var endDate = end.date;
+    var availabilityStartDate = this.startDate.date;
+    var availabilityEndDate = this.endDate.date;
 
     return (startDate.isBefore(availabilityEndDate) ||
             startDate.isAtSameMomentAs(availabilityEndDate)) &&
         (endDate.isAfter(availabilityStartDate) ||
             endDate.isAtSameMomentAs(availabilityStartDate));
+  }
+
+  /// Compares this AvailabilityModel breaks to another AvailabilityModel breaks
+  bool breaksEqual(List<AvailabilityBreakModel> otherBreaks) {
+    if (breaks.length != otherBreaks.length) {
+      return false;
+    }
+    for (var i = 0; i < breaks.length; i++) {
+      if (!breaks[i].equals(otherBreaks[i])) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
@@ -160,4 +167,14 @@ class AvailabilityBreakModel {
         "endTime": endTime.millisecondsSinceEpoch,
         "duration": submittedDuration?.inMinutes,
       };
+
+  /// Compares this AvailabilityBreakModel to another AvailabilityBreakModel
+  /// This only compares the start time, end time and submitted duration,
+  /// it ignores the date of the DateTime objects
+  bool equals(AvailabilityBreakModel other) =>
+      startTime.hour == other.startTime.hour &&
+      startTime.minute == other.startTime.minute &&
+      endTime.hour == other.endTime.hour &&
+      endTime.minute == other.endTime.minute &&
+      submittedDuration == other.submittedDuration;
 }

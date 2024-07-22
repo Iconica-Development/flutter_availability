@@ -250,8 +250,16 @@ List<CalendarDay> _generateCalendarDays(
   }) {
     for (var i = 0; i < count; i++) {
       var day = isNextMonth
-          ? DateTime(startDay.year, startDay.month, startDay.day + i + 1)
-          : DateTime(startDay.year, startDay.month, startDay.day - count + i);
+          ? DateTime(
+              startDay.year,
+              startDay.month,
+              startDay.day + i + 1,
+            )
+          : DateTime(
+              startDay.year,
+              startDay.month,
+              startDay.day - count + i,
+            );
       var isSelected = selectedRange != null &&
           !day.isBefore(selectedRange.start) &&
           !day.isAfter(selectedRange.end);
@@ -275,7 +283,7 @@ List<CalendarDay> _generateCalendarDays(
 
   // Add days of the current month
   for (var i = 1; i <= daysInMonth; i++) {
-    var day = DateTime(month.year, month.month, i);
+    var day = DateTime(month.year, month.month, i, 0, 0);
     var specialDay = days.firstWhere(
       (d) =>
           d.date.day == i &&

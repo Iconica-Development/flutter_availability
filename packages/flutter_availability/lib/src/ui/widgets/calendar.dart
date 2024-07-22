@@ -177,7 +177,7 @@ List<CalendarDay> _mapAvailabilitiesToCalendarDays(
               availability.template!,
             );
         return CalendarDay(
-          date: availability.availabilityModel.startDate,
+          date: DateUtils.dateOnly(availability.availabilityModel.startDate),
           color: availability.template != null
               ? Color(availability.template!.color)
               : null,
