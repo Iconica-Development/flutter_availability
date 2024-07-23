@@ -4,11 +4,11 @@ import "package:flutter/material.dart";
 import "package:flutter_availability/src/config/availability_translations.dart";
 import "package:flutter_availability/src/service/errors.dart";
 import "package:flutter_availability/src/service/local_data_interface.dart";
-import "package:flutter_availability/src/ui/widgets/default_base_screen.dart";
-import "package:flutter_availability/src/ui/widgets/default_buttons.dart";
-import "package:flutter_availability/src/ui/widgets/default_confirmation_dialog.dart";
-import "package:flutter_availability/src/ui/widgets/default_error_display.dart";
-import "package:flutter_availability/src/ui/widgets/default_loaders.dart";
+import "package:flutter_availability/src/ui/widgets/defaults/default_base_screen.dart";
+import "package:flutter_availability/src/ui/widgets/defaults/default_buttons.dart";
+import "package:flutter_availability/src/ui/widgets/defaults/default_confirmation_dialog.dart";
+import "package:flutter_availability/src/ui/widgets/defaults/default_error_display.dart";
+import "package:flutter_availability/src/ui/widgets/defaults/default_loaders.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// Class that holds all options for the availability userstory
