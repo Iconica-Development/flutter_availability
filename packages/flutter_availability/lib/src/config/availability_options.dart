@@ -8,6 +8,7 @@ import "package:flutter_availability/src/ui/widgets/default_base_screen.dart";
 import "package:flutter_availability/src/ui/widgets/default_buttons.dart";
 import "package:flutter_availability/src/ui/widgets/default_confirmation_dialog.dart";
 import "package:flutter_availability/src/ui/widgets/default_error_display.dart";
+import "package:flutter_availability/src/ui/widgets/default_loaders.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// Class that holds all options for the availability userstory
@@ -223,19 +224,3 @@ typedef ErrorDisplayBuilder = Future<void> Function(
   BuildContext context,
   AvailabilityError error,
 );
-
-///
-class DefaultLoader extends StatelessWidget {
-  ///
-  const DefaultLoader({super.key});
-
-  /// Builder definition for providing a loading indicator implementation
-  static Widget builder(
-    BuildContext context,
-  ) =>
-      const DefaultLoader();
-
-  @override
-  Widget build(BuildContext context) =>
-      const CircularProgressIndicator.adaptive();
-}

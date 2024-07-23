@@ -167,7 +167,7 @@ class _TemplateListSection extends StatelessWidget {
           ),
         ],
         if (isLoading) ...[
-          Center(child: options.loadingIndicatorBuilder(context)),
+          options.loadingIndicatorBuilder(context),
         ],
         const SizedBox(height: 8),
         templateCreationButton,
