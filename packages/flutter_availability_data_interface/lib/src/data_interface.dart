@@ -7,6 +7,9 @@ class AvailabilityNotFoundException implements Exception {}
 /// Exception thrown when the requested template can not be found
 class TemplateNotFoundException implements Exception {}
 
+/// Exception thrown when the requested template can not be applied
+class TemplateApplyException implements Exception {}
+
 /// A base interface that defines the communication from the availability user
 /// story to its persistance solution.
 ///
