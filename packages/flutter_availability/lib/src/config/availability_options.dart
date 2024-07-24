@@ -144,6 +144,8 @@ class AvailabilityColors {
     this.textDarkColor,
     this.textLightColor,
     this.templateWeekOverviewBackgroundColor,
+    this.templateColorLightCheckmarkColor,
+    this.templateColorDarkCheckmarkColor,
     this.templateColors = const [
       Color(0xFF9bb8f2),
       Color(0xFF4b77d0),
@@ -178,6 +180,14 @@ class AvailabilityColors {
   /// color. This is used to make sure the text is readable on light backgrounds
   /// If not provided the text color will be the theme's text color
   final Color? textDarkColor;
+
+  /// The light color variant of the checkmark icon when selecting a color for
+  /// a template
+  final Color? templateColorLightCheckmarkColor;
+
+  /// The dark color variant of the checkmark icon when selecting a color for
+  /// a template
+  final Color? templateColorDarkCheckmarkColor;
 
   /// The color of the background in the template week overview that creates a
   /// layered effect by interchanging a color and a transparent color
