@@ -296,59 +296,72 @@ class _AvailabilityBreakSelectionDialogState
         ? translations.pauseDialogDescriptionTemplate
         : translations.pauseDialogDescriptionAvailability;
 
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: spacing.sidePadding,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 44),
-            Text(
-              translations.pauseDialogTitle,
-              style: textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              descriptionText,
-              style: textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Row(
+    return Stack(
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: spacing.sidePadding,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
               children: [
-                const Spacer(),
-                Expanded(
-                  flex: 2,
-                  child: DurationInputField(
-                    initialValue: _breakViewModel.submittedDuration,
-                    onDurationChanged: onUpdateDuration,
-                  ),
+                const SizedBox(height: 44),
+                Text(
+                  translations.pauseDialogTitle,
+                  style: textTheme.titleMedium,
+                  textAlign: TextAlign.center,
                 ),
-                const Spacer(),
+                const SizedBox(height: 4),
+                Text(
+                  descriptionText,
+                  style: textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Spacer(),
+                    Expanded(
+                      flex: 2,
+                      child: DurationInputField(
+                        initialValue: _breakViewModel.submittedDuration,
+                        onDurationChanged: onUpdateDuration,
+                      ),
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TimeSelection(
+                  key: ValueKey(
+                    [_breakViewModel.startTime, _breakViewModel.endTime],
+                  ),
+                  // rebuild the widget when the start or end time changes
+                  title: translations.pauseDialogPeriodTitle,
+                  description: translations.pauseDialogPeriodDescription,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  startTime: _breakViewModel.startTime,
+                  endTime: _breakViewModel.endTime,
+                  onStartChanged: onUpdateStart,
+                  onEndChanged: onUpdateEnd,
+                ),
+                const SizedBox(height: 36),
+                saveButton,
+                SizedBox(height: spacing.bottomButtonPadding),
               ],
             ),
-            const SizedBox(height: 24),
-            TimeSelection(
-              key: ValueKey(
-                [_breakViewModel.startTime, _breakViewModel.endTime],
-              ),
-              // rebuild the widget when the start or end time changes
-              title: translations.pauseDialogPeriodTitle,
-              description: translations.pauseDialogPeriodDescription,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              startTime: _breakViewModel.startTime,
-              endTime: _breakViewModel.endTime,
-              onStartChanged: onUpdateStart,
-              onEndChanged: onUpdateEnd,
-            ),
-            const SizedBox(height: 36),
-            saveButton,
-            SizedBox(height: spacing.bottomButtonPadding),
-          ],
+          ),
         ),
-      ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: IconButton(
+            padding: const EdgeInsets.all(16),
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+      ],
     );
   }
 }
