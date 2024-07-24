@@ -91,45 +91,42 @@ class _TemplateLegendState extends State<TemplateLegend> {
             thickness: 2,
             child: Column(
               children: [
-                for (final (index, template) in templates.indexed) ...[
-                  if (index == 0) ...[
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        left: 12,
-                      ),
-                      child: _TemplateLegendItem(
-                        name: translations.templateSelectionLabel,
-                        backgroundColor: colors.selectedDayColor ??
-                            colorScheme.primaryFixedDim,
-                        borderColor: colorScheme.primary,
-                      ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 10,
+                    left: 12,
+                  ),
+                  child: _TemplateLegendItem(
+                    name: translations.templateSelectionLabel,
+                    backgroundColor:
+                        colors.selectedDayColor ?? colorScheme.primaryFixedDim,
+                    borderColor: colorScheme.primary,
+                  ),
+                ),
+                if (existAvailabilitiesWithoutTemplate) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 10,
+                      left: 12,
                     ),
-                    if (existAvailabilitiesWithoutTemplate) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 10,
-                          left: 12,
-                        ),
-                        child: _TemplateLegendItem(
-                          name: translations.availabilityWithoutTemplateLabel,
-                          backgroundColor: colors.customAvailabilityColor ??
-                              colorScheme.secondary,
-                        ),
-                      ),
-                    ],
-                  ] else ...[
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        left: 12,
-                      ),
-                      child: _TemplateLegendItem(
-                        name: template.name,
-                        backgroundColor: Color(template.color),
-                      ),
+                    child: _TemplateLegendItem(
+                      name: translations.availabilityWithoutTemplateLabel,
+                      backgroundColor: colors.customAvailabilityColor ??
+                          colorScheme.secondary,
                     ),
-                  ],
+                  ),
+                ],
+                for (var template in templates) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 10,
+                      left: 12,
+                    ),
+                    child: _TemplateLegendItem(
+                      name: template.name,
+                      backgroundColor: Color(template.color),
+                    ),
+                  ),
                 ],
                 Padding(
                   padding: const EdgeInsets.only(
