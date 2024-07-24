@@ -24,6 +24,7 @@ class TimeInputField extends StatelessWidget {
     var translations = options.translations;
 
     Future<void> onFieldtap() async {
+      FocusManager.instance.primaryFocus?.unfocus();
       var initialTime = initialValue ?? TimeOfDay.now();
       var time = await (options.timePickerBuilder?.call(context, initialTime) ??
           showTimePicker(
