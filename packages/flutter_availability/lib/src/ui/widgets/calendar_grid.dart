@@ -72,7 +72,7 @@ class CalendarGrid extends StatelessWidget {
         var day = dayNames[index ~/ 2];
         return Expanded(
           child: Text(
-            day,
+            day.toUpperCase(),
             style: textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
