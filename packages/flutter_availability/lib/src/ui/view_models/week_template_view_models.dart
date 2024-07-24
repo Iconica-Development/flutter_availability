@@ -23,12 +23,10 @@ class WeekTemplateViewModel {
       name: template.name,
       color: template.color,
       data: {
-        for (var day in WeekDay.values)
-          day: data.data.containsKey(day)
-              ? DayTemplateDataViewModel.fromDayTemplateData(
-                  data.data[day]!,
-                )
-              : const DayTemplateDataViewModel(),
+        for (var day in WeekDay.values.where(data.data.containsKey))
+          day: DayTemplateDataViewModel.fromDayTemplateData(
+            data.data[day]!,
+          ),
       },
     );
   }
