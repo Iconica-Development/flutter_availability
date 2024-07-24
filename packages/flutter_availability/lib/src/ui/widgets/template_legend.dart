@@ -98,8 +98,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                   ),
                   child: _TemplateLegendItem(
                     name: translations.templateSelectionLabel,
-                    backgroundColor:
-                        colors.selectedDayColor ?? colorScheme.primaryFixedDim,
+                    backgroundColor: Colors.white,
                     borderColor: colorScheme.primary,
                   ),
                 ),
