@@ -45,7 +45,10 @@ class BasePage extends StatelessWidget {
             ),
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: Column(children: buttons),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: buttons,
+              ),
             ),
           ),
         ),
