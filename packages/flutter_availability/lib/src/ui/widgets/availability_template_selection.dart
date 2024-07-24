@@ -36,7 +36,7 @@ class AvailabilityTemplateSelection extends StatelessWidget {
     var translations = options.translations;
 
     var titleText = translations.availabilityAddTemplateTitle;
-    if (selectedTemplates.isEmpty) {
+    if (selectedTemplates.isNotEmpty) {
       if (selectedTemplates.length > 1) {
         titleText = translations.availabilityUsedTemplates;
       } else {
