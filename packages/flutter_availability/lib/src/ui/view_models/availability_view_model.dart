@@ -176,7 +176,7 @@ class AvailabilityViewModel {
     );
     return AvailabilityModel(
       id: ids?.firstOrNull,
-      userId: userId!,
+      userId: userId ?? "",
       startDate: startDate,
       endDate: endDate,
       breaks: breaks.map((e) => e.toBreak()).toList(),
