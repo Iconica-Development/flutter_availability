@@ -35,15 +35,17 @@ class PauseSelection extends StatelessWidget {
 
     Future<BreakViewModel?> openBreakDialog(
       BreakViewModel? initialBreak,
-    ) async =>
-        AvailabilityBreakSelectionDialog.show(
-          context,
-          initialBreak: initialBreak,
-          userId: availabilityScope.userId,
-          options: options,
-          service: availabilityScope.service,
-          editingTemplate: editingTemplate,
-        );
+    ) async {
+      FocusManager.instance.primaryFocus?.unfocus();
+      return AvailabilityBreakSelectionDialog.show(
+        context,
+        initialBreak: initialBreak,
+        userId: availabilityScope.userId,
+        options: options,
+        service: availabilityScope.service,
+        editingTemplate: editingTemplate,
+      );
+    }
 
     Future<void> onClickAddBreak() async {
       var newBreak = await openBreakDialog(null);
