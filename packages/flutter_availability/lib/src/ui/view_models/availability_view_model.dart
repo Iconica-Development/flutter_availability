@@ -150,7 +150,7 @@ class AvailabilityViewModel {
       }
     }
 
-    return copyWith(
+    return clearTimeAndBreak().copyWith(
       templates: [template],
       breaks: breaks,
       conflictingPauses: conflictingPauses,
@@ -161,10 +161,25 @@ class AvailabilityViewModel {
     );
   }
 
-  ///
+  /// Removes the templates from the availability
   AvailabilityViewModel removeTemplates() => copyWith(
         templates: [],
         templateSelected: false,
+      );
+
+  /// Removes the time and breaks from the availability
+  AvailabilityViewModel clearTimeAndBreak() => AvailabilityViewModel(
+        selectedRange: selectedRange,
+        templates: templates,
+        ids: ids,
+        userId: userId,
+        startTime: null,
+        endTime: null,
+        breaks: [],
+        clearAvailability: clearAvailability,
+        conflictingPauses: conflictingPauses,
+        conflictingTime: conflictingTime,
+        templateSelected: templateSelected,
       );
 
   /// create a AvailabilityModel from the current AvailabilityViewModel
