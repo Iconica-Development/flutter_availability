@@ -120,7 +120,9 @@ class AvailabilityViewModel {
 
   /// Whether the save button should be enabled
   bool get canSave =>
-      clearAvailability || (startTime != null && endTime != null);
+      clearAvailability ||
+      templateSelected ||
+      (startTime != null && endTime != null);
 
   ///
   AvailabilityViewModel applyTemplate(AvailabilityTemplateModel template) {
