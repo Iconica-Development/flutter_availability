@@ -80,10 +80,10 @@ class _TemplateLegendState extends State<TemplateLegend> {
     );
 
     if (_templateDrawerOpen && !templatesLoading) {
-      body = SingleChildScrollView(
-        controller: _scrollController,
-        child: Container(
-          constraints: const BoxConstraints(maxHeight: 152),
+      body = Container(
+        constraints: const BoxConstraints(maxHeight: 152),
+        child: SingleChildScrollView(
+          controller: _scrollController,
           child: Scrollbar(
             controller: _scrollController,
             thumbVisibility: true,
