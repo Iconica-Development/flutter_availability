@@ -61,6 +61,7 @@ class _TemplateWeekDaySelectionState extends State<TemplateWeekDaySelection> {
                     onDaySelected: (selected) =>
                         onDaySelected(selected, days.indexOf(day)),
                   ),
+                  const SizedBox(width: 8),
                 ],
               ],
             ),
@@ -125,25 +126,22 @@ class _DaySelectionCardLayout extends StatelessWidget {
           )
         : abbreviationTextStyle;
 
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        height: isSelected ? 72 : 64,
-        width: isSelected ? 72 : 64,
-        child: ChoiceChip(
-          shape: RoundedRectangleBorder(borderRadius: options.borderRadius),
-          padding: EdgeInsets.zero,
-          label: Center(
-            child: Text(
-              day.toUpperCase(),
-              style: abbreviationTextStyle,
-            ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: isSelected ? 72 : 64,
+      width: isSelected ? 72 : 64,
+      child: ChoiceChip(
+        shape: RoundedRectangleBorder(borderRadius: options.borderRadius),
+        padding: EdgeInsets.zero,
+        label: Center(
+          child: Text(
+            day.toUpperCase(),
+            style: abbreviationTextStyle,
           ),
-          selected: isSelected,
-          showCheckmark: theme.chipTheme.showCheckmark ?? false,
-          onSelected: onDaySelected,
         ),
+        selected: isSelected,
+        showCheckmark: theme.chipTheme.showCheckmark ?? false,
+        onSelected: onDaySelected,
       ),
     );
   }
