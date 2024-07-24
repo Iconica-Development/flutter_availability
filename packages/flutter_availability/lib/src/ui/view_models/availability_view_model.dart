@@ -31,7 +31,10 @@ class AvailabilityViewModel {
     List<AvailabilityWithTemplate> models,
     DateTimeRange range,
   ) {
-    var coveredByAvailabilities = models.length == (range.duration.inDays + 1);
+    var coveredByAvailabilities = _rangeIsCoveredWithAvailabilities(
+      models.length,
+      range,
+    );
     var userId = models.firstOrNull?.availabilityModel.userId;
     // if there is no availability there is no conflicting time or pauses
     var conflictingPauses = models.isNotEmpty;
@@ -128,17 +131,23 @@ class AvailabilityViewModel {
     var breaks = <BreakViewModel>[];
     var appliedAvailabilities =
         template.apply(selectedRange.start, selectedRange.end);
-
-    if (_availabilityTimesAreEqual(appliedAvailabilities)) {
-      conflictingTime = false;
-      startTime = TimeOfDay.fromDateTime(appliedAvailabilities.first.startDate);
-      endTime = TimeOfDay.fromDateTime(appliedAvailabilities.first.endDate);
-    }
-    if (_availabilityBreaksAreEqual(appliedAvailabilities)) {
-      conflictingPauses = false;
-      breaks = appliedAvailabilities.first.breaks
-          .map(BreakViewModel.fromAvailabilityBreakModel)
-          .toList();
+    // If there are missing days in the range, the time cannot be applied
+    if (_rangeIsCoveredWithAvailabilities(
+      appliedAvailabilities.length,
+      selectedRange,
+    )) {
+      if (_availabilityTimesAreEqual(appliedAvailabilities)) {
+        conflictingTime = false;
+        startTime =
+            TimeOfDay.fromDateTime(appliedAvailabilities.first.startDate);
+        endTime = TimeOfDay.fromDateTime(appliedAvailabilities.first.endDate);
+      }
+      if (_availabilityBreaksAreEqual(appliedAvailabilities)) {
+        conflictingPauses = false;
+        breaks = appliedAvailabilities.first.breaks
+            .map(BreakViewModel.fromAvailabilityBreakModel)
+            .toList();
+      }
     }
 
     return copyWith(
@@ -237,3 +246,10 @@ bool _availabilityBreaksAreEqual(List<AvailabilityModel> availabilityModels) {
   var breaks = firstModel.breaks;
   return availabilityModels.every((model) => model.breaksEqual(breaks));
 }
+
+/// Checks if there are as many availabilities as days in the range
+bool _rangeIsCoveredWithAvailabilities(
+  int amountOfAvailabilities,
+  DateTimeRange range,
+) =>
+    amountOfAvailabilities == (range.duration.inDays + 1);
