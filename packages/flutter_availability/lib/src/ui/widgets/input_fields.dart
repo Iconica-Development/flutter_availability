@@ -71,6 +71,7 @@ class DurationInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
@@ -87,6 +88,7 @@ class DurationInputField extends StatelessWidget {
     return TextFormField(
       decoration: InputDecoration(
         labelText: translations.time,
+        labelStyle: theme.inputDecorationTheme.hintStyle,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
