@@ -130,12 +130,6 @@ class _WeekTemplateModificationScreenState
       Text(translations.deleteTemplateButton),
     );
 
-    var previousButton = options.bigTextButtonBuilder(
-      context,
-      onBackPressed,
-      Text(translations.editTemplateButton),
-    );
-
     var title = Center(
       child: Text(
         translations.weekTemplateTitle,
@@ -223,6 +217,7 @@ class _WeekTemplateModificationScreenState
           const SizedBox(height: 30),
           TemplateWeekOverview(
             template: _viewModel,
+            onClickEdit: onBackPressed,
           ),
         ],
       ),
@@ -260,8 +255,6 @@ class _WeekTemplateModificationScreenState
                     nextButton,
                   ] else ...[
                     saveButton,
-                    const SizedBox(height: 8),
-                    previousButton,
                   ],
                   if (widget.template != null) ...[
                     const SizedBox(height: 8),
