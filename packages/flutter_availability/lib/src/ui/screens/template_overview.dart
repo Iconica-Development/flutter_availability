@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -33,7 +34,6 @@ class AvailabilityTemplateOverview extends HookWidget {
     var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
-    var spacing = options.spacing;
 
     var dayTemplateStream = useMemoized(() => service.getDayTemplates());
     var weekTemplateStream = useMemoized(() => service.getWeekTemplates());
@@ -74,22 +74,15 @@ class AvailabilityTemplateOverview extends HookWidget {
       onSelectTemplate: onSelectTemplate,
       onAddTemplate: () => onAddTemplate(AvailabilityTemplateType.week),
     );
-
-    var body = Padding(
-      padding: EdgeInsets.symmetric(horizontal: spacing.sidePadding),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            title,
-            const SizedBox(height: 24),
-            dayTemplateSection,
-            const SizedBox(height: 40),
-            weekTemplateSection,
-            SizedBox(height: spacing.bottomButtonPadding),
-          ],
-        ),
-      ),
+    var body = BasePage(
+      body: [
+        title,
+        const SizedBox(height: 24),
+        dayTemplateSection,
+        const SizedBox(height: 40),
+        weekTemplateSection,
+      ],
+      buttons: const [],
     );
 
     return options.baseScreenBuilder(context, onExit, body);
