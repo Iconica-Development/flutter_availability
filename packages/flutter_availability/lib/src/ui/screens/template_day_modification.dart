@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/service/errors.dart";
 import "package:flutter_availability/src/ui/view_models/day_template_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/base_page.dart";
@@ -70,12 +71,32 @@ class _DayTemplateModificationScreenState
 
     Future<void> onSavePressed() async {
       var template = _viewModel.toTemplate();
-      if (widget.template == null) {
-        await service.createTemplate(template);
-      } else {
-        await service.updateTemplate(template);
+      AvailabilityError? error;
+      try {
+        if (widget.template == null) {
+          await service.createTemplate(template);
+        } else {
+          await service.updateTemplate(template);
+        }
+        widget.onExit();
+      } on BreakEndBeforeStartException {
+        error = AvailabilityError.breakEndBeforeStart;
+      } on BreakSubmittedDurationTooLongException {
+        error = AvailabilityError.breakSubmittedDurationTooLong;
+      } on TemplateEndBeforeStartException {
+        error = AvailabilityError.endBeforeStart;
+      } on TemplateBreakBeforeStartException {
+        error = AvailabilityError.templateBreakBeforeStart;
+      } on TemplateBreakAfterEndException {
+        error = AvailabilityError.templateBreakAfterEnd;
       }
-      widget.onExit();
+
+      if (error != null && context.mounted) {
+        await options.errorDisplayBuilder(
+          context,
+          error,
+        );
+      }
     }
 
     var canSave = _viewModel.canSave;

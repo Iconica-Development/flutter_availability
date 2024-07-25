@@ -42,6 +42,8 @@ class AvailabilityService {
       userId: userId,
     );
 
+    availability.validate();
+
     await dataInterface.setAvailabilitiesForUser(
       userId: userId,
       availability: updatedAvailability,
@@ -163,6 +165,9 @@ class AvailabilityService {
     var updatedTemplate = template.copyWith(
       userId: userId,
     );
+
+    template.validate();
+
     await dataInterface.createTemplateForUser(
       userId,
       updatedTemplate,
@@ -171,6 +176,8 @@ class AvailabilityService {
 
   /// Updates a template
   Future<void> updateTemplate(AvailabilityTemplateModel template) async {
+    template.validate();
+
     await dataInterface.updateTemplateForUser(
       userId,
       template.id!,

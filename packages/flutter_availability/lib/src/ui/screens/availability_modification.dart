@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/view_models/availability_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
@@ -8,7 +9,6 @@ import "package:flutter_availability/src/ui/widgets/availabillity_time_selection
 import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/util/scope.dart";
-import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Screen for modifying the availabilities for a specific daterange
@@ -78,18 +78,35 @@ class _AvailabilitiesModificationScreenState
         widget.onExit();
         return;
       }
-      if (_availabilityViewModel.templateSelected) {
-        await service.applyTemplate(
-          template: _availabilityViewModel.templates.first,
-          range: widget.dateRange,
-        );
-      } else {
-        await service.createAvailability(
-          availability: _availabilityViewModel.toModel(),
-          range: widget.dateRange,
+
+      AvailabilityError? error;
+      try {
+        if (_availabilityViewModel.templateSelected) {
+          await service.applyTemplate(
+            template: _availabilityViewModel.templates.first,
+            range: widget.dateRange,
+          );
+        } else {
+          await service.createAvailability(
+            availability: _availabilityViewModel.toModel(),
+            range: widget.dateRange,
+          );
+        }
+        widget.onExit();
+      } on AvailabilityEndBeforeStartException {
+        error = AvailabilityError.endBeforeStart;
+      } on BreakEndBeforeStartException {
+        error = AvailabilityError.breakEndBeforeStart;
+      } on BreakSubmittedDurationTooLongException {
+        error = AvailabilityError.breakSubmittedDurationTooLong;
+      }
+
+      if (error != null && context.mounted) {
+        await options.errorDisplayBuilder(
+          context,
+          error,
         );
       }
-      widget.onExit();
     }
 
     Future<void> onClickSave() async {

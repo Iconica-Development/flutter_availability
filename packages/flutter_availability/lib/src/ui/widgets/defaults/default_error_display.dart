@@ -23,11 +23,13 @@ class DefaultErrorDisplayDialog extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-        children: [
-          Text(_error.name),
-          const SizedBox(height: 20),
-          Text(_error.description),
-        ],
+  Widget build(BuildContext context) => Scaffold(
+        body: Column(
+          children: [
+            Text(_error.name),
+            const SizedBox(height: 20),
+            Text(_error.description),
+          ],
+        ),
       );
 }

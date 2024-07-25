@@ -1,6 +1,17 @@
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 import "package:flutter_availability_data_interface/src/models/availability.dart";
 
+/// Exception thrown when the end is before the start
+class TemplateEndBeforeStartException implements Exception {}
+
+/// Exception thrown when the start of a break is before the start of the
+/// availability
+class TemplateBreakBeforeStartException implements Exception {}
+
+/// Exception thrown when the end of a break is after the end of the
+/// availability
+class TemplateBreakAfterEndException implements Exception {}
+
 /// A limited set of different availability template types
 enum AvailabilityTemplateType {
   /// A template that applies to any day, regardless of when it is.
@@ -103,6 +114,11 @@ class AvailabilityTemplateModel {
   /// Get the end time for the specified day in the week for this template
   DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) =>
       templateData.getEndTimeForDayOfWeek(weekDay);
+
+  /// Verify the validity of this template
+  void validate() {
+    templateData.validate();
+  }
 }
 
 /// Used as the key for defining week-based templates
@@ -167,6 +183,9 @@ abstract interface class TemplateData {
 
   /// Get the end time for the specified day in the week for this template
   DateTime? getEndTimeForDayOfWeek(WeekDay weekDay);
+
+  /// Verify the validity of the data in this template
+  void validate();
 }
 
 /// A week based template data structure
@@ -261,6 +280,13 @@ class WeekTemplateData implements TemplateData {
   /// Get the end time for the specified day in the week for this template
   @override
   DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) => _data[weekDay]?.endTime;
+
+  @override
+  void validate() {
+    for (var dayData in _data.entries) {
+      dayData.value.validate();
+    }
+  }
 }
 
 /// A day based template data structure
@@ -371,6 +397,25 @@ class DayTemplateData implements TemplateData {
   /// Get the end time for the specified day in the week for this template
   @override
   DateTime? getEndTimeForDayOfWeek(WeekDay weekDay) => endTime;
+
+  @override
+  void validate() {
+    if (endTime.compareTo(startTime) < 0) {
+      throw TemplateEndBeforeStartException();
+    }
+
+    for (var breakData in breaks) {
+      breakData.validate();
+
+      if (breakData.startTime.compareTo(startTime) < 0) {
+        throw TemplateBreakBeforeStartException();
+      }
+
+      if (breakData.endTime.compareTo(endTime) > 0) {
+        throw TemplateBreakAfterEndException();
+      }
+    }
+  }
 }
 
 List<DateTime> _getDatesBetween(DateTime startDate, DateTime endDate) {

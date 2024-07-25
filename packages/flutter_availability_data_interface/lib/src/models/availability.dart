@@ -1,6 +1,16 @@
 // ignore_for_file: Generated using data class generator
 import "package:flutter_availability_data_interface/src/utils.dart";
 
+/// Exception thrown when the end is before the start
+class BreakEndBeforeStartException implements Exception {}
+
+/// Exception thrown when the submitted duration is longer than the difference
+/// between the start and end time
+class BreakSubmittedDurationTooLongException implements Exception {}
+
+/// Exception thrown when the end is before the start
+class AvailabilityEndBeforeStartException implements Exception {}
+
 /// A model defining the data structure for an availability
 class AvailabilityModel {
   /// Creates a new availability
@@ -80,6 +90,17 @@ class AvailabilityModel {
       }
     }
     return true;
+  }
+
+  /// Verify the validity of this availability
+  void validate() {
+    if (startDate.compareTo(endDate) < 0) {
+      throw AvailabilityEndBeforeStartException();
+    }
+
+    for (var breakData in breaks) {
+      breakData.validate();
+    }
   }
 }
 
@@ -177,4 +198,19 @@ class AvailabilityBreakModel {
       endTime.hour == other.endTime.hour &&
       endTime.minute == other.endTime.minute &&
       submittedDuration == other.submittedDuration;
+
+  /// Verify the validity of this break
+  void validate() {
+    if (endTime.compareTo(startTime) < 0) {
+      throw BreakEndBeforeStartException();
+    }
+
+    if (submittedDuration != null) {
+      var calculatedDuration = endTime.difference(startTime);
+
+      if (calculatedDuration < submittedDuration!) {
+        throw BreakSubmittedDurationTooLongException();
+      }
+    }
+  }
 }
