@@ -230,7 +230,13 @@ class _TemplateLegendItem extends StatelessWidget {
           height: 20,
         ),
         const SizedBox(width: 8),
-        Text(name, style: theme.textTheme.bodyLarge),
+        Expanded(
+          child: Text(
+            name,
+            style: theme.textTheme.bodyLarge,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }

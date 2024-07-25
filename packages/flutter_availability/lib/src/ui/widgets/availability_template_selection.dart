@@ -103,17 +103,20 @@ class _TemplateList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var template in selectedTemplates) ...[
-                _TemplateListItem(template: template),
-                if (template != selectedTemplates.last) ...[
-                  const SizedBox(height: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var template in selectedTemplates) ...[
+                  _TemplateListItem(template: template),
+                  if (template != selectedTemplates.last) ...[
+                    const SizedBox(height: 12),
+                  ],
                 ],
               ],
-            ],
+            ),
           ),
+          const SizedBox(width: 8),
           InkWell(
             onTap: onTemplatesRemoved,
             child: const Icon(Icons.remove),
@@ -146,7 +149,13 @@ class _TemplateListItem extends StatelessWidget {
           height: 20,
         ),
         const SizedBox(width: 12),
-        Text(template.name, style: theme.textTheme.bodyLarge),
+        Expanded(
+          child: Text(
+            template.name,
+            style: theme.textTheme.bodyLarge,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }
