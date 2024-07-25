@@ -217,8 +217,14 @@ class _TemplateListSectionItem extends StatelessWidget {
               width: 20,
             ),
             const SizedBox(width: 8),
-            Text(template.name, style: theme.textTheme.bodyLarge),
-            const Spacer(),
+            Expanded(
+              child: Text(
+                template.name,
+                style: theme.textTheme.bodyLarge,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 4),
             InkWell(
               onTap: () => onEditTemplate(template),
               child: const Icon(Icons.edit),

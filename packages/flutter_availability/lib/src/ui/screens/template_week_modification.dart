@@ -182,7 +182,13 @@ class _WeekTemplateModificationScreenState
     var overviewPage = _WeekTemplateSidePadding(
       child: Column(
         children: [
-          Text(translations.templateTitleLabel, style: textTheme.titleMedium),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              translations.templateTitleLabel,
+              style: textTheme.titleMedium,
+            ),
+          ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(12),
@@ -204,7 +210,13 @@ class _WeekTemplateModificationScreenState
                   height: 20,
                 ),
                 const SizedBox(width: 12),
-                Text(_viewModel.name ?? "", style: textTheme.bodyLarge),
+                Expanded(
+                  child: Text(
+                    _viewModel.name ?? "",
+                    style: textTheme.bodyLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
           ),
