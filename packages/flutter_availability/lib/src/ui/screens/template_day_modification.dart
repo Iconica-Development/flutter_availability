@@ -51,6 +51,13 @@ class _DayTemplateModificationScreenState
     var translations = options.translations;
 
     Future<void> onDeletePressed() async {
+      var isConfirmed = await options.confirmationDialogBuilder(
+        context,
+        title: translations.templateDeleteDialogConfirmTitle,
+        description: translations.templateDeleteDialogConfirmDescription,
+      );
+      if (!isConfirmed) return;
+
       await service.deleteTemplate(widget.template!);
       widget.onExit();
     }
