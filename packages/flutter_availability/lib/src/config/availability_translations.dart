@@ -45,6 +45,8 @@ class AvailabilityTranslations {
     required this.templateTitleLabel,
     required this.templateColorLabel,
     required this.weekTemplateOverviewTitle,
+    required this.templateDeleteDialogConfirmTitle,
+    required this.templateDeleteDialogConfirmDescription,
     required this.pause,
     required this.unavailable,
     required this.time,
@@ -113,6 +115,9 @@ class AvailabilityTranslations {
     this.templateTitleLabel = "Template Title",
     this.templateColorLabel = "Colorlabel",
     this.weekTemplateOverviewTitle = "Overview availability",
+    this.templateDeleteDialogConfirmTitle = "Are you sure you want to delete?",
+    this.templateDeleteDialogConfirmDescription =
+        "You can't undo this deletion",
     this.pause = "Pause",
     this.unavailable = "Unavailable",
     this.time = "Time",
@@ -246,6 +251,12 @@ class AvailabilityTranslations {
 
   /// The title for the week overview section
   final String weekTemplateOverviewTitle;
+
+  /// The title on the dialog for confirming the template delete
+  final String templateDeleteDialogConfirmTitle;
+
+  /// The description on the dialog for confirming the template delete
+  final String templateDeleteDialogConfirmDescription;
 
   /// The label used for pause
   final String pause;
