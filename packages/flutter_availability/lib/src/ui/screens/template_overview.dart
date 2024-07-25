@@ -41,6 +41,11 @@ class AvailabilityTemplateOverview extends HookWidget {
     var dayTemplatesSnapshot = useStream(dayTemplateStream);
     var weekTemplatesSnapshot = useStream(weekTemplateStream);
 
+    useEffect(() {
+      availabilityScope.popHandler.add(onExit);
+      return () => availabilityScope.popHandler.remove(onExit);
+    });
+
     var dayTemplates =
         dayTemplatesSnapshot.data ?? <AvailabilityTemplateModel>[];
     var weekTemplates =

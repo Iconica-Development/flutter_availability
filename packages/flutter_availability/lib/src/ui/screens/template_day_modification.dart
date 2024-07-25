@@ -7,9 +7,10 @@ import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Page for creating or editing a day template
-class DayTemplateModificationScreen extends StatefulWidget {
+class DayTemplateModificationScreen extends StatefulHookWidget {
   /// Constructor
   const DayTemplateModificationScreen({
     required this.template,
@@ -49,6 +50,11 @@ class _DayTemplateModificationScreenState
     var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
+
+    useEffect(() {
+      availabilityScope.popHandler.add(widget.onExit);
+      return () => availabilityScope.popHandler.remove(widget.onExit);
+    });
 
     Future<void> onDeletePressed() async {
       var isConfirmed = await options.confirmationDialogBuilder(

@@ -9,11 +9,12 @@ import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Screen for modifying the availabilities for a specific daterange
 /// There might already be availabilities for the selected period but they
 /// will be overwritten
-class AvailabilitiesModificationScreen extends StatefulWidget {
+class AvailabilitiesModificationScreen extends StatefulHookWidget {
   /// Constructor
   const AvailabilitiesModificationScreen({
     required this.dateRange,
@@ -61,6 +62,11 @@ class _AvailabilitiesModificationScreenState
     var options = availabilityScope.options;
     var spacing = options.spacing;
     var translations = options.translations;
+
+    useEffect(() {
+      availabilityScope.popHandler.add(widget.onExit);
+      return () => availabilityScope.popHandler.remove(widget.onExit);
+    });
 
     // TODO(freek): the selected period might be longer than 1 month
     //so we need to get all the availabilites through a stream
@@ -180,7 +186,7 @@ class _AvailabilitiesModificationScreenState
   }
 }
 
-class _AvailabilitiesModificationScreenLayout extends StatelessWidget {
+class _AvailabilitiesModificationScreenLayout extends HookWidget {
   const _AvailabilitiesModificationScreenLayout({
     required this.dateRange,
     required this.clearAvailability,

@@ -17,7 +17,7 @@ class AvailabilityOverview extends StatefulHookWidget {
   });
 
   /// Callback for when the user gives an availability range
-  final void Function(
+  final Future<void> Function(
     DateTimeRange range,
     List<AvailabilityWithTemplate> selectedAvailabilities,
   ) onEditDateRange;
@@ -48,6 +48,11 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       () => service.getOverviewDataForMonth(_selectedDate),
       [_selectedDate],
     );
+
+    useEffect(() {
+      availabilityScope.popHandler.add(widget.onExit);
+      return () => availabilityScope.popHandler.remove(widget.onExit);
+    });
 
     var availabilitySnapshot = useStream(availabilityStream);
 
@@ -94,14 +99,16 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
 
     VoidCallback? onButtonPress;
     if (_selectedRange != null) {
-      onButtonPress = () {
-        widget.onEditDateRange(
+      onButtonPress = () async {
+        await widget.onEditDateRange(
           _selectedRange!,
           selectedAvailabilities,
         );
-        setState(() {
-          _selectedRange = null;
-        });
+        if (mounted) {
+          setState(() {
+            _selectedRange = null;
+          });
+        }
       };
     }
 

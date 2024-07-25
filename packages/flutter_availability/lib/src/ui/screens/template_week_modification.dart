@@ -8,9 +8,10 @@ import "package:flutter_availability/src/ui/widgets/template_week_day_selection.
 import "package:flutter_availability/src/ui/widgets/template_week_overview.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:flutter_hooks/flutter_hooks.dart";
 
 /// Page for creating or editing a day template
-class WeekTemplateModificationScreen extends StatefulWidget {
+class WeekTemplateModificationScreen extends StatefulHookWidget {
   /// Constructor
   const WeekTemplateModificationScreen({
     required this.template,
@@ -110,6 +111,11 @@ class _WeekTemplateModificationScreenState
       }
       widget.onExit();
     }
+
+    useEffect(() {
+      availabilityScope.popHandler.add(onBackPressed);
+      return () => availabilityScope.popHandler.remove(onBackPressed);
+    });
 
     var canSave = _viewModel.canSave;
     var nextButton = options.primaryButtonBuilder(

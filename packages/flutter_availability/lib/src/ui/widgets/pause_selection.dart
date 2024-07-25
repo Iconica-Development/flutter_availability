@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/src/service/pop_handler.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/generic_time_selection.dart";
 import "package:flutter_availability/src/ui/widgets/input_fields.dart";
@@ -32,6 +33,7 @@ class PauseSelection extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var popHandler = availabilityScope.popHandler;
 
     Future<BreakViewModel?> openBreakDialog(
       BreakViewModel? initialBreak,
@@ -43,6 +45,7 @@ class PauseSelection extends StatelessWidget {
         userId: availabilityScope.userId,
         options: options,
         service: availabilityScope.service,
+        popHandler: popHandler,
         editingTemplate: editingTemplate,
       );
     }
@@ -201,6 +204,7 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
     required AvailabilityOptions options,
     required String userId,
     required AvailabilityService service,
+    required PopHandler popHandler,
     required bool editingTemplate,
     BreakViewModel? initialBreak,
   }) async =>
@@ -217,6 +221,7 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
           userId: userId,
           options: options,
           service: service,
+          popHandler: popHandler,
           child: AvailabilityBreakSelectionDialog(
             initialBreak: initialBreak,
             editingTemplate: editingTemplate,
