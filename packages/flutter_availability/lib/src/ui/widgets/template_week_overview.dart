@@ -11,11 +11,15 @@ class TemplateWeekOverview extends StatelessWidget {
   ///
   const TemplateWeekOverview({
     required this.template,
+    required this.onClickEdit,
     super.key,
   });
 
   /// The template to show
   final WeekTemplateViewModel template;
+
+  /// The callback for the textbutton to edit the week template
+  final VoidCallback onClickEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +37,23 @@ class TemplateWeekOverview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          translations.weekTemplateOverviewTitle,
-          style: textTheme.titleMedium,
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                translations.weekTemplateOverviewTitle,
+                style: textTheme.titleMedium,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            options.smallTextButtonBuilder(
+              context,
+              onClickEdit,
+              Text(
+                translations.editTemplateButton,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         DecoratedBox(
