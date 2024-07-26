@@ -94,7 +94,7 @@ class AvailabilityModel {
 
   /// Verify the validity of this availability
   void validate() {
-    if (startDate.compareTo(endDate) < 0) {
+    if (!startDate.isBefore(endDate)) {
       throw AvailabilityEndBeforeStartException();
     }
 
