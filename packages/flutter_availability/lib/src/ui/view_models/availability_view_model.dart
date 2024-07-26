@@ -130,6 +130,10 @@ class AvailabilityViewModel {
       templateSelected ||
       (startTime != null && endTime != null);
 
+  /// Whether a message should be shown to the user that the start and end times
+  /// are conflicting and they can't be filled in automatically
+  bool get showConflictingMessage => templateSelected && conflictingTime;
+
   /// Whether a template deviation should be shown to the user
   bool get isDeviatingFromTemplate =>
       startTime != null &&
