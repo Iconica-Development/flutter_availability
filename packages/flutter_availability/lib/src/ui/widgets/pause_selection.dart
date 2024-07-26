@@ -316,61 +316,66 @@ class _AvailabilityBreakSelectionDialogState
 
     return Stack(
       children: [
-        Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: spacing.sidePadding,
+        Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 44),
-                Text(
-                  translations.pauseDialogTitle,
-                  style: textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  descriptionText,
-                  style: textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Spacer(
-                      flex: 3,
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: DurationInputField(
-                        initialValue: _breakViewModel.submittedDuration,
-                        onDurationChanged: onUpdateDuration,
-                      ),
-                    ),
-                    const Spacer(
-                      flex: 3,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                TimeSelection(
-                  key: ValueKey(
-                    [_breakViewModel.startTime, _breakViewModel.endTime],
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: spacing.sidePadding,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 44),
+                  Text(
+                    translations.pauseDialogTitle,
+                    style: textTheme.titleMedium,
+                    textAlign: TextAlign.center,
                   ),
-                  // rebuild the widget when the start or end time changes
-                  title: translations.pauseDialogPeriodTitle,
-                  description: translations.pauseDialogPeriodDescription,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  startTime: _breakViewModel.startTime,
-                  endTime: _breakViewModel.endTime,
-                  onStartChanged: onUpdateStart,
-                  onEndChanged: onUpdateEnd,
-                ),
-                const SizedBox(height: 36),
-                saveButton,
-                SizedBox(height: spacing.bottomButtonPadding),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    descriptionText,
+                    style: textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Spacer(
+                        flex: 3,
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: DurationInputField(
+                          initialValue: _breakViewModel.submittedDuration,
+                          onDurationChanged: onUpdateDuration,
+                        ),
+                      ),
+                      const Spacer(
+                        flex: 3,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  TimeSelection(
+                    key: ValueKey(
+                      [_breakViewModel.startTime, _breakViewModel.endTime],
+                    ),
+                    // rebuild the widget when the start or end time changes
+                    title: translations.pauseDialogPeriodTitle,
+                    description: translations.pauseDialogPeriodDescription,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    startTime: _breakViewModel.startTime,
+                    endTime: _breakViewModel.endTime,
+                    onStartChanged: onUpdateStart,
+                    onEndChanged: onUpdateEnd,
+                  ),
+                  const SizedBox(height: 36),
+                  saveButton,
+                  SizedBox(height: spacing.bottomButtonPadding),
+                ],
+              ),
             ),
           ),
         ),
