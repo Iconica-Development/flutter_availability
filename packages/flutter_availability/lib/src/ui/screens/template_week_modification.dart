@@ -182,7 +182,10 @@ class _WeekTemplateModificationScreenState
       const SizedBox(height: 24),
       Padding(
         padding: EdgeInsets.only(left: spacing.sidePadding),
-        child: TemplateWeekDaySelection(onDaySelected: onDaySelected),
+        child: TemplateWeekDaySelection(
+          initialSelectedDay: _selectedDay.index,
+          onDaySelected: onDaySelected,
+        ),
       ),
       const SizedBox(height: 24),
       _WeekTemplateSidePadding(

@@ -9,8 +9,13 @@ class TemplateWeekDaySelection extends StatefulWidget {
   /// Creates a [TemplateWeekDaySelection]
   const TemplateWeekDaySelection({
     required this.onDaySelected,
+    required this.initialSelectedDay,
     super.key,
   });
+
+  /// The initial day that should be selected when the widget is first created
+  /// This should be an index of the days of the week starting with 0 for Monday
+  final int initialSelectedDay;
 
   /// Callback for when a day is selected
   final void Function(int) onDaySelected;
@@ -21,7 +26,7 @@ class TemplateWeekDaySelection extends StatefulWidget {
 }
 
 class _TemplateWeekDaySelectionState extends State<TemplateWeekDaySelection> {
-  int _selectedDayIndex = 0;
+  late int _selectedDayIndex = widget.initialSelectedDay;
 
   @override
   Widget build(BuildContext context) {
