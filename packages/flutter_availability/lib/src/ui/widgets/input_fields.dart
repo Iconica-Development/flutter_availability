@@ -140,6 +140,7 @@ class _DurationInputFieldState extends State<DurationInputField> {
           ),
           suffixIcon: const Icon(Icons.access_time),
         ),
+        initialValue: widget.initialValue?.inMinutes.toString(),
         keyboardType: TextInputType.number,
         style: options.textStyles.inputFieldTextStyle,
         onChanged: _onFieldChanged,
