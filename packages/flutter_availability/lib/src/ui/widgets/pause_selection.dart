@@ -328,15 +328,19 @@ class _AvailabilityBreakSelectionDialogState
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Spacer(),
+                    const Spacer(
+                      flex: 3,
+                    ),
                     Expanded(
-                      flex: 2,
+                      flex: 4,
                       child: DurationInputField(
                         initialValue: _breakViewModel.submittedDuration,
                         onDurationChanged: onUpdateDuration,
                       ),
                     ),
-                    const Spacer(),
+                    const Spacer(
+                      flex: 3,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
