@@ -99,6 +99,8 @@ class _AvailabilitiesModificationScreenState
         error = AvailabilityError.breakEndBeforeStart;
       } on BreakSubmittedDurationTooLongException {
         error = AvailabilityError.breakSubmittedDurationTooLong;
+      } on BreakOutsideAvailabilityTimeException {
+        error = AvailabilityError.breakOutsideAvailabilityTime;
       }
 
       if (error != null && context.mounted) {

@@ -13,6 +13,11 @@ enum AvailabilityError {
     "and end time",
   ),
 
+  /// Error identifier for when a break is outside the availability time
+  breakOutsideAvailabilityTime(
+    "The break is outside the availability time",
+  ),
+
   /// Error identifier for when the end of the day is before the start
   endBeforeStart("The end of the day is before the start"),
 
