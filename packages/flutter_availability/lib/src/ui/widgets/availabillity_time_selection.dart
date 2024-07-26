@@ -40,6 +40,8 @@ class AvailabilityTimeSelection extends StatelessWidget {
       explanationText = isSingleDay
           ? translations.availabilityTemplateDeviationExplanation
           : translations.availabilitiesTemplateDeviationExplanation;
+    } else if (viewModel.showConflictingMessage) {
+      explanationText = translations.availabilitiesConflictingTimeExplanation;
     }
 
     return Column(
@@ -68,6 +70,7 @@ class _AvailabilityExplanation extends StatelessWidget {
     required this.explanation,
   });
 
+  /// The explanation text to show to the user
   final String explanation;
 
   @override
