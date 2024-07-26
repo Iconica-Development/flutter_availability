@@ -277,18 +277,28 @@ class _AvailabilityBreakSelectionDialogState
       });
     }
 
+    Future<void> onSave() async {
+      AvailabilityError? error;
+      try {
+        _breakViewModel.toBreak().validate();
+        Navigator.of(context).pop(_breakViewModel);
+      } on BreakEndBeforeStartException {
+        error = AvailabilityError.breakEndBeforeStart;
+      } on BreakSubmittedDurationTooLongException {
+        error = AvailabilityError.breakSubmittedDurationTooLong;
+      }
+
+      if (error != null && context.mounted) {
+        await options.errorDisplayBuilder(
+          context,
+          error,
+        );
+      }
+    }
+
     var canSave = _breakViewModel.canSave;
 
-    var onSaveButtonPress = canSave
-        ? () {
-            if (_breakViewModel.isValid) {
-              Navigator.of(context).pop(_breakViewModel);
-            } else {
-              debugPrint("Break is not valid");
-              // TODO(freek): show error message
-            }
-          }
-        : null;
+    var onSaveButtonPress = canSave ? onSave : null;
 
     var saveButton = options.primaryButtonBuilder(
       context,
