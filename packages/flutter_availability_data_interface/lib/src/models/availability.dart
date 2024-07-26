@@ -8,6 +8,9 @@ class BreakEndBeforeStartException implements Exception {}
 /// between the start and end time
 class BreakSubmittedDurationTooLongException implements Exception {}
 
+/// Exception thrown when a break is outside the availability time
+class BreakOutsideAvailabilityTimeException implements Exception {}
+
 /// Exception thrown when the end is before the start
 class AvailabilityEndBeforeStartException implements Exception {}
 
@@ -100,6 +103,12 @@ class AvailabilityModel {
 
     for (var breakData in breaks) {
       breakData.validate();
+      var breakStart = breakData.startTime.time;
+      var breakEnd = breakData.endTime.time;
+      if (breakStart.isBefore(startDate.time) ||
+          breakEnd.isAfter(endDate.time)) {
+        throw BreakOutsideAvailabilityTimeException();
+      }
     }
   }
 }
@@ -201,7 +210,7 @@ class AvailabilityBreakModel {
 
   /// Verify the validity of this break
   void validate() {
-    if (endTime.compareTo(startTime) < 0) {
+    if (!startTime.isBefore(endTime)) {
       throw BreakEndBeforeStartException();
     }
 
