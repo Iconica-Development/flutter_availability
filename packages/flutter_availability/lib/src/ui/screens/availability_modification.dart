@@ -183,17 +183,13 @@ class _AvailabilitiesModificationScreenState
     }
 
     return _AvailabilitiesModificationScreenLayout(
-      dateRange: widget.dateRange,
-      clearAvailability: _availabilityViewModel.clearAvailability,
+      viewModel: _availabilityViewModel,
       onClearSection: onClearSection,
       selectedTemplates: _availabilityViewModel.templates,
       onTemplateSelected: onTemplateSelected,
       onTemplatesRemoved: onTemplatesRemoved,
-      startTime: _availabilityViewModel.startTime,
-      endTime: _availabilityViewModel.endTime,
       onStartChanged: onStartChanged,
       onEndChanged: onEndChanged,
-      breaks: _availabilityViewModel.breaks,
       onBreaksChanged: onBreaksChanged,
       sidePadding: spacing.sidePadding,
       bottomButtonPadding: spacing.bottomButtonPadding,
@@ -205,17 +201,13 @@ class _AvailabilitiesModificationScreenState
 
 class _AvailabilitiesModificationScreenLayout extends HookWidget {
   const _AvailabilitiesModificationScreenLayout({
-    required this.dateRange,
-    required this.clearAvailability,
+    required this.viewModel,
     required this.onClearSection,
     required this.selectedTemplates,
     required this.onTemplateSelected,
     required this.onTemplatesRemoved,
-    required this.startTime,
-    required this.endTime,
     required this.onStartChanged,
     required this.onEndChanged,
-    required this.breaks,
     required this.onBreaksChanged,
     required this.sidePadding,
     required this.bottomButtonPadding,
@@ -223,8 +215,7 @@ class _AvailabilitiesModificationScreenLayout extends HookWidget {
     required this.onExit,
   });
 
-  final DateTimeRange dateRange;
-  final bool clearAvailability;
+  final AvailabilityViewModel viewModel;
   // ignore: avoid_positional_boolean_parameters
   final void Function(bool isChecked) onClearSection;
 
@@ -232,12 +223,9 @@ class _AvailabilitiesModificationScreenLayout extends HookWidget {
   final void Function() onTemplateSelected;
   final void Function() onTemplatesRemoved;
 
-  final TimeOfDay? startTime;
-  final TimeOfDay? endTime;
   final void Function(TimeOfDay start) onStartChanged;
   final void Function(TimeOfDay start) onEndChanged;
 
-  final List<BreakViewModel> breaks;
   final void Function(List<BreakViewModel> breaks) onBreaksChanged;
 
   final double sidePadding;
@@ -258,11 +246,11 @@ class _AvailabilitiesModificationScreenLayout extends HookWidget {
       BasePage(
         body: [
           AvailabilityClearSection(
-            range: dateRange,
-            clearAvailable: clearAvailability,
+            range: viewModel.selectedRange,
+            clearAvailable: viewModel.clearAvailability,
             onChanged: onClearSection,
           ),
-          if (!clearAvailability) ...[
+          if (!viewModel.clearAvailability) ...[
             const SizedBox(height: 24),
             AvailabilityTemplateSelection(
               selectedTemplates: selectedTemplates,
@@ -271,16 +259,14 @@ class _AvailabilitiesModificationScreenLayout extends HookWidget {
             ),
             const SizedBox(height: 24),
             AvailabilityTimeSelection(
-              dateRange: dateRange,
-              startTime: startTime,
-              endTime: endTime,
-              key: ValueKey([startTime, endTime]),
+              viewModel: viewModel,
+              key: ValueKey(viewModel),
               onStartChanged: onStartChanged,
               onEndChanged: onEndChanged,
             ),
             const SizedBox(height: 24),
             PauseSelection(
-              breaks: breaks,
+              breaks: viewModel.breaks,
               editingTemplate: false,
               onBreaksChanged: onBreaksChanged,
             ),

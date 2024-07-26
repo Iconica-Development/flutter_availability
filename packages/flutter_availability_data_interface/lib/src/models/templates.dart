@@ -1,5 +1,6 @@
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 import "package:flutter_availability_data_interface/src/models/availability.dart";
+import "package:flutter_availability_data_interface/src/utils.dart";
 
 /// Exception thrown when the end is before the start
 class TemplateEndBeforeStartException implements Exception {}
@@ -119,6 +120,15 @@ class AvailabilityTemplateModel {
   void validate() {
     templateData.validate();
   }
+
+  /// check if an availability's day corresponds to the template with the given
+  /// [availability] and [start] and [end] dates
+  bool availabilityDeviatesFromTemplate(
+    AvailabilityModel availability,
+    DateTime start,
+    DateTime end,
+  ) =>
+      templateData.availabilityDeviates(availability, start, end);
 }
 
 /// Used as the key for defining week-based templates
@@ -186,6 +196,14 @@ abstract interface class TemplateData {
 
   /// Verify the validity of the data in this template
   void validate();
+
+  /// Check if an availability's day corresponds to the template with the given
+  /// [availability] and [start] and [end] dates
+  bool availabilityDeviates(
+    AvailabilityModel availability,
+    DateTime start,
+    DateTime end,
+  );
 }
 
 /// A week based template data structure
@@ -286,6 +304,21 @@ class WeekTemplateData implements TemplateData {
     for (var dayData in _data.entries) {
       dayData.value.validate();
     }
+  }
+
+  @override
+  bool availabilityDeviates(
+    AvailabilityModel availability,
+    DateTime start,
+    DateTime end,
+  ) {
+    var dayOfWeek = WeekDay.values[availability.startDate.weekday];
+    var data = _data[dayOfWeek];
+    if (data == null) {
+      return false;
+    }
+    // compare the start and end with the template
+    return !start.timeMatches(data.startTime) || !end.timeMatches(data.endTime);
   }
 }
 
@@ -416,6 +449,14 @@ class DayTemplateData implements TemplateData {
       }
     }
   }
+
+  @override
+  bool availabilityDeviates(
+    AvailabilityModel availability,
+    DateTime start,
+    DateTime end,
+  ) =>
+      !start.timeMatches(startTime) || !end.timeMatches(endTime);
 }
 
 List<DateTime> _getDatesBetween(DateTime startDate, DateTime endDate) {
