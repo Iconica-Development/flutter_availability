@@ -315,7 +315,8 @@ class WeekTemplateData implements TemplateData {
     var dayOfWeek = WeekDay.values[availability.startDate.weekday];
     var data = _data[dayOfWeek];
     if (data == null) {
-      return false;
+      // if the day of the week is not in the template, it deviates
+      return true;
     }
     // compare the start and end with the template
     return !start.timeMatches(data.startTime) || !end.timeMatches(data.endTime);
