@@ -211,6 +211,7 @@ class AvailabilityBreakSelectionDialog extends StatefulWidget {
       showModalBottomSheet<BreakViewModel>(
         context: context,
         useSafeArea: false,
+        isScrollControlled: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
