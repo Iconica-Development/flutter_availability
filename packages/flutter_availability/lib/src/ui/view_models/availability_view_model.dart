@@ -21,7 +21,8 @@ class AvailabilityViewModel {
     this.conflictingPauses = false,
     this.conflictingTime = false,
     this.templateSelected = false,
-  });
+    List<AvailabilityWithTemplate> initialModels = const [],
+  }) : _initialModels = initialModels;
 
   /// This constructor creates a [AvailabilityViewModel] from a list of
   /// [AvailabilityWithTemplate] models
@@ -59,6 +60,7 @@ class AvailabilityViewModel {
     }
 
     return AvailabilityViewModel(
+      initialModels: models,
       templates: models.getUniqueTemplates(),
       breaks: breaks,
       ids: models.map((e) => e.availabilityModel.id!).toList(),
@@ -70,6 +72,10 @@ class AvailabilityViewModel {
       selectedRange: range,
     );
   }
+
+  /// The initial models that were selected and can be checked for deviations
+  /// from the templates
+  final List<AvailabilityWithTemplate> _initialModels;
 
   /// The templates are selected for the availability range
   /// There can be multiple templates used in a selected range but only one
@@ -123,6 +129,17 @@ class AvailabilityViewModel {
       clearAvailability ||
       templateSelected ||
       (startTime != null && endTime != null);
+
+  /// Whether a template deviation should be shown to the user
+  bool get isDeviatingFromTemplate =>
+      startTime != null &&
+      endTime != null &&
+      templates.isNotEmpty &&
+      _isAnyTemplateWithDifferentTimeFromAvailability();
+
+  /// Checks whether any availability has a different time from their template
+  bool _isAnyTemplateWithDifferentTimeFromAvailability() =>
+      _initialModels.any(_availabilityTemplateDeviatesFromTime);
 
   ///
   AvailabilityViewModel applyTemplate(AvailabilityTemplateModel template) {
@@ -209,6 +226,24 @@ class AvailabilityViewModel {
     );
   }
 
+  /// Checks the current selected start and end time against the templates for
+  /// the initial models to see if the time deviates from the template
+  bool _availabilityTemplateDeviatesFromTime(AvailabilityWithTemplate model) {
+    var template = model.template;
+    var availability = model.availabilityModel;
+    if (template == null) {
+      return false;
+    }
+    var startDate = DateTime(0, 0, 0, startTime!.hour, startTime!.minute);
+    var endDate = DateTime(0, 0, 0, endTime!.hour, endTime!.minute);
+
+    return template.availabilityDeviatesFromTemplate(
+      availability,
+      startDate,
+      endDate,
+    );
+  }
+
   /// Copies the current properties into a new instance
   /// of [AvailabilityViewModel],
   AvailabilityViewModel copyWith({
@@ -236,6 +271,7 @@ class AvailabilityViewModel {
         conflictingTime: conflictingTime ?? this.conflictingTime,
         templateSelected: templateSelected ?? this.templateSelected,
         selectedRange: selectedRange ?? this.selectedRange,
+        initialModels: _initialModels,
       );
 }
 

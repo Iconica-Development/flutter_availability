@@ -29,6 +29,9 @@ class AvailabilityTranslations {
     required this.availabilityUsedTemplates,
     required this.availabilityTimeTitle,
     required this.availabilitiesTimeTitle,
+    required this.availabilityTemplateDeviationExplanation,
+    required this.availabilitiesTemplateDeviationExplanation,
+    required this.availabilitiesConflictingTimeExplanation,
     required this.availabilityDialogConfirmTitle,
     required this.availabilityDialogConfirmDescription,
     required this.templateScreenTitle,
@@ -95,6 +98,13 @@ class AvailabilityTranslations {
     this.availabilityUsedTemplates = "Used templates",
     this.availabilityTimeTitle = "Start and end time workday",
     this.availabilitiesTimeTitle = "Start and end time workdays",
+    this.availabilityTemplateDeviationExplanation =
+        "The start and end time are deviating from the template for this day",
+    this.availabilitiesTemplateDeviationExplanation =
+        "The start and end time are deviating from the template for these days",
+    this.availabilitiesConflictingTimeExplanation =
+        "There are conflicting times when applying this template "
+            "for this period",
     this.availabilityDialogConfirmTitle =
         "Are you sure you want to save the changes?",
     this.availabilityDialogConfirmDescription =
@@ -203,6 +213,18 @@ class AvailabilityTranslations {
 
   /// The title on the time selection section for adding multiple availabilities
   final String availabilitiesTimeTitle;
+
+  /// The explainer text when the availability deviates from the used template
+  /// on the availability modification screen
+  final String availabilityTemplateDeviationExplanation;
+
+  /// The explainer text when one of the availabilities deviates from the used
+  /// template on the availability modification screen
+  final String availabilitiesTemplateDeviationExplanation;
+
+  /// The explainer text when the availabilities have conflicting times when
+  /// applying a template and the start and end time have not been filled in
+  final String availabilitiesConflictingTimeExplanation;
 
   /// The title on the dialog for confirming the availability update
   final String availabilityDialogConfirmTitle;
