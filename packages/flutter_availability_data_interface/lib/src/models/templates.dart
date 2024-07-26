@@ -433,7 +433,7 @@ class DayTemplateData implements TemplateData {
 
   @override
   void validate() {
-    if (endTime.compareTo(startTime) < 0) {
+    if (!startTime.isBefore(endTime)) {
       throw TemplateEndBeforeStartException();
     }
 
