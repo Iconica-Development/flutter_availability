@@ -36,10 +36,12 @@ class TemplateNameInput extends StatelessWidget {
           decoration: InputDecoration(
             hintText: translations.templateTitleHintText,
             hintStyle: theme.inputDecorationTheme.hintStyle,
+            counterText: "",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
+          maxLength: 100,
           initialValue: initialValue,
           style: options.textStyles.inputFieldTextStyle,
           onChanged: onNameChanged,
