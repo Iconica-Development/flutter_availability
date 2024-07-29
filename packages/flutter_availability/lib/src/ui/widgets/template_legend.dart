@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/config/availability_options.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
@@ -35,6 +36,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
     var options = availabilityScope.options;
     var colors = options.colors;
     var translations = options.translations;
+    var featureSet = options.featureSet;
 
     var templatesLoading =
         widget.availabilities.connectionState == ConnectionState.waiting;
@@ -46,6 +48,11 @@ class _TemplateLegendState extends State<TemplateLegend> {
         false;
 
     var templatesVisible = templatesAvailable && _templateDrawerOpen;
+
+    if (!templatesAvailable &&
+        !featureSet.require(AvailabilityFeature.templates)) {
+      return const SizedBox.shrink();
+    }
 
     void onDrawerHeaderClick() {
       if (!templatesAvailable && !_templateDrawerOpen) {
@@ -115,25 +122,23 @@ class _TemplateLegendState extends State<TemplateLegend> {
                     ),
                   ),
                 ],
-                for (var template in templates) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 10,
-                      left: 12,
+                if (featureSet.require(AvailabilityFeature.templates)) ...[
+                  for (var template in templates) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        left: 12,
+                      ),
+                      child: _TemplateLegendItem(
+                        name: template.name,
+                        backgroundColor: Color(template.color),
+                      ),
                     ),
-                    child: _TemplateLegendItem(
-                      name: template.name,
-                      backgroundColor: Color(template.color),
-                    ),
-                  ),
+                  ],
+                  const SizedBox(height: 10),
+                  createNewTemplateButton,
                 ],
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 10,
-                    bottom: 8,
-                  ),
-                  child: createNewTemplateButton,
-                ),
+                const SizedBox(height: 8),
               ],
             ),
           ),
@@ -184,12 +189,14 @@ class _TemplateLegendState extends State<TemplateLegend> {
           padding: const EdgeInsets.only(right: 2),
           child: body,
         ),
-        if (!templatesVisible) ...[
-          const SizedBox(height: 12),
-          if (templatesLoading) ...[
-            options.loadingIndicatorBuilder(context),
-          ] else ...[
-            createNewTemplateButton,
+        if (featureSet.require(AvailabilityFeature.templates)) ...[
+          if (!templatesVisible) ...[
+            const SizedBox(height: 12),
+            if (templatesLoading) ...[
+              options.loadingIndicatorBuilder(context),
+            ] else ...[
+              createNewTemplateButton,
+            ],
           ],
         ],
       ],
