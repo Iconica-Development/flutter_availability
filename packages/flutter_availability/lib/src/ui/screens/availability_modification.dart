@@ -241,6 +241,7 @@ class _AvailabilitiesModificationScreenLayout extends HookWidget {
   Widget build(BuildContext context) {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+    var featureSet = options.featureSet;
 
     return options.baseScreenBuilder(
       context,
@@ -253,25 +254,31 @@ class _AvailabilitiesModificationScreenLayout extends HookWidget {
             onChanged: onClearSection,
           ),
           if (!viewModel.clearAvailability) ...[
-            const SizedBox(height: 24),
-            AvailabilityTemplateSelection(
-              selectedTemplates: selectedTemplates,
-              onTemplateAdd: onTemplateSelected,
-              onTemplatesRemoved: onTemplatesRemoved,
-            ),
-            const SizedBox(height: 24),
-            AvailabilityTimeSelection(
-              viewModel: viewModel,
-              key: ValueKey(viewModel),
-              onStartChanged: onStartChanged,
-              onEndChanged: onEndChanged,
-            ),
-            const SizedBox(height: 24),
-            PauseSelection(
-              breaks: viewModel.breaks,
-              editingTemplate: false,
-              onBreaksChanged: onBreaksChanged,
-            ),
+            if (featureSet.require(AvailabilityFeature.templates)) ...[
+              const SizedBox(height: 24),
+              AvailabilityTemplateSelection(
+                selectedTemplates: selectedTemplates,
+                onTemplateAdd: onTemplateSelected,
+                onTemplatesRemoved: onTemplatesRemoved,
+              ),
+            ],
+            if (featureSet.require(AvailabilityFeature.customAvailability)) ...[
+              const SizedBox(height: 24),
+              AvailabilityTimeSelection(
+                viewModel: viewModel,
+                key: ValueKey(viewModel),
+                onStartChanged: onStartChanged,
+                onEndChanged: onEndChanged,
+              ),
+              if (featureSet.require(AvailabilityFeature.breaks)) ...[
+                const SizedBox(height: 24),
+                PauseSelection(
+                  breaks: viewModel.breaks,
+                  editingTemplate: false,
+                  onBreaksChanged: onBreaksChanged,
+                ),
+              ],
+            ],
           ],
         ],
         buttons: [saveButton],

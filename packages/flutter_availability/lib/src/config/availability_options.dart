@@ -28,6 +28,11 @@ class AvailabilityOptions {
     this.timePickerBuilder,
     this.loadingIndicatorBuilder = DefaultLoader.builder,
     this.errorDisplayBuilder = DefaultErrorDisplayDialog.defaultErrorDisplay,
+    this.featureSet = const {
+      AvailabilityFeature.breaks,
+      AvailabilityFeature.customAvailability,
+      AvailabilityFeature.templates,
+    },
     AvailabilityDataInterface? dataInterface,
   }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
 
@@ -94,6 +99,11 @@ class AvailabilityOptions {
   /// the calls of the method. To ensure this, you can add a scaffold in the
   /// base widget through [baseScreenBuilder].
   final ErrorDisplayBuilder errorDisplayBuilder;
+
+  /// Enabled features when using these options
+  ///
+  /// Look at [AvailabilityFeature] for more information.
+  final Set<AvailabilityFeature> featureSet;
 
   final _borderRadius = BorderRadius.circular(5);
 
@@ -233,3 +243,21 @@ typedef ErrorDisplayBuilder = Future<void> Function(
   BuildContext context,
   AvailabilityError error,
 );
+
+/// Lists all features that are toggleable
+enum AvailabilityFeature {
+  /// Anything template related
+  templates,
+
+  /// Definition of breaks
+  breaks,
+
+  /// Definition of custom availabilities without templates
+  customAvailability;
+}
+
+/// Extension for validating whether a feature is enabled
+extension FeatureRequirement on Set<AvailabilityFeature> {
+  /// Whether a required feature is enabled
+  bool require(AvailabilityFeature feature) => contains(feature);
+}
