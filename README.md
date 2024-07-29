@@ -35,6 +35,15 @@ There is also a function for pushing the availability screen to the navigation s
 openAvailabilitiesForUser(context, "userIdOfTheUser", AvailabilityOptions());
 ```
 
+You can also use the AvailabilityEntryWidget to show a button with an icon and some styling options that starts the userstory:
+
+```dart
+AvailabilityEntryWidget(
+    userId: "userIdOfTheUser",
+    options: AvailabilityOptions(),
+),
+```
+
 ## Issues
 
 Please file any issues, bugs or feature request as an issue on our [GitHub](https://github.com/Iconica-Development/flutter_availability) page. Commercial support is available if you need help with integration with your app or services. You can contact us at [support@iconica.nl](mailto:support@iconica.nl).
