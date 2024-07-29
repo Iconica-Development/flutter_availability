@@ -1,4 +1,5 @@
 import "package:flutter_availability_data_interface/src/data_interface.dart";
+import "package:flutter_availability_data_interface/src/local_repository/local_data_interface.dart";
 import "package:flutter_availability_data_interface/src/models/availability.dart";
 import "package:flutter_availability_data_interface/src/models/templates.dart";
 import "package:flutter_availability_data_interface/src/utils/public.dart";
@@ -7,10 +8,10 @@ import "package:rxdart/rxdart.dart";
 ///
 class AvailabilityService {
   ///
-  const AvailabilityService({
+  AvailabilityService({
     required this.userId,
-    required this.dataInterface,
-  });
+    AvailabilityDataInterface? dataInterface,
+  }) : dataInterface = dataInterface ?? LocalAvailabilityDataInterface();
 
   /// The user id for which the availabilities are managed
   final String userId;
