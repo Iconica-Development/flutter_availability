@@ -1,6 +1,13 @@
 # flutter_availability
 
-This package tries to create an all encompassing implementation for handling time availability use cases. 
+This package creates an all encompassing implementation for handling time availability use cases. By Default this package runs with a local data implementation that does not persist data. You can add your own implementation by implementing the AvailabilityDataInterface.
+
+All configuration of the userstory is done through the AvailabilityOptions class.
+
+![Flutter Availability GIF](availability.gif)
+
+Figma Design that defines this component (only accessible for Iconica developers): TO BE CREATED
+Figma clickable prototype that demonstrates this component (only accessible for Iconica developers): TO BE CREATED
 
 ## Setup
 
@@ -12,6 +19,20 @@ To use this package, add flutter_availability as a dependency in your pubspec.ya
       url: https://github.com/Iconica-Development/flutter_availability
       path: packages/flutter_availability
       ref: 1.0.0
+```
+
+You can start the userstory by adding the availability widget like this to your widget tree:
+
+```dart
+AvailabilityUserStory(
+    userId: "userIdOfTheUser",
+    options: AvailabilityOptions(),
+),
+```
+There is also a function for pushing the availability screen to the navigation stack:
+
+```dart
+openAvailabilitiesForUser(context, "userIdOfTheUser", AvailabilityOptions());
 ```
 
 ## Issues
