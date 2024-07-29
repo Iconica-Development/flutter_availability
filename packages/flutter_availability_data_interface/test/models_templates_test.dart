@@ -1,5 +1,5 @@
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
-import "package:flutter_test/flutter_test.dart";
+import "package:test/test.dart";
 
 void main() {
   group("AvailabilityTemplate", () {
