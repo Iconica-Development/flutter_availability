@@ -1,6 +1,6 @@
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 import "package:flutter_availability_data_interface/src/models/availability.dart";
-import "package:flutter_availability_data_interface/src/utils.dart";
+import "package:flutter_availability_data_interface/src/utils/private.dart";
 
 /// Exception thrown when the end is before the start
 class TemplateEndBeforeStartException implements Exception {}

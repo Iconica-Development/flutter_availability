@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/config/availability_translations.dart";
-import "package:flutter_availability/src/service/availability_service.dart";
+import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
 import "package:flutter_availability/src/util/availability_deviation.dart";
 import "package:flutter_availability/src/util/scope.dart";

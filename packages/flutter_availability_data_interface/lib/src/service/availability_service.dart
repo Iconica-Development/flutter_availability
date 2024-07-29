@@ -1,5 +1,7 @@
-import "package:flutter/material.dart";
-import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:flutter_availability_data_interface/src/data_interface.dart";
+import "package:flutter_availability_data_interface/src/models/availability.dart";
+import "package:flutter_availability_data_interface/src/models/templates.dart";
+import "package:flutter_availability_data_interface/src/utils/public.dart";
 import "package:rxdart/rxdart.dart";
 
 ///
@@ -21,7 +23,7 @@ class AvailabilityService {
   /// changed
   Future<void> createAvailability({
     required AvailabilityModel availability,
-    required DateTimeRange range,
+    required DateRange range,
   }) async {
     // apply the startTime and endTime to the availability model
     var updatedAvailability = availability.copyWith(
@@ -68,7 +70,7 @@ class AvailabilityService {
   /// [template] to each day in the range
   Future<void> applyTemplate({
     required AvailabilityTemplateModel template,
-    required DateTimeRange range,
+    required DateRange range,
   }) async {
     await dataInterface.applyTemplateForUser(
       userId,

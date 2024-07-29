@@ -1,4 +1,4 @@
-import "package:flutter_availability_data_interface/src/utils.dart";
+import "package:flutter_availability_data_interface/src/utils/private.dart";
 
 /// Exception thrown when the end is before the start
 class BreakEndBeforeStartException implements Exception {}

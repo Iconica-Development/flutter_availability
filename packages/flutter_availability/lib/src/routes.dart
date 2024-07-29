@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/screens/availability_modification.dart";
 import "package:flutter_availability/src/ui/screens/availability_overview.dart";
 import "package:flutter_availability/src/ui/screens/template_day_modification.dart";
