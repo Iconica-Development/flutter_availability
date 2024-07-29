@@ -1,16 +1,25 @@
 import "dart:async";
 
-import "package:flutter_availability/src/service/initial_data.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
+import "package:flutter_availability_data_interface/src/local_repository/initial_data.dart";
+import "package:rxdart/rxdart.dart";
 
 /// A local implementation of the [AvailabilityDataInterface] that stores data
 /// in memory.
 class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
+  /// Creates a representation of the local data interface.
   ///
-  LocalAvailabilityDataInterface() {
+  /// A second call of the constructor will return the same value as earlier
+  /// calls according to the singleton principle
+  factory LocalAvailabilityDataInterface() =>
+      _localDataInterface ??= LocalAvailabilityDataInterface._();
+
+  LocalAvailabilityDataInterface._() {
     _notifyAvailabilityChanges();
     _notifyTemplateChanges();
   }
+
+  static LocalAvailabilityDataInterface? _localDataInterface;
 
   final Map<String, List<AvailabilityModel>> _userAvailabilities = {
     "": getDefaultLocalAvailabilitiesForUser(),
@@ -21,9 +30,9 @@ class LocalAvailabilityDataInterface implements AvailabilityDataInterface {
   };
 
   final StreamController<Map<String, List<AvailabilityModel>>>
-      _availabilityController = StreamController.broadcast();
+      _availabilityController = BehaviorSubject();
   final StreamController<Map<String, List<AvailabilityTemplateModel>>>
-      _templateController = StreamController.broadcast();
+      _templateController = BehaviorSubject();
 
   void _notifyAvailabilityChanges() {
     _availabilityController.add(_userAvailabilities);

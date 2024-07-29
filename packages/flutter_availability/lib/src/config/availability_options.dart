@@ -3,7 +3,6 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/config/availability_translations.dart";
 import "package:flutter_availability/src/service/errors.dart";
-import "package:flutter_availability/src/service/local_data_interface.dart";
 import "package:flutter_availability/src/ui/widgets/defaults/default_base_screen.dart";
 import "package:flutter_availability/src/ui/widgets/defaults/default_buttons.dart";
 import "package:flutter_availability/src/ui/widgets/defaults/default_confirmation_dialog.dart";
