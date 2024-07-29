@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/config/availability_options.dart";
 import "package:flutter_availability/src/routes.dart";
-import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/service/pop_handler.dart";
 import "package:flutter_availability/src/util/scope.dart";
+import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// This pushes the availability user story to the navigator stack.
 Future<void> openAvailabilitiesForUser(

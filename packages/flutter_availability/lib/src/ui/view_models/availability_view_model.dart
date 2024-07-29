@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/util/utils.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";

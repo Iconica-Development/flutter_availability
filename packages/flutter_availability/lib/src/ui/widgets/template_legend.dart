@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/util/scope.dart";
+import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 /// This shows all the templates of a given month and an option to navigate to
 /// the template overview
