@@ -1,3 +1,4 @@
+// ignore_for_file: Generated using data class generator
 import "package:flutter_availability_data_interface/src/utils.dart";
 
 /// Exception thrown when the end is before the start
