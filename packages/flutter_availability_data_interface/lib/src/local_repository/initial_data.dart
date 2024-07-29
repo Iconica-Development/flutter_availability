@@ -40,7 +40,7 @@ List<AvailabilityTemplateModel> getDefaultLocalTemplatesForUser() {
       ("2", "Afternoon", 0xFF00FF00),
       ("3", "Evening", 0xFFFF0000),
       ("4", "Night", 0xFFFF00FF),
-      ("5", "All day", 0xFF9999),
+      ("5", "All day", 0xFFFF9999),
     ]) ...[
       AvailabilityTemplateModel(
         id: template.$1,
