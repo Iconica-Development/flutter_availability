@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  rxdart: ^0.27.0
   flutter_hooks: ^0.20.5
   flutter_availability_data_interface:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub

@@ -8,12 +8,8 @@ environment:
   sdk: ">=3.4.3 <4.0.0"
   flutter: ">=1.17.0"
 
-dependencies:
-  rxdart: ^0.27.0
-
 dev_dependencies:
   test: ^1.16.0
-  mocktail: ^1.0.4
   flutter_iconica_analysis:
     git:
       url: https://github.com/Iconica-Development/flutter_iconica_analysis

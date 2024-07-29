@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/service/pop_handler.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/generic_time_selection.dart";

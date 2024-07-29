@@ -1,7 +1,7 @@
 import "package:flutter/widgets.dart";
 import "package:flutter_availability/src/config/availability_options.dart";
+import "package:flutter_availability/src/service/availability_service.dart";
 import "package:flutter_availability/src/service/pop_handler.dart";
-import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 ///
 class AvailabilityScope extends InheritedWidget {

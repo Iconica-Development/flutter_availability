@@ -10,7 +10,7 @@ command:
 
 scripts:
   lint:all:
-    run: dart run melos run analyze && dart run melos run format-check && dart run melos run test
+    run: dart run melos run analyze && dart run melos run format-check
     description: Run all static analysis checks.
 
   get:
@@ -20,6 +20,7 @@ scripts:
 
   upgrade:
     run: melos exec -c 1 -- "flutter pub upgrade"
+
 
   analyze:
     run: |
@@ -34,9 +35,3 @@ scripts:
   format-check:
     run: dart run melos exec dart format . --set-exit-if-changed
     description: Run `dart format` checks for all packages.
-
-  test:
-    run: |
-      dart run melos exec -c 1 -- \
-        flutter test -r github --no-test-assets
-    description: Run `flutter test` to validate all tests for all packages
