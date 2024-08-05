@@ -48,7 +48,6 @@ class _TemplateLegendState extends State<TemplateLegend> {
         false;
 
     var templatesVisible = templatesAvailable && _templateDrawerOpen;
-
     if (!templatesAvailable &&
         !featureSet.require(AvailabilityFeature.templates)) {
       return const SizedBox.shrink();
@@ -86,7 +85,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
       thickness: 1,
     );
 
-    if (_templateDrawerOpen && !templatesLoading) {
+    if (_templateDrawerOpen && templatesAvailable) {
       body = Container(
         constraints: const BoxConstraints(maxHeight: 152),
         child: SingleChildScrollView(
@@ -161,8 +160,8 @@ class _TemplateLegendState extends State<TemplateLegend> {
                   translations.templateLegendTitle,
                   style: textTheme.titleMedium,
                 ),
-                if ((templatesAvailable && !templatesLoading) ||
-                    _templateDrawerOpen) ...[
+                if (templatesAvailable ||
+                    (_templateDrawerOpen && templatesLoading)) ...[
                   Icon(
                     _templateDrawerOpen
                         ? Icons.arrow_drop_up
@@ -195,7 +194,9 @@ class _TemplateLegendState extends State<TemplateLegend> {
             if (templatesLoading) ...[
               options.loadingIndicatorBuilder(context),
             ] else ...[
-              createNewTemplateButton,
+              if (templates.isEmpty) ...[
+                createNewTemplateButton,
+              ],
             ],
           ],
         ],
