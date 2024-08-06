@@ -240,7 +240,7 @@ class AvailabilityViewModel {
     var startDate = DateTime(0, 0, 0, startTime!.hour, startTime!.minute);
     var endDate = DateTime(0, 0, 0, endTime!.hour, endTime!.minute);
 
-    return template.availabilityDeviatesFromTemplate(
+    return template.availabilityTimeDeviatesFromTemplate(
       availability,
       startDate,
       endDate,

@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
-import "package:flutter_availability/src/util/availability_deviation.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
@@ -170,11 +169,21 @@ List<CalendarDay> _mapAvailabilitiesToCalendarDays(
 ) =>
     availabilitySnapshot.data?.map(
       (availability) {
-        var templateIsDeviated = availability.template != null &&
-            isTemplateDeviated(
-              availability.availabilityModel,
-              availability.template!,
-            );
+        var availabilityModel = availability.availabilityModel;
+        var templateTimeIsDeviated =
+            availability.template?.availabilityTimeDeviatesFromTemplate(
+                  availabilityModel,
+                  availabilityModel.startDate,
+                  availabilityModel.endDate,
+                ) ??
+                false;
+        var templateBreaksAreDeviated =
+            availability.template?.availabilityBreaksDeviatesFromTemplate(
+                  availabilityModel,
+                ) ??
+                false;
+        var templateIsDeviated =
+            templateTimeIsDeviated || templateBreaksAreDeviated;
         return CalendarDay(
           date: DateUtils.dateOnly(availability.availabilityModel.startDate),
           color: availability.template != null

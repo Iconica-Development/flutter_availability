@@ -48,6 +48,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
         false;
 
     var templatesVisible = templatesAvailable && _templateDrawerOpen;
+
     if (!templatesAvailable &&
         !featureSet.require(AvailabilityFeature.templates)) {
       return const SizedBox.shrink();
@@ -193,10 +194,8 @@ class _TemplateLegendState extends State<TemplateLegend> {
             const SizedBox(height: 12),
             if (templatesLoading) ...[
               options.loadingIndicatorBuilder(context),
-            ] else ...[
-              if (templates.isEmpty) ...[
-                createNewTemplateButton,
-              ],
+            ] else if (templates.isEmpty) ...[
+              createNewTemplateButton,
             ],
           ],
         ],

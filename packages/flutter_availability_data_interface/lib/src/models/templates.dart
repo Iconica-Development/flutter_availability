@@ -123,12 +123,18 @@ class AvailabilityTemplateModel {
 
   /// check if an availability's day corresponds to the template with the given
   /// [availability] and [start] and [end] dates
-  bool availabilityDeviatesFromTemplate(
+  bool availabilityTimeDeviatesFromTemplate(
     AvailabilityModel availability,
     DateTime start,
     DateTime end,
   ) =>
-      templateData.availabilityDeviates(availability, start, end);
+      templateData.availabilityTimeDeviates(availability, start, end);
+
+  /// check if an availability's breaks correspond to the template
+  bool availabilityBreaksDeviatesFromTemplate(
+    AvailabilityModel availability,
+  ) =>
+      templateData.availabilityBreaksDeviates(availability);
 }
 
 /// Used as the key for defining week-based templates
@@ -198,12 +204,15 @@ abstract interface class TemplateData {
   void validate();
 
   /// Check if an availability's day corresponds to the template with the given
-  /// [availability] and [start] and [end] dates
-  bool availabilityDeviates(
+  /// [availability]
+  bool availabilityTimeDeviates(
     AvailabilityModel availability,
     DateTime start,
     DateTime end,
   );
+
+  /// Check if an availability's breaks correspond to the template
+  bool availabilityBreaksDeviates(AvailabilityModel availability);
 }
 
 /// A week based template data structure
@@ -307,12 +316,12 @@ class WeekTemplateData implements TemplateData {
   }
 
   @override
-  bool availabilityDeviates(
+  bool availabilityTimeDeviates(
     AvailabilityModel availability,
     DateTime start,
     DateTime end,
   ) {
-    var dayOfWeek = WeekDay.values[availability.startDate.weekday];
+    var dayOfWeek = WeekDay.values[availability.startDate.weekday - 1];
     var data = _data[dayOfWeek];
     if (data == null) {
       // if the day of the week is not in the template, it deviates
@@ -320,6 +329,17 @@ class WeekTemplateData implements TemplateData {
     }
     // compare the start and end with the template
     return !start.timeMatches(data.startTime) || !end.timeMatches(data.endTime);
+  }
+
+  @override
+  bool availabilityBreaksDeviates(AvailabilityModel availability) {
+    var dayOfWeek = WeekDay.values[availability.startDate.weekday - 1];
+    var data = _data[dayOfWeek];
+    if (data == null) {
+      // if the day of the week is not in the template, it deviates
+      return true;
+    }
+    return checkAvailabilityBreaksDeviates(data.breaks, availability.breaks);
   }
 }
 
@@ -452,12 +472,16 @@ class DayTemplateData implements TemplateData {
   }
 
   @override
-  bool availabilityDeviates(
+  bool availabilityTimeDeviates(
     AvailabilityModel availability,
     DateTime start,
     DateTime end,
   ) =>
       !start.timeMatches(startTime) || !end.timeMatches(endTime);
+
+  @override
+  bool availabilityBreaksDeviates(AvailabilityModel availability) =>
+      checkAvailabilityBreaksDeviates(breaks, availability.breaks);
 }
 
 List<DateTime> _getDatesBetween(DateTime startDate, DateTime endDate) {
@@ -473,3 +497,20 @@ extension _MergeTime on DateTime {
   DateTime mergeTime(DateTime time) =>
       DateTime(year, month, day, time.hour, time.minute);
 }
+
+/// Checks if the availability breaks deviate from the template breaks
+/// If there are any differences in the breaks, this will return true
+/// If all the breaks are the same, this will return false
+bool checkAvailabilityBreaksDeviates(
+  List<AvailabilityBreakModel> templateBreaks,
+  List<AvailabilityBreakModel> availabilityBreaks,
+) =>
+    templateBreaks.length != availabilityBreaks.length ||
+    templateBreaks.any(
+      (templateBreak) => !availabilityBreaks.any(
+        (breakData) =>
+            breakData.startTime.timeMatches(templateBreak.startTime) &&
+            breakData.endTime.timeMatches(templateBreak.endTime) &&
+            breakData.submittedDuration == templateBreak.submittedDuration,
+      ),
+    );
