@@ -29,10 +29,7 @@ class App extends StatelessWidget {
         ],
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
-        home: AvailabilityUserStory(
-          userId: "",
-          options: AvailabilityOptions(),
-        ),
+        home: const Home(),
       );
 }
 
@@ -40,16 +37,10 @@ class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: const Center(
-          child: Text("Hello World"),
+  Widget build(BuildContext context) => const Scaffold(
+        body: Center(
+          child: Text("Start the user story by tapping the button below"),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            debugPrint("starting availability user story");
-            await openAvailabilitiesForUser(context, "", null);
-            debugPrint("finishing availability user story");
-          },
-        ),
+        floatingActionButton: AvailabilityEntryWidget(),
       );
 }
