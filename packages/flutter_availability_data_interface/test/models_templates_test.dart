@@ -182,6 +182,458 @@ void main() {
         );
       });
     });
+
+    group("availabilityTimeDeviates", () {
+      group("day templates", () {
+        test("returns false when availability matches the day template", () {
+          var availability = AvailabilityModel(
+            userId: "user1",
+            startDate: DateTime(2023, 7, 9, 9, 0),
+            endDate: DateTime(2023, 7, 9, 17, 0),
+            breaks: [],
+          );
+          var template = AvailabilityTemplateModel(
+            userId: "user1",
+            name: "Day Template",
+            color: 0,
+            templateType: AvailabilityTemplateType.day,
+            templateData: DayTemplateData(
+              startTime: DateTime(2023, 7, 9, 9, 0),
+              endTime: DateTime(2023, 7, 9, 17, 0),
+              breaks: [],
+            ),
+          );
+          var result = template.availabilityTimeDeviatesFromTemplate(
+            availability,
+            availability.startDate,
+            availability.endDate,
+          );
+          expect(result, isFalse);
+        });
+
+        test("returns true when availability does not match the day template",
+            () {
+          var availability = AvailabilityModel(
+            userId: "user1",
+            startDate: DateTime(2023, 7, 9, 10, 0),
+            endDate: DateTime(2023, 7, 9, 18, 0),
+            breaks: [],
+          );
+          var template = AvailabilityTemplateModel(
+            userId: "user1",
+            name: "Day Template",
+            color: 0,
+            templateType: AvailabilityTemplateType.day,
+            templateData: DayTemplateData(
+              startTime: DateTime(2023, 7, 9, 9, 0),
+              endTime: DateTime(2023, 7, 9, 17, 0),
+              breaks: [],
+            ),
+          );
+          var result = template.availabilityTimeDeviatesFromTemplate(
+            availability,
+            availability.startDate,
+            availability.endDate,
+          );
+          expect(result, isTrue);
+        });
+      });
+
+      group("week templates", () {
+        test("returns false when availability matches the week template", () {
+          var availability = AvailabilityModel(
+            userId: "user1",
+            startDate: DateTime(2023, 7, 9, 9, 0),
+            endDate: DateTime(2023, 7, 9, 17, 0),
+            breaks: [],
+          );
+          var template = AvailabilityTemplateModel(
+            userId: "user1",
+            name: "Week Template",
+            color: 0,
+            templateType: AvailabilityTemplateType.week,
+            templateData: WeekTemplateData.forDays(
+              sunday: DayTemplateData(
+                startTime: DateTime(2023, 7, 9, 9, 0),
+                endTime: DateTime(2023, 7, 9, 17, 0),
+                breaks: [],
+              ),
+            ),
+          );
+          var result = template.availabilityTimeDeviatesFromTemplate(
+            availability,
+            availability.startDate,
+            availability.endDate,
+          );
+          expect(result, isFalse);
+        });
+
+        test("returns true when availability does not match the week template",
+            () {
+          var availability = AvailabilityModel(
+            userId: "user1",
+            startDate: DateTime(2023, 7, 9, 10, 0), // sunday
+            endDate: DateTime(2023, 7, 9, 18, 0), // sunday
+            breaks: [],
+          );
+          var template = AvailabilityTemplateModel(
+            userId: "user1",
+            name: "Week Template",
+            color: 0,
+            templateType: AvailabilityTemplateType.week,
+            templateData: WeekTemplateData.forDays(
+              sunday: DayTemplateData(
+                startTime: DateTime(2023, 7, 9, 9, 0),
+                endTime: DateTime(2023, 7, 9, 17, 0),
+                breaks: [],
+              ),
+            ),
+          );
+          var result = template.availabilityTimeDeviatesFromTemplate(
+            availability,
+            availability.startDate,
+            availability.endDate,
+          );
+          expect(result, isTrue);
+        });
+
+        test(
+            "returns true when the template is missing the "
+            "day of the availability", () {
+          var availability = AvailabilityModel(
+            userId: "user1",
+            startDate: DateTime(2023, 7, 10, 10, 0), // monday
+            endDate: DateTime(2023, 7, 10, 18, 0), // monday
+            breaks: [],
+          );
+          var template = const AvailabilityTemplateModel(
+            userId: "user1",
+            name: "Week Template",
+            color: 0,
+            templateType: AvailabilityTemplateType.week,
+            templateData: WeekTemplateData(data: {}),
+          );
+          var result = template.availabilityTimeDeviatesFromTemplate(
+            availability,
+            availability.startDate,
+            availability.endDate,
+          );
+          expect(result, isTrue);
+        });
+
+        test("returns true when the template is fully null", () {
+          var availability = AvailabilityModel(
+            userId: "user1",
+            startDate: DateTime(2023, 7, 10, 10, 0),
+            endDate: DateTime(2023, 7, 10, 18, 0),
+            breaks: [],
+          );
+          var template = const AvailabilityTemplateModel(
+            userId: "user1",
+            name: "Week Template",
+            color: 0,
+            templateType: AvailabilityTemplateType.week,
+            templateData: WeekTemplateData(data: {}),
+          );
+          var result = template.availabilityTimeDeviatesFromTemplate(
+            availability,
+            availability.startDate,
+            availability.endDate,
+          );
+          expect(result, isTrue);
+        });
+      });
+    });
+  });
+
+  group("availabilityBreaksDeviates", () {
+    group("day templates", () {
+      test("returns false when availability matches the day template breaks",
+          () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0),
+          endDate: DateTime(2023, 7, 9, 17, 0),
+          breaks: [
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 12, 0),
+              endTime: DateTime(2023, 7, 9, 13, 0),
+            ),
+          ],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Day Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.day,
+          templateData: DayTemplateData(
+            startTime: DateTime(2023, 7, 9, 9, 0),
+            endTime: DateTime(2023, 7, 9, 17, 0),
+            breaks: [
+              AvailabilityBreakModel(
+                startTime: DateTime(2023, 7, 9, 12, 0),
+                endTime: DateTime(2023, 7, 9, 13, 0),
+              ),
+            ],
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isFalse);
+      });
+
+      test(
+          "returns true when availability breaks do not match the day template",
+          () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0),
+          endDate: DateTime(2023, 7, 9, 17, 0),
+          breaks: [
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 12, 0),
+              endTime: DateTime(2023, 7, 9, 13, 0),
+            ),
+          ],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Day Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.day,
+          templateData: DayTemplateData(
+            startTime: DateTime(2023, 7, 9, 9, 0),
+            endTime: DateTime(2023, 7, 9, 17, 0),
+            breaks: [
+              AvailabilityBreakModel(
+                startTime: DateTime(2023, 7, 9, 12, 30),
+                endTime: DateTime(2023, 7, 9, 13, 30),
+              ),
+            ],
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isTrue);
+      });
+
+      test(
+          "returns true when availability has more breaks than "
+          "the day template", () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0),
+          endDate: DateTime(2023, 7, 9, 17, 0),
+          breaks: [
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 12, 0),
+              endTime: DateTime(2023, 7, 9, 12, 30),
+            ),
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 15, 0),
+              endTime: DateTime(2023, 7, 9, 15, 30),
+            ),
+          ],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Day Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.day,
+          templateData: DayTemplateData(
+            startTime: DateTime(2023, 7, 9, 9, 0),
+            endTime: DateTime(2023, 7, 9, 17, 0),
+            breaks: [
+              AvailabilityBreakModel(
+                startTime: DateTime(2023, 7, 9, 12, 0),
+                endTime: DateTime(2023, 7, 9, 12, 30),
+              ),
+            ],
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isTrue);
+      });
+
+      test(
+          "returns true when availability has fewer breaks than "
+          "the day template", () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0),
+          endDate: DateTime(2023, 7, 9, 17, 0),
+          breaks: [],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Day Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.day,
+          templateData: DayTemplateData(
+            startTime: DateTime(2023, 7, 9, 9, 0),
+            endTime: DateTime(2023, 7, 9, 17, 0),
+            breaks: [
+              AvailabilityBreakModel(
+                startTime: DateTime(2023, 7, 9, 12, 0),
+                endTime: DateTime(2023, 7, 9, 12, 30),
+              ),
+            ],
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isTrue);
+      });
+    });
+
+    group("week templates", () {
+      test("returns false when availability matches the week template breaks",
+          () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0), // Sunday
+          endDate: DateTime(2023, 7, 9, 17, 0), // Sunday
+          breaks: [
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 12, 0),
+              endTime: DateTime(2023, 7, 9, 13, 0),
+            ),
+          ],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Week Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.week,
+          templateData: WeekTemplateData.forDays(
+            sunday: DayTemplateData(
+              startTime: DateTime(2023, 7, 9, 9, 0),
+              endTime: DateTime(2023, 7, 9, 17, 0),
+              breaks: [
+                AvailabilityBreakModel(
+                  startTime: DateTime(2023, 7, 9, 12, 0),
+                  endTime: DateTime(2023, 7, 9, 13, 0),
+                ),
+              ],
+            ),
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isFalse);
+      });
+
+      test(
+          "returns true when availability breaks do not match the "
+          "week template", () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0), // Sunday
+          endDate: DateTime(2023, 7, 9, 17, 0), // Sunday
+          breaks: [
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 12, 0),
+              endTime: DateTime(2023, 7, 9, 13, 0),
+            ),
+          ],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Week Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.week,
+          templateData: WeekTemplateData.forDays(
+            sunday: DayTemplateData(
+              startTime: DateTime(2023, 7, 9, 9, 0),
+              endTime: DateTime(2023, 7, 9, 17, 0),
+              breaks: [
+                AvailabilityBreakModel(
+                  startTime: DateTime(2023, 7, 9, 12, 30),
+                  endTime: DateTime(2023, 7, 9, 13, 30),
+                ),
+              ],
+            ),
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isTrue);
+      });
+
+      test(
+          "returns true when availability has more breaks than the "
+          "week template", () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0), // Sunday
+          endDate: DateTime(2023, 7, 9, 17, 0), // Sunday
+          breaks: [
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 12, 0),
+              endTime: DateTime(2023, 7, 9, 12, 30),
+            ),
+            AvailabilityBreakModel(
+              startTime: DateTime(2023, 7, 9, 15, 0),
+              endTime: DateTime(2023, 7, 9, 15, 30),
+            ),
+          ],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Week Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.week,
+          templateData: WeekTemplateData.forDays(
+            sunday: DayTemplateData(
+              startTime: DateTime(2023, 7, 9, 9, 0),
+              endTime: DateTime(2023, 7, 9, 17, 0),
+              breaks: [
+                AvailabilityBreakModel(
+                  startTime: DateTime(2023, 7, 9, 12, 0),
+                  endTime: DateTime(2023, 7, 9, 12, 30),
+                ),
+              ],
+            ),
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isTrue);
+      });
+
+      test(
+          "returns true when availability has fewer breaks than "
+          "the week template", () {
+        var availability = AvailabilityModel(
+          userId: "user1",
+          startDate: DateTime(2023, 7, 9, 9, 0), // Sunday
+          endDate: DateTime(2023, 7, 9, 17, 0), // Sunday
+          breaks: [],
+        );
+        var template = AvailabilityTemplateModel(
+          userId: "user1",
+          name: "Week Template",
+          color: 0,
+          templateType: AvailabilityTemplateType.week,
+          templateData: WeekTemplateData.forDays(
+            sunday: DayTemplateData(
+              startTime: DateTime(2023, 7, 9, 9, 0),
+              endTime: DateTime(2023, 7, 9, 17, 0),
+              breaks: [
+                AvailabilityBreakModel(
+                  startTime: DateTime(2023, 7, 9, 12, 0),
+                  endTime: DateTime(2023, 7, 9, 12, 30),
+                ),
+              ],
+            ),
+          ),
+        );
+        var result =
+            template.availabilityBreaksDeviatesFromTemplate(availability);
+        expect(result, isTrue);
+      });
+    });
   });
 }
 
