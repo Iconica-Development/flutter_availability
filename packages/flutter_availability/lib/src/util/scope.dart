@@ -29,7 +29,7 @@ class AvailabilityScope extends InheritedWidget {
 
   @override
   bool updateShouldNotify(AvailabilityScope oldWidget) =>
-      oldWidget.userId != userId || options != options;
+      oldWidget.userId != userId || oldWidget.options != options;
 
   ///
   static AvailabilityScope of(BuildContext context) =>
