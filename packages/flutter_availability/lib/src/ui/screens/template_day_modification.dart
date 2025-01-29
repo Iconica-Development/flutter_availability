@@ -4,6 +4,7 @@ import "package:flutter_availability/src/ui/view_models/day_template_view_model.
 import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
 import "package:flutter_availability/src/util/scope.dart";
@@ -51,6 +52,7 @@ class _DayTemplateModificationScreenState
     var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     useEffect(() {
       availabilityScope.popHandler.add(widget.onExit);
@@ -101,10 +103,13 @@ class _DayTemplateModificationScreenState
 
     var canSave = _viewModel.canSave;
 
-    var deleteButton = options.bigTextButtonBuilder(
-      context,
-      onDeletePressed,
-      Text(translations.deleteTemplateButton),
+    var deleteButton = CustomSemantics(
+      identifier: identifiers.deleteTemplateButtonIdentifier,
+      child: options.bigTextButtonBuilder(
+        context,
+        onDeletePressed,
+        Text(translations.deleteTemplateButton),
+      ),
     );
 
     void onNameChanged(String name) {
@@ -153,10 +158,13 @@ class _DayTemplateModificationScreenState
           ),
         ],
         buttons: [
-          options.primaryButtonBuilder(
-            context,
-            canSave ? onSavePressed : null,
-            Text(translations.saveButton),
+          CustomSemantics(
+            identifier: identifiers.saveButtonIdentifier,
+            child: options.primaryButtonBuilder(
+              context,
+              canSave ? onSavePressed : null,
+              Text(translations.saveButton),
+            ),
           ),
           if (widget.template != null) ...[
             const SizedBox(height: 8),

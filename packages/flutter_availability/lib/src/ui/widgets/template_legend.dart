@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/config/availability_options.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
@@ -36,6 +37,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
     var options = availabilityScope.options;
     var colors = options.colors;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
     var featureSet = options.featureSet;
 
     var templatesLoading =
@@ -63,20 +65,23 @@ class _TemplateLegendState extends State<TemplateLegend> {
       });
     }
 
-    var createNewTemplateButton = GestureDetector(
-      onTap: () => widget.onViewTemplates(),
-      child: ColoredBox(
-        color: Colors.transparent,
-        child: Row(
-          children: [
-            const SizedBox(width: 12),
-            const Icon(Icons.add, size: 20),
-            const SizedBox(width: 6),
-            Text(
-              translations.createTemplateButton,
-              style: textTheme.bodyLarge,
-            ),
-          ],
+    var createNewTemplateButton = CustomSemantics(
+      identifier: identifiers.createNewTemplateButtonIdentifier,
+      child: GestureDetector(
+        onTap: () => widget.onViewTemplates(),
+        child: ColoredBox(
+          color: Colors.transparent,
+          child: Row(
+            children: [
+              const SizedBox(width: 12),
+              const Icon(Icons.add, size: 20),
+              const SizedBox(width: 6),
+              Text(
+                translations.createTemplateButton,
+                style: textTheme.bodyLarge,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -104,6 +109,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                     left: 12,
                   ),
                   child: _TemplateLegendItem(
+                    index: 0,
                     name: translations.templateSelectionLabel,
                     backgroundColor: Colors.white,
                     borderColor: colorScheme.primary,
@@ -116,6 +122,7 @@ class _TemplateLegendState extends State<TemplateLegend> {
                       left: 12,
                     ),
                     child: _TemplateLegendItem(
+                      index: 1,
                       name: translations.availabilityWithoutTemplateLabel,
                       backgroundColor: colors.customAvailabilityColor ??
                           colorScheme.secondary,
@@ -123,13 +130,14 @@ class _TemplateLegendState extends State<TemplateLegend> {
                   ),
                 ],
                 if (featureSet.require(AvailabilityFeature.templates)) ...[
-                  for (var template in templates) ...[
+                  for (var (index, template) in templates.indexed) ...[
                     Padding(
                       padding: const EdgeInsets.only(
                         top: 10,
                         left: 12,
                       ),
                       child: _TemplateLegendItem(
+                        index: index + 2,
                         name: template.name,
                         backgroundColor: Color(template.color),
                       ),
@@ -149,27 +157,30 @@ class _TemplateLegendState extends State<TemplateLegend> {
     return Column(
       children: [
         // a button to open/close a drawer with all the templates
-        GestureDetector(
-          onTap: onDrawerHeaderClick,
-          child: ColoredBox(
-            color: Colors.transparent,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  translations.templateLegendTitle,
-                  style: textTheme.titleMedium,
-                ),
-                if (templatesAvailable ||
-                    (_templateDrawerOpen && templatesLoading)) ...[
-                  Icon(
-                    _templateDrawerOpen
-                        ? Icons.arrow_drop_up
-                        : Icons.arrow_drop_down,
+        CustomSemantics(
+          identifier: identifiers.toggleTemplateDrawerButtonIdentifier,
+          child: GestureDetector(
+            onTap: onDrawerHeaderClick,
+            child: ColoredBox(
+              color: Colors.transparent,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    translations.templateLegendTitle,
+                    style: textTheme.titleMedium,
                   ),
+                  if (templatesAvailable ||
+                      (_templateDrawerOpen && templatesLoading)) ...[
+                    Icon(
+                      _templateDrawerOpen
+                          ? Icons.arrow_drop_up
+                          : Icons.arrow_drop_down,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
@@ -208,10 +219,16 @@ class _TemplateLegendItem extends StatelessWidget {
   const _TemplateLegendItem({
     required this.name,
     required this.backgroundColor,
+    required this.index,
     this.borderColor,
   });
 
   final String name;
+
+  /// The index of the color in the list of colors (index 0 is the selected
+  /// color template, index 1 is the color for availabilities without a
+  /// template)
+  final int index;
 
   final Color backgroundColor;
 
@@ -222,6 +239,9 @@ class _TemplateLegendItem extends StatelessWidget {
     var theme = Theme.of(context);
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+    var identifiers = options.accessibilityIds;
+
+    var templateIdentifier = "${identifiers.templateNameIdentifier}_$index";
 
     return Row(
       children: [
@@ -238,10 +258,13 @@ class _TemplateLegendItem extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(
-            name,
-            style: theme.textTheme.bodyLarge,
-            overflow: TextOverflow.ellipsis,
+          child: CustomSemantics(
+            identifier: templateIdentifier,
+            child: Text(
+              name,
+              style: theme.textTheme.bodyLarge,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
       ],

@@ -3,6 +3,7 @@ import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/week_template_view_models.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
@@ -28,11 +29,23 @@ class TemplateWeekOverview extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
     var colors = options.colors;
 
     var dayNames = getDaysOfTheWeekAsStrings(translations, context);
 
     var templateData = template.data;
+
+    var editButton = CustomSemantics(
+      identifier: identifiers.weekTemplateEditButtonIdentifier,
+      child: options.smallTextButtonBuilder(
+        context,
+        onClickEdit,
+        Text(
+          translations.editTemplateButton,
+        ),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,13 +59,7 @@ class TemplateWeekOverview extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            options.smallTextButtonBuilder(
-              context,
-              onClickEdit,
-              Text(
-                translations.editTemplateButton,
-              ),
-            ),
+            editButton,
           ],
         ),
         const SizedBox(height: 8),
@@ -67,12 +74,13 @@ class TemplateWeekOverview extends StatelessWidget {
           ),
           child: Column(
             children: [
-              for (var day in WeekDay.values) ...[
+              for (var (index, day) in WeekDay.values.indexed) ...[
                 _TemplateDayDetailRow(
-                  dayName: dayNames[day.index],
+                  dayName: dayNames[index],
                   dayData:
                       templateData.containsKey(day) ? templateData[day] : null,
-                  isOdd: day.index.isOdd,
+                  index: index,
+                  isOdd: index.isOdd,
                 ),
               ],
             ],
@@ -88,6 +96,7 @@ class _TemplateDayDetailRow extends StatelessWidget {
     required this.dayName,
     required this.dayData,
     required this.isOdd,
+    required this.index,
   });
 
   /// The name of the day
@@ -96,6 +105,9 @@ class _TemplateDayDetailRow extends StatelessWidget {
   /// There odd rows do not have a background color
   /// This causes a layered effect
   final bool isOdd;
+
+  /// The index of the day
+  final int index;
 
   /// The data of the day
   final DayTemplateDataViewModel? dayData;
@@ -107,6 +119,7 @@ class _TemplateDayDetailRow extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     var startTime = dayData?.startTime;
     var endTime = dayData?.endTime;
@@ -118,6 +131,8 @@ class _TemplateDayDetailRow extends StatelessWidget {
     } else {
       dayPeriod = translations.unavailable;
     }
+
+    var dayPeriodIdentifier = "${identifiers.weekDayTimeIdentifier}_$index";
 
     var breaks = dayData?.breaks ?? <BreakViewModel>[];
 
@@ -145,13 +160,23 @@ class _TemplateDayDetailRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(dayName, style: textTheme.bodyLarge),
-              Text(dayPeriod, style: textTheme.bodyLarge),
+              CustomSemantics(
+                identifier: dayPeriodIdentifier,
+                child: Text(
+                  dayPeriod,
+                  style: textTheme.bodyLarge,
+                ),
+              ),
             ],
           ),
           // for each break add a line
-          for (var dayBreak in breaks) ...[
+          for (var (breakIndex, dayBreak) in breaks.indexed) ...[
             const SizedBox(height: 4),
-            _TemplateDayDetailPauseRow(dayBreakViewModel: dayBreak),
+            _TemplateDayDetailPauseRow(
+              dayBreakViewModel: dayBreak,
+              dayIndex: index,
+              breakIndex: breakIndex,
+            ),
           ],
         ],
       ),
@@ -162,9 +187,19 @@ class _TemplateDayDetailRow extends StatelessWidget {
 class _TemplateDayDetailPauseRow extends StatelessWidget {
   const _TemplateDayDetailPauseRow({
     required this.dayBreakViewModel,
+    required this.dayIndex,
+    required this.breakIndex,
   });
 
   final BreakViewModel dayBreakViewModel;
+
+  /// The index of the day in the list of days
+  /// This is used to create unique identifiers when there are multiple days
+  /// with breaks
+  final int dayIndex;
+
+  /// The index of the break in the list of breaks
+  final int breakIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +208,7 @@ class _TemplateDayDetailPauseRow extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     var dayBreak = dayBreakViewModel.toBreak();
     var startTime = TimeOfDay.fromDateTime(dayBreak.startTime);
@@ -186,6 +222,9 @@ class _TemplateDayDetailPauseRow extends StatelessWidget {
       fontStyle: FontStyle.italic,
     );
 
+    var breakIdentifier =
+        "${identifiers.weekDayBreakIdentifier}_${dayIndex}_$breakIndex";
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -196,9 +235,12 @@ class _TemplateDayDetailPauseRow extends StatelessWidget {
             style: pauseTextStyle,
           ),
         ),
-        Text(
-          pausePeriod,
-          style: pauseTextStyle,
+        CustomSemantics(
+          identifier: breakIdentifier,
+          child: Text(
+            pausePeriod,
+            style: pauseTextStyle,
+          ),
         ),
       ],
     );

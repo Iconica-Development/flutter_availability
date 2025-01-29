@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 /// Returns the days of the week as abbreviated strings
@@ -119,6 +120,7 @@ class _CalendarDay extends StatelessWidget {
     var colorScheme = theme.colorScheme;
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+    var identifiers = options.accessibilityIds;
     var colors = options.colors;
 
     var dayColor = day.color ??
@@ -134,6 +136,10 @@ class _CalendarDay extends StatelessWidget {
       textStyle = textTheme.titleMedium?.copyWith(color: textColor);
     }
 
+    var dayIdentifier =
+        "${identifiers.availabilityDateButtonIdentifier}_${day.date.year}_"
+        "${day.date.month}_${day.date.day}";
+
     var decoration = day.outsideMonth
         ? null
         : BoxDecoration(
@@ -145,32 +151,35 @@ class _CalendarDay extends StatelessWidget {
             ),
           );
 
-    return InkWell(
-      onTap: () => onDayTap(day.date),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: options.borderRadius,
-          border: Border.all(
-            color: day.isSelected ? theme.dividerColor : Colors.transparent,
-            width: 1.5,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: decoration,
-                child: Text(day.date.day.toString(), style: textStyle),
-              ),
+    return CustomSemantics(
+      identifier: dayIdentifier,
+      child: InkWell(
+        onTap: () => onDayTap(day.date),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: options.borderRadius,
+            border: Border.all(
+              color: day.isSelected ? theme.dividerColor : Colors.transparent,
+              width: 1.5,
             ),
-            if (day.templateDeviation) ...[
-              Positioned(
-                right: 4,
-                child: Text("*", style: textStyle),
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: decoration,
+                  child: Text(day.date.day.toString(), style: textStyle),
+                ),
               ),
+              if (day.templateDeviation) ...[
+                Positioned(
+                  right: 4,
+                  child: Text("*", style: textStyle),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

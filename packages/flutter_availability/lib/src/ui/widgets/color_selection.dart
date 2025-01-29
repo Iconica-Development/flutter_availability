@@ -1,6 +1,7 @@
 import "dart:math";
 
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 /// Widget for selecting a color for a template
@@ -40,9 +41,10 @@ class TemplateColorSelection extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            for (var color in colors.templateColors) ...[
+            for (var (index, color) in colors.templateColors.indexed) ...[
               _TemplateColorItem(
                 color: color,
+                index: index,
                 selectedColor: selectedColor,
                 onColorSelected: onColorSelected,
               ),
@@ -57,6 +59,7 @@ class TemplateColorSelection extends StatelessWidget {
 class _TemplateColorItem extends StatelessWidget {
   const _TemplateColorItem({
     required this.color,
+    required this.index,
     required this.selectedColor,
     required this.onColorSelected,
   });
@@ -66,13 +69,19 @@ class _TemplateColorItem extends StatelessWidget {
 
   final Color color;
 
+  /// The index of the color in the list of colors
+  final int index;
+
   final int? selectedColor;
 
   @override
   Widget build(BuildContext context) {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+    var identifiers = options.accessibilityIds;
     var colors = options.colors;
+
+    var isSelected = selectedColor == color.value;
 
     /// If the color is selected, deselect it, otherwise select it
     void onColorClick(Color color) => onColorSelected(
@@ -83,20 +92,25 @@ class _TemplateColorItem extends StatelessWidget {
         ? colors.templateColorLightCheckmarkColor
         : colors.templateColorDarkCheckmarkColor;
 
-    var icon = selectedColor == color.value
-        ? Icon(Icons.check, color: checkMarkColor)
-        : null;
+    var icon = isSelected ? Icon(Icons.check, color: checkMarkColor) : null;
 
-    return GestureDetector(
-      onTap: () => onColorClick(color),
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: options.borderRadius,
+    var colorIdentifier = isSelected
+        ? identifiers.colorSelectedButtonIdentifier
+        : "${identifiers.colorSelectionButtonIdentifier}_$index";
+
+    return CustomSemantics(
+      identifier: colorIdentifier,
+      child: GestureDetector(
+        onTap: () => onColorClick(color),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: options.borderRadius,
+          ),
+          child: icon,
         ),
-        child: icon,
       ),
     );
   }

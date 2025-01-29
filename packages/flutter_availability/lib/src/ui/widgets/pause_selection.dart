@@ -4,6 +4,7 @@ import "package:flutter_availability/src/service/pop_handler.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/generic_time_selection.dart";
 import "package:flutter_availability/src/ui/widgets/input_fields.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
@@ -32,6 +33,7 @@ class PauseSelection extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
     var popHandler = availabilityScope.popHandler;
 
     Future<BreakViewModel?> openBreakDialog(
@@ -73,13 +75,16 @@ class PauseSelection extends StatelessWidget {
 
     var sortedBreaks = breaks.toList()..sort((a, b) => a.compareTo(b));
 
-    var addButton = options.bigTextButtonWrapperBuilder(
-      context,
-      onClickAddBreak,
-      options.bigTextButtonBuilder(
+    var addButton = CustomSemantics(
+      identifier: identifiers.addBreaksButtonIdentifier,
+      child: options.bigTextButtonWrapperBuilder(
         context,
         onClickAddBreak,
-        Text(translations.addButton),
+        options.bigTextButtonBuilder(
+          context,
+          onClickAddBreak,
+          Text(translations.addButton),
+        ),
       ),
     );
 
@@ -99,10 +104,11 @@ class PauseSelection extends StatelessWidget {
             ),
           ],
         ),
-        for (var breakModel in sortedBreaks) ...[
+        for (var (index, breakModel) in sortedBreaks.indexed) ...[
           const SizedBox(height: 8),
           BreakDisplay(
             breakModel: breakModel,
+            index: index,
             onRemove: () => onDeleteBreak(breakModel),
             onClick: () async => onEditBreak(breakModel),
           ),
@@ -119,6 +125,7 @@ class BreakDisplay extends StatelessWidget {
   /// Creates a new break display
   const BreakDisplay({
     required this.breakModel,
+    required this.index,
     required this.onRemove,
     required this.onClick,
     super.key,
@@ -126,6 +133,9 @@ class BreakDisplay extends StatelessWidget {
 
   /// The break to display
   final BreakViewModel breakModel;
+
+  /// The index of the break in the list
+  final int index;
 
   /// Callback for when the minus button is clicked
   final VoidCallback onRemove;
@@ -140,6 +150,7 @@ class BreakDisplay extends StatelessWidget {
     var options = availabilityScope.options;
     var colors = options.colors;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     var starTime = translations.timeFormatter(
       context,
@@ -151,6 +162,9 @@ class BreakDisplay extends StatelessWidget {
     );
 
     var breakDuration = breakModel.duration.inMinutes;
+    var editBreakIdentifier = "${identifiers.editBreakButtonIdentifier}_$index";
+    var deleteBreakIdentifier =
+        "${identifiers.deleteBreakButtonIdentifier}_$index";
 
     return InkWell(
       onTap: onClick,
@@ -163,16 +177,22 @@ class BreakDisplay extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            Text(
-              "$breakDuration "
-              "${translations.timeMinutes}  |  "
-              "$starTime - "
-              "$endTime",
+            CustomSemantics(
+              identifier: editBreakIdentifier,
+              child: Text(
+                "$breakDuration "
+                "${translations.timeMinutes}  |  "
+                "$starTime - "
+                "$endTime",
+              ),
             ),
             const Spacer(),
-            InkWell(
-              onTap: onRemove,
-              child: const Icon(Icons.remove),
+            CustomSemantics(
+              identifier: deleteBreakIdentifier,
+              child: InkWell(
+                onTap: onRemove,
+                child: const Icon(Icons.remove),
+              ),
             ),
           ],
         ),
@@ -251,6 +271,7 @@ class _AvailabilityBreakSelectionDialogState
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
     var spacing = options.spacing;
 
     void onUpdateDuration(Duration? duration) {
@@ -299,13 +320,16 @@ class _AvailabilityBreakSelectionDialogState
 
     var onSaveButtonPress = canSave ? onSave : null;
 
-    var saveButton = options.primaryButtonBuilder(
-      context,
-      onSaveButtonPress,
-      Text(
-        widget.initialBreak == null
-            ? translations.addButton
-            : translations.saveButton,
+    var saveButton = CustomSemantics(
+      identifier: identifiers.addButtonIdentifier,
+      child: options.primaryButtonBuilder(
+        context,
+        onSaveButtonPress,
+        Text(
+          widget.initialBreak == null
+              ? translations.addButton
+              : translations.saveButton,
+        ),
       ),
     );
 
@@ -381,10 +405,13 @@ class _AvailabilityBreakSelectionDialogState
         Positioned(
           right: 0,
           top: 0,
-          child: IconButton(
-            padding: const EdgeInsets.all(16),
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.of(context).pop(),
+          child: CustomSemantics(
+            identifier: identifiers.closeButtonIdentifier,
+            child: IconButton(
+              padding: const EdgeInsets.all(16),
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
         ),
       ],

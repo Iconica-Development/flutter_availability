@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/calendar.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/ui/widgets/template_legend.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
@@ -43,6 +44,7 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
     var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     var availabilityStream = useMemoized(
       () => service.getOverviewDataForMonth(_selectedDate),
@@ -127,16 +129,22 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
       }
     }
 
-    var clearSelectedButton = options.bigTextButtonBuilder(
-      context,
-      onClearButtonClicked,
-      Text(translations.clearAvailabilityButton),
+    var clearSelectedButton = CustomSemantics(
+      identifier: identifiers.clearAvailabilitiesButtonIdentifier,
+      child: options.bigTextButtonBuilder(
+        context,
+        onClearButtonClicked,
+        Text(translations.clearAvailabilityButton),
+      ),
     );
 
-    var startEditButton = options.primaryButtonBuilder(
-      context,
-      onButtonPress,
-      Text(translations.editAvailabilityButton),
+    var startEditButton = CustomSemantics(
+      identifier: identifiers.viewAvailabilitiesButtonIdentifier,
+      child: options.primaryButtonBuilder(
+        context,
+        onButtonPress,
+        Text(translations.editAvailabilityButton),
+      ),
     );
 
     return options.baseScreenBuilder(

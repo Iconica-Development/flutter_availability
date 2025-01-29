@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
@@ -65,6 +66,7 @@ class CalendarView extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     var mappedCalendarDays = _mapAvailabilitiesToCalendarDays(availabilities);
     var existsTemplateDeviations = mappedCalendarDays.any(
@@ -74,33 +76,42 @@ class CalendarView extends StatelessWidget {
     var monthDateSelector = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          padding: EdgeInsets.zero,
-          icon: const Icon(Icons.chevron_left),
-          onPressed: () {
-            onMonthChanged(
-              DateTime(month.year, month.month - 1),
-            );
-          },
+        CustomSemantics(
+          identifier: identifiers.previousMonthButtonIdentifier,
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: const Icon(Icons.chevron_left),
+            onPressed: () {
+              onMonthChanged(
+                DateTime(month.year, month.month - 1),
+              );
+            },
+          ),
         ),
         const SizedBox(width: 44),
         SizedBox(
           width: _calculateTextWidthOfLongestMonth(context, translations),
-          child: Text(
-            translations.monthYearFormatter(context, month),
-            style: textTheme.titleMedium,
-            textAlign: TextAlign.center,
+          child: CustomSemantics(
+            identifier: identifiers.monthNameTextIdentifier,
+            child: Text(
+              translations.monthYearFormatter(context, month),
+              style: textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         const SizedBox(width: 44),
-        IconButton(
-          padding: EdgeInsets.zero,
-          icon: const Icon(Icons.chevron_right),
-          onPressed: () {
-            onMonthChanged(
-              DateTime(month.year, month.month + 1),
-            );
-          },
+        CustomSemantics(
+          identifier: identifiers.nextMonthButtonIdentifier,
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: const Icon(Icons.chevron_right),
+            onPressed: () {
+              onMonthChanged(
+                DateTime(month.year, month.month + 1),
+              );
+            },
+          ),
         ),
       ],
     );

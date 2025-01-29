@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
@@ -30,6 +31,7 @@ class AvailabilityClearSection extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     var isSingleDay = range.start.isAtSameMomentAs(range.end);
 
@@ -43,22 +45,29 @@ class AvailabilityClearSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          titleText,
-          style: textTheme.titleMedium,
+        CustomSemantics(
+          identifier: identifiers.availabilitiesPeriodTextIdentifier,
+          child: Text(
+            titleText,
+            style: textTheme.titleMedium,
+          ),
         ),
         const SizedBox(height: 8),
         Row(
           children: [
-            Checkbox(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-              splashRadius: 0,
-              value: clearAvailable,
-              onChanged: (value) {
-                if (value == null) return;
-                onChanged(value);
-              },
+            CustomSemantics(
+              identifier:
+                  identifiers.selectUnavailableForPeriodButtonIdentifier,
+              child: Checkbox(
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                splashRadius: 0,
+                value: clearAvailable,
+                onChanged: (value) {
+                  if (value == null) return;
+                  onChanged(value);
+                },
+              ),
             ),
             const SizedBox(width: 8),
             Text(
