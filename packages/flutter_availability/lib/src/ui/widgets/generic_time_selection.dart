@@ -44,6 +44,7 @@ class TimeSelection extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     return Column(
       crossAxisAlignment: crossAxisAlignment,
@@ -63,6 +64,7 @@ class TimeSelection extends StatelessWidget {
             Expanded(
               flex: 2,
               child: TimeInputField(
+                identifier: identifiers.startTimeTextFieldIdentifier,
                 initialValue: startTime,
                 onTimeChanged: onStartChanged,
               ),
@@ -78,6 +80,7 @@ class TimeSelection extends StatelessWidget {
             Expanded(
               flex: 2,
               child: TimeInputField(
+                identifier: identifiers.endTimeTextFieldIdentifier,
                 initialValue: endTime,
                 onTimeChanged: onEndChanged,
               ),

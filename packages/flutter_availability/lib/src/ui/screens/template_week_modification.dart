@@ -3,6 +3,7 @@ import "package:flutter_availability/src/service/errors.dart";
 import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/week_template_view_models.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
 import "package:flutter_availability/src/ui/widgets/template_week_day_selection.dart";
@@ -53,6 +54,7 @@ class _WeekTemplateModificationScreenState
     var service = availabilityScope.service;
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
     var spacing = options.spacing;
 
     var weekTemplateDate = _viewModel.data;
@@ -134,22 +136,31 @@ class _WeekTemplateModificationScreenState
     });
 
     var canSave = _viewModel.canSave;
-    var nextButton = options.primaryButtonBuilder(
-      context,
-      canSave ? onNextPressed : null,
-      Text(translations.nextButton),
+    var nextButton = CustomSemantics(
+      identifier: identifiers.nextButtonIdentifier,
+      child: options.primaryButtonBuilder(
+        context,
+        canSave ? onNextPressed : null,
+        Text(translations.nextButton),
+      ),
     );
 
-    var saveButton = options.primaryButtonBuilder(
-      context,
-      canSave ? onSavePressed : null,
-      Text(translations.saveButton),
+    var saveButton = CustomSemantics(
+      identifier: identifiers.saveButtonIdentifier,
+      child: options.primaryButtonBuilder(
+        context,
+        canSave ? onSavePressed : null,
+        Text(translations.saveButton),
+      ),
     );
 
-    var deleteButton = options.bigTextButtonBuilder(
-      context,
-      onDeletePressed,
-      Text(translations.deleteTemplateButton),
+    var deleteButton = CustomSemantics(
+      identifier: identifiers.deleteTemplateButtonIdentifier,
+      child: options.bigTextButtonBuilder(
+        context,
+        onDeletePressed,
+        Text(translations.deleteTemplateButton),
+      ),
     );
 
     var title = Center(
@@ -230,10 +241,13 @@ class _WeekTemplateModificationScreenState
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    _viewModel.name ?? "",
-                    style: textTheme.bodyLarge,
-                    overflow: TextOverflow.ellipsis,
+                  child: CustomSemantics(
+                    identifier: identifiers.templateNameIdentifier,
+                    child: Text(
+                      _viewModel.name ?? "",
+                      style: textTheme.bodyLarge,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],

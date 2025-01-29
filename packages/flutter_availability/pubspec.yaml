@@ -1,6 +1,6 @@
 name: flutter_availability
 description: "Flutter availability userstory package"
-version: 1.0.0
+version: 1.1.0
 
 publish_to: https://forgejo.internal.iconica.nl/api/packages/internal/pub
 
@@ -14,7 +14,7 @@ dependencies:
   flutter_hooks: ^0.20.5
   flutter_availability_data_interface:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
-    version: ^1.0.0
+    version: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -25,4 +25,3 @@ dev_dependencies:
       url: https://github.com/Iconica-Development/flutter_iconica_analysis
       ref: 7.0.0
 
-flutter:

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 /// An input field for time selection
@@ -8,11 +9,15 @@ class TimeInputField extends StatelessWidget {
   const TimeInputField({
     required this.initialValue,
     required this.onTimeChanged,
+    required this.identifier,
     super.key,
   });
 
   ///
   final TimeOfDay? initialValue;
+
+  /// The accessibility identifier for this input field
+  final String identifier;
 
   ///
   final void Function(TimeOfDay) onTimeChanged;
@@ -37,21 +42,25 @@ class TimeInputField extends StatelessWidget {
       }
     }
 
-    return TextFormField(
-      decoration: InputDecoration(
-        suffixIcon: const Icon(Icons.access_time),
-        hintText: translations.time,
-        hintStyle: theme.inputDecorationTheme.hintStyle,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+    return CustomSemantics(
+      identifier: identifier,
+      isTextField: true,
+      child: TextFormField(
+        decoration: InputDecoration(
+          suffixIcon: const Icon(Icons.access_time),
+          hintText: translations.time,
+          hintStyle: theme.inputDecorationTheme.hintStyle,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
+        initialValue: initialValue != null
+            ? translations.timeFormatter(context, initialValue!)
+            : null,
+        readOnly: true,
+        style: options.textStyles.inputFieldTextStyle,
+        onTap: onFieldtap,
       ),
-      initialValue: initialValue != null
-          ? translations.timeFormatter(context, initialValue!)
-          : null,
-      readOnly: true,
-      style: options.textStyles.inputFieldTextStyle,
-      onTap: onFieldtap,
     );
   }
 }
@@ -122,6 +131,7 @@ class _DurationInputFieldState extends State<DurationInputField> {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     return Focus(
       onFocusChange: (hasFocus) {
@@ -131,22 +141,26 @@ class _DurationInputFieldState extends State<DurationInputField> {
           _removeOverlay();
         }
       },
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: translations.time,
-          labelStyle: theme.inputDecorationTheme.hintStyle,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+      child: CustomSemantics(
+        identifier: identifiers.durationTextFieldIdentifier,
+        isTextField: true,
+        child: TextFormField(
+          decoration: InputDecoration(
+            labelText: translations.time,
+            labelStyle: theme.inputDecorationTheme.hintStyle,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            suffixIcon: const Icon(Icons.access_time),
           ),
-          suffixIcon: const Icon(Icons.access_time),
+          initialValue: widget.initialValue?.inMinutes.toString(),
+          keyboardType: TextInputType.number,
+          style: options.textStyles.inputFieldTextStyle,
+          onChanged: _onFieldChanged,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
         ),
-        initialValue: widget.initialValue?.inMinutes.toString(),
-        keyboardType: TextInputType.number,
-        style: options.textStyles.inputFieldTextStyle,
-        onChanged: _onFieldChanged,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-        ],
       ),
     );
   }

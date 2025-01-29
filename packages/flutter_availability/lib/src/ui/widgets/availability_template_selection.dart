@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
@@ -34,6 +35,7 @@ class AvailabilityTemplateSelection extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     var titleText = translations.availabilityAddTemplateTitle;
     if (selectedTemplates.isNotEmpty) {
@@ -47,10 +49,13 @@ class AvailabilityTemplateSelection extends StatelessWidget {
     var addButton = options.bigTextButtonWrapperBuilder(
       context,
       onTemplateAdd,
-      options.bigTextButtonBuilder(
-        context,
-        onTemplateAdd,
-        Text(translations.addButton),
+      CustomSemantics(
+        identifier: identifiers.addTemplateToAvailabilitiesButtonIdentifier,
+        child: options.bigTextButtonBuilder(
+          context,
+          onTemplateAdd,
+          Text(translations.addButton),
+        ),
       ),
     );
 
@@ -89,6 +94,7 @@ class _TemplateList extends StatelessWidget {
     var theme = Theme.of(context);
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+    var identifiers = options.accessibilityIds;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -107,8 +113,8 @@ class _TemplateList extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (var template in selectedTemplates) ...[
-                  _TemplateListItem(template: template),
+                for (var (index, template) in selectedTemplates.indexed) ...[
+                  _TemplateListItem(template: template, index: index),
                   if (template != selectedTemplates.last) ...[
                     const SizedBox(height: 12),
                   ],
@@ -117,9 +123,13 @@ class _TemplateList extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          InkWell(
-            onTap: onTemplatesRemoved,
-            child: const Icon(Icons.remove),
+          CustomSemantics(
+            identifier:
+                identifiers.removeTemplatesFromAvailabilitiesButtonIdentifier,
+            child: InkWell(
+              onTap: onTemplatesRemoved,
+              child: const Icon(Icons.remove),
+            ),
           ),
         ],
       ),
@@ -128,15 +138,22 @@ class _TemplateList extends StatelessWidget {
 }
 
 class _TemplateListItem extends StatelessWidget {
-  const _TemplateListItem({required this.template});
+  const _TemplateListItem({
+    required this.template,
+    required this.index,
+  });
 
   final AvailabilityTemplateModel template;
+
+  /// The index of the template in the list of selected templates
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+    var identifiers = options.accessibilityIds;
 
     return Row(
       children: [
@@ -150,10 +167,13 @@ class _TemplateListItem extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(
-            template.name,
-            style: theme.textTheme.bodyLarge,
-            overflow: TextOverflow.ellipsis,
+          child: CustomSemantics(
+            identifier: "${identifiers.templateNameIdentifier}_$index",
+            child: Text(
+              template.name,
+              style: theme.textTheme.bodyLarge,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
       ],

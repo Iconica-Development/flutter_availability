@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 /// Input section for the template name
@@ -23,6 +24,7 @@ class TemplateNameInput extends StatelessWidget {
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,19 +34,23 @@ class TemplateNameInput extends StatelessWidget {
           style: textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
-        TextFormField(
-          decoration: InputDecoration(
-            hintText: translations.templateTitleHintText,
-            hintStyle: theme.inputDecorationTheme.hintStyle,
-            counterText: "",
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+        CustomSemantics(
+          identifier: identifiers.templateNameTextFieldIdentifier,
+          isTextField: true,
+          child: TextFormField(
+            decoration: InputDecoration(
+              hintText: translations.templateTitleHintText,
+              hintStyle: theme.inputDecorationTheme.hintStyle,
+              counterText: "",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
+            maxLength: 100,
+            initialValue: initialValue,
+            style: options.textStyles.inputFieldTextStyle,
+            onChanged: onNameChanged,
           ),
-          maxLength: 100,
-          initialValue: initialValue,
-          style: options.textStyles.inputFieldTextStyle,
-          onChanged: onNameChanged,
         ),
       ],
     );

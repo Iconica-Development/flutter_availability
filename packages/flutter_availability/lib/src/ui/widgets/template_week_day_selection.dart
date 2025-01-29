@@ -2,6 +2,7 @@
 
 import "package:flutter/material.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 /// A widget for selecting a day of the week
@@ -58,10 +59,10 @@ class _TemplateWeekDaySelectionState extends State<TemplateWeekDaySelection> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                for (var day in days) ...[
+                for (var (index, day) in days.indexed) ...[
                   _DaySelectionCard(
                     day: day,
-                    days: days,
+                    index: index,
                     selectedDayIndex: _selectedDayIndex,
                     onDaySelected: (selected) =>
                         onDaySelected(selected, days.indexOf(day)),
@@ -81,12 +82,12 @@ class _DaySelectionCard extends StatelessWidget {
   const _DaySelectionCard({
     required this.selectedDayIndex,
     required this.day,
-    required this.days,
+    required this.index,
     required this.onDaySelected,
   });
 
   final String day;
-  final List<String> days;
+  final int index;
 
   final int selectedDayIndex;
 
@@ -94,11 +95,11 @@ class _DaySelectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var index = days.indexOf(day);
     var isSelected = index == selectedDayIndex;
 
     return _DaySelectionCardLayout(
       day: day,
+      index: index,
       isSelected: isSelected,
       onDaySelected: onDaySelected,
     );
@@ -108,12 +109,16 @@ class _DaySelectionCard extends StatelessWidget {
 class _DaySelectionCardLayout extends StatelessWidget {
   const _DaySelectionCardLayout({
     required this.day,
+    required this.index,
     required this.isSelected,
     required this.onDaySelected,
   });
 
   final String day;
   final bool isSelected;
+
+  /// The index of the day in the list of days
+  final int index;
 
   final void Function(bool) onDaySelected;
 
@@ -124,6 +129,7 @@ class _DaySelectionCardLayout extends StatelessWidget {
     var abbreviationTextStyle = textTheme.headlineMedium;
     var availabilityScope = AvailabilityScope.of(context);
     var options = availabilityScope.options;
+    var identifiers = options.accessibilityIds;
 
     abbreviationTextStyle = isSelected
         ? abbreviationTextStyle?.copyWith(
@@ -131,22 +137,27 @@ class _DaySelectionCardLayout extends StatelessWidget {
           )
         : abbreviationTextStyle;
 
+    var identifier = "${identifiers.weekDayButtonIdentifier}_$index";
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height: isSelected ? 72 : 64,
       width: isSelected ? 72 : 64,
-      child: ChoiceChip(
-        shape: RoundedRectangleBorder(borderRadius: options.borderRadius),
-        padding: EdgeInsets.zero,
-        label: Center(
-          child: Text(
-            day.toUpperCase(),
-            style: abbreviationTextStyle,
+      child: CustomSemantics(
+        identifier: identifier,
+        child: ChoiceChip(
+          shape: RoundedRectangleBorder(borderRadius: options.borderRadius),
+          padding: EdgeInsets.zero,
+          label: Center(
+            child: Text(
+              day.toUpperCase(),
+              style: abbreviationTextStyle,
+            ),
           ),
+          selected: isSelected,
+          showCheckmark: theme.chipTheme.showCheckmark ?? false,
+          onSelected: onDaySelected,
         ),
-        selected: isSelected,
-        showCheckmark: theme.chipTheme.showCheckmark ?? false,
-        onSelected: onDaySelected,
       ),
     );
   }

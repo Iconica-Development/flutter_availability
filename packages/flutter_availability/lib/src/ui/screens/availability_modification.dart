@@ -7,6 +7,7 @@ import "package:flutter_availability/src/ui/widgets/availability_template_select
 import "package:flutter_availability/src/ui/widgets/availabillity_time_selection.dart";
 import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/pause_selection.dart";
+import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability/src/util/utils.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -62,6 +63,7 @@ class _AvailabilitiesModificationScreenState
     var options = availabilityScope.options;
     var spacing = options.spacing;
     var translations = options.translations;
+    var identifiers = options.accessibilityIds;
 
     useEffect(() {
       availabilityScope.popHandler.add(widget.onExit);
@@ -126,10 +128,13 @@ class _AvailabilitiesModificationScreenState
     }
 
     var canSave = _availabilityViewModel.canSave;
-    var saveButton = options.primaryButtonBuilder(
-      context,
-      canSave ? onClickSave : null,
-      Text(translations.saveButton),
+    var saveButton = CustomSemantics(
+      identifier: identifiers.saveButtonIdentifier,
+      child: options.primaryButtonBuilder(
+        context,
+        canSave ? onClickSave : null,
+        Text(translations.saveButton),
+      ),
     );
 
     // ignore: avoid_positional_boolean_parameters

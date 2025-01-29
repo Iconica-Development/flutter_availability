@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:flutter_availability/src/config/availability_accessibility_ids.dart";
 import "package:flutter_availability/src/config/availability_translations.dart";
 import "package:flutter_availability/src/service/errors.dart";
 import "package:flutter_availability/src/ui/widgets/defaults/default_base_screen.dart";
@@ -15,6 +16,7 @@ class AvailabilityOptions {
   /// AvailabilityOptions constructor where everything is optional.
   AvailabilityOptions({
     this.translations = const AvailabilityTranslations.empty(),
+    this.accessibilityIds = const AvailabilityAccessibilityIds.empty(),
     this.baseScreenBuilder = DefaultBaseScreen.builder,
     this.primaryButtonBuilder = DefaultPrimaryButton.builder,
     this.secondaryButtonBuilder = DefaultSecondaryButton.builder,
@@ -38,6 +40,10 @@ class AvailabilityOptions {
 
   /// The translations for the availability userstory
   final AvailabilityTranslations translations;
+
+  /// All the accessibility ids for the availability userstory
+  /// These are used to add identifiers to the elements for testing
+  final AvailabilityAccessibilityIds accessibilityIds;
 
   /// The implementation for communicating with the persistance layer
   final AvailabilityDataInterface dataInterface;
