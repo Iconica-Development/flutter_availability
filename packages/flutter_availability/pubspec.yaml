@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_hooks: ^0.20.5
+  flutter_hooks: ">=0.20.5 <0.22.0"
   flutter_availability_data_interface:
     hosted: https://forgejo.internal.iconica.nl/api/packages/internal/pub
     version: ^1.1.0
