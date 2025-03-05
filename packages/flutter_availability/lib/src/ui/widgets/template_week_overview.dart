@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_availability/src/ui/view_models/break_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/week_template_view_models.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
-import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 

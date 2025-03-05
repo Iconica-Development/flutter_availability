@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_availability/src/service/errors.dart";
 import "package:flutter_availability/src/ui/view_models/day_template_view_model.dart";
 import "package:flutter_availability/src/ui/view_models/template_daydata_view_model.dart";
 import "package:flutter_availability/src/ui/widgets/base_page.dart";
 import "package:flutter_availability/src/ui/widgets/color_selection.dart";
-import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/ui/widgets/template_name_input.dart";
 import "package:flutter_availability/src/ui/widgets/template_time_break.dart";
 import "package:flutter_availability/src/util/scope.dart";

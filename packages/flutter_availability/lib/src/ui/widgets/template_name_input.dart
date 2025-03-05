@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 /// Input section for the template name
