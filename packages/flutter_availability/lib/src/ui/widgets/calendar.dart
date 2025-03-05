@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
+import "package:flutter_accessibility/flutter_accessibility.dart";
 import "package:flutter_availability/flutter_availability.dart";
 import "package:flutter_availability/src/ui/widgets/calendar_grid.dart";
-import "package:flutter_availability/src/ui/widgets/semantic_widget.dart";
 import "package:flutter_availability/src/util/scope.dart";
 
 ///
