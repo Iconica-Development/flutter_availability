@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Improve the UI for smaller screens to prevent overflows
+
 ## 1.1.1
 
 * Removed custom definition of CustomSemantics to use the one from flutter_accessibility instead

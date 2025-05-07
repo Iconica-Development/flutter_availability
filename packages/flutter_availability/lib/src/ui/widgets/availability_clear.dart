@@ -70,9 +70,11 @@ class AvailabilityClearSection extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(
-              unavailableText,
-              style: textTheme.bodyMedium,
+            Expanded(
+              child: Text(
+                unavailableText,
+                style: textTheme.bodyMedium,
+              ),
             ),
           ],
         ),

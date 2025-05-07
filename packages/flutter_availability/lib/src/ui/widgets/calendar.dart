@@ -73,47 +73,52 @@ class CalendarView extends StatelessWidget {
       (element) => element.templateDeviation,
     );
 
-    var monthDateSelector = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CustomSemantics(
-          identifier: identifiers.previousMonthButtonIdentifier,
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () {
-              onMonthChanged(
-                DateTime(month.year, month.month - 1),
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: 44),
-        SizedBox(
-          width: _calculateTextWidthOfLongestMonth(context, translations),
-          child: CustomSemantics(
-            identifier: identifiers.monthNameTextIdentifier,
-            child: Text(
-              translations.monthYearFormatter(context, month),
-              style: textTheme.titleMedium,
-              textAlign: TextAlign.center,
+    var monthDateSelector = LayoutBuilder(
+      builder: (context, constraints) {
+        var monthWidth =
+            _calculateTextWidthOfLongestMonth(context, translations);
+        var sideSpace =
+            ((constraints.maxWidth - monthWidth) / 2 - 44).clamp(0.0, 44.0);
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomSemantics(
+              identifier: identifiers.previousMonthButtonIdentifier,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () {
+                  onMonthChanged(DateTime(month.year, month.month - 1));
+                },
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 44),
-        CustomSemantics(
-          identifier: identifiers.nextMonthButtonIdentifier,
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () {
-              onMonthChanged(
-                DateTime(month.year, month.month + 1),
-              );
-            },
-          ),
-        ),
-      ],
+            SizedBox(width: sideSpace),
+            SizedBox(
+              width: monthWidth,
+              child: CustomSemantics(
+                identifier: identifiers.monthNameTextIdentifier,
+                child: Text(
+                  translations.monthYearFormatter(context, month),
+                  style: textTheme.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            SizedBox(width: sideSpace),
+            CustomSemantics(
+              identifier: identifiers.nextMonthButtonIdentifier,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.chevron_right),
+                onPressed: () {
+                  onMonthChanged(DateTime(month.year, month.month + 1));
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
 
     var calendarGrid = CalendarGrid(

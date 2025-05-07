@@ -167,9 +167,12 @@ class _CalendarDay extends StatelessWidget {
             children: [
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
                   decoration: decoration,
-                  child: Text(day.date.day.toString(), style: textStyle),
+                  child: Text(
+                    day.date.day.toString(),
+                    style: textStyle,
+                  ),
                 ),
               ),
               if (day.templateDeviation) ...[
