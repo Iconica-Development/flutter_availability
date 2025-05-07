@@ -76,9 +76,11 @@ class _TemplateLegendState extends State<TemplateLegend> {
               const SizedBox(width: 12),
               const Icon(Icons.add, size: 20),
               const SizedBox(width: 6),
-              Text(
-                translations.createTemplateButton,
-                style: textTheme.bodyLarge,
+              Expanded(
+                child: Text(
+                  translations.createTemplateButton,
+                  style: textTheme.bodyLarge,
+                ),
               ),
             ],
           ),
