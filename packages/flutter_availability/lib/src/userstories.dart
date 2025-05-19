@@ -71,7 +71,7 @@ class _AvailabilityUserStoryState extends State<AvailabilityUserStory> {
           onPop: _popHandler.handlePop,
           child: Navigator(
             onGenerateInitialRoutes: (state, route) => [
-              homePageRoute(widget.onExit ?? () {}),
+              homePageRoute(widget.onExit),
             ],
           ),
         ),

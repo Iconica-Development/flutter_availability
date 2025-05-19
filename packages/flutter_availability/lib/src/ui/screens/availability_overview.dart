@@ -13,7 +13,7 @@ class AvailabilityOverview extends StatefulHookWidget {
   const AvailabilityOverview({
     required this.onEditDateRange,
     required this.onViewTemplates,
-    required this.onExit,
+    this.onExit,
     super.key,
   });
 
@@ -27,7 +27,7 @@ class AvailabilityOverview extends StatefulHookWidget {
   final VoidCallback onViewTemplates;
 
   /// Callback for when the user wants to navigate back
-  final VoidCallback onExit;
+  final VoidCallback? onExit;
 
   @override
   State<AvailabilityOverview> createState() => _AvailabilityOverviewState();
@@ -52,8 +52,10 @@ class _AvailabilityOverviewState extends State<AvailabilityOverview> {
     );
 
     useEffect(() {
-      availabilityScope.popHandler.add(widget.onExit);
-      return () => availabilityScope.popHandler.remove(widget.onExit);
+      var onExit = widget.onExit;
+      if (onExit == null) return null;
+      availabilityScope.popHandler.add(onExit);
+      return () => availabilityScope.popHandler.remove(onExit);
     });
 
     var availabilitySnapshot = useStream(availabilityStream);

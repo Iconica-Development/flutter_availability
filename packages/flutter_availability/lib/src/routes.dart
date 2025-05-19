@@ -7,13 +7,13 @@ import "package:flutter_availability/src/ui/screens/template_week_modification.d
 import "package:flutter_availability_data_interface/flutter_availability_data_interface.dart";
 
 ///
-MaterialPageRoute homePageRoute(VoidCallback onExit) => MaterialPageRoute(
+MaterialPageRoute homePageRoute(VoidCallback? onExit) => MaterialPageRoute(
       builder: (context) => AvailabilityOverview(
         onEditDateRange: (range, availabilities) async => Navigator.of(context)
             .push(availabilityViewRoute(range, availabilities)),
         onViewTemplates: () async =>
             Navigator.of(context).push(templateOverviewRoute()),
-        onExit: () => onExit(),
+        onExit: onExit,
       ),
     );
 
