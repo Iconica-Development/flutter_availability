@@ -216,7 +216,7 @@ class AvailabilityColors {
 /// Builder definition for providing a base screen surrounding each page
 typedef BaseScreenBuilder = Widget Function(
   BuildContext context,
-  VoidCallback onBack,
+  VoidCallback? onBack,
   Widget child,
 );
 

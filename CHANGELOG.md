@@ -1,3 +1,7 @@
+## 1.2.1
+
+* Added the use of onExit to show BackButton on the OverviewScreen
+
 ## 1.2.0
 
 * Improve the UI for smaller screens to prevent overflows
